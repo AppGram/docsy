@@ -1,5 +1,9 @@
 <p align="center">
-  <img src="docs/assets/docsy-logo.png" alt="Docsy logo" width="200" />
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/docsy-logo-dark.png" />
+    <source media="(prefers-color-scheme: light)" srcset="docs/assets/docsy-logo.png" />
+    <img src="docs/assets/docsy-logo.png" alt="Docsy logo" width="200" />
+  </picture>
 </p>
 
 <h1 align="center">Docsy</h1>
