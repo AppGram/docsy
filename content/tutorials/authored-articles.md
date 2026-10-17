@@ -97,4 +97,4 @@ access:
 
 Keep protected Markdown outside `public/`. Files in `public/` are static assets and bypass request-time permission checks.
 
-Next: [ingest an OpenAPI document](./openapi-ingestion).
+Next: [ingest an OpenAPI document](../openapi-ingestion).

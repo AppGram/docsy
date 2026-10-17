@@ -8,7 +8,9 @@
 
 <h1 align="center">Docsy</h1>
 
-<p align="center"><strong>Generate a polished, self-hosted documentation site from OpenAPI and SDK metadata—then own every line of the result.</strong></p>
+<p align="center"><strong>Build a polished, self-hosted documentation site from Markdown, OpenAPI, and SDK metadata—then own every line of the result.</strong></p>
+
+<p align="center"><a href="https://appgram.github.io/docsy/">Documentation</a> · <a href="https://github.com/AppGram/docsy/issues">Issues</a></p>
 
 Docsy is an Astro-based documentation generator for teams that want a strong default interface without giving up control of their source. Product copy, navigation, visual tokens, ingestion, and access rules live in `docsy.config.yaml`. The generated Astro components and CSS stay in your repository and can be edited normally by a developer or coding agent.
 
@@ -18,7 +20,7 @@ Docsy can ship as a fully static site or as a server-rendered Node application w
 
 ## Preview
 
-These screenshots come from the included Nager.Date OpenAPI example—not from AppGram product documentation.
+These screenshots show the default interface configured for the public Nager.Date OpenAPI—not AppGram product documentation.
 
 ### Light and dark
 
@@ -79,20 +81,26 @@ The important boundary is simple:
 
 Docsy never requires a hosted control plane. A generated project builds and runs from its own repository.
 
-## Tutorials
+## Documentation
 
-These articles are both readable on GitHub and rendered by the included Docsy example through `content.articles`:
+The repository is its own Docsy documentation portal. Every article is readable on GitHub and rendered at [appgram.github.io/docsy](https://appgram.github.io/docsy/) through `content.articles`:
 
-| Tutorial | What it explains |
+| Article | What it explains |
 | --- | --- |
+| [Get started with Docsy](content/getting-started.md) | Run the portal, generate a project, and understand the ownership boundary |
 | [Configure Docsy with YAML](content/tutorials/yaml-configuration.md) | The configuration lifecycle, top-level sections, paths, and environment values |
 | [Write authored documentation](content/tutorials/authored-articles.md) | Markdown articles, YAML registration, navigation, search, exports, and permissions |
-| [Ingest an OpenAPI document](content/tutorials/openapi-ingestion.md) | Local and remote sources, section matching, navigation, and SDK adapters |
+| [Ingest an OpenAPI document](content/tutorials/openapi-ingestion.md) | Local and remote sources, section matching, and navigation |
+| [Ingest SDK documentation](content/ingestion/sdk-adapters.md) | TypeDoc, compact TypeDoc, Swift symbol, and Dart adapters |
+| [Customize the default UI](content/customization/default-ui.md) | YAML brand tokens and the source-owned Astro interface |
 | [Protect documentation by tier](content/tutorials/lock-mode.md) | Ordered access rules, trusted headers, webhooks, and locked deployment |
+| [Deploy to GitHub Pages](content/deployment/github-pages.md) | Static Pages configuration and the included Actions workflow |
+| [Self-host Docsy](content/deployment/self-hosting.md) | Static, Node, and Docker deployment shapes |
+| [CLI reference](content/reference/cli.md) | Project generation, validation, building, and production startup |
 
 ## Quick start
 
-Run the included public-API example:
+Run Docsy's own documentation portal:
 
 ```bash
 git clone https://github.com/AppGram/docsy.git docsy
@@ -101,9 +109,9 @@ npm ci
 npm run dev
 ```
 
-Open [http://localhost:4321/docs/](http://localhost:4321/docs/).
+Open [http://localhost:4321/docsy/](http://localhost:4321/docsy/).
 
-The example uses a committed Nager.Date OpenAPI snapshot, so the first build is deterministic and does not depend on a documentation service.
+The portal uses the default light interface and renders every registered Markdown article. OpenAPI ingestion is disabled for the portal itself; the committed Nager.Date snapshot remains available as a deterministic example source.
 
 ## Generate a project
 
@@ -395,6 +403,12 @@ npm run build
 Publish `release/` as the web root. The configured `site.basePath` is already staged underneath it, and `release/index.html` redirects to that mount path.
 
 Any conventional static server, object storage website, or CDN can host this output.
+
+### GitHub Pages
+
+The repository includes `.github/workflows/pages.yml`. It validates and builds the open-mode portal, uploads `dist/`, and deploys it through the `github-pages` environment whenever `main` changes.
+
+For a repository site, set `site.origin` to the GitHub Pages host and `site.basePath` to the repository name. The Docsy portal uses `https://appgram.github.io` and `/docsy`.
 
 ### Node server
 

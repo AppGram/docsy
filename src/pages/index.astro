@@ -63,23 +63,25 @@ const articles = getArticleSources().map((article) => ({ ...article, href: artic
   {apiSections.length > 0 && <h2>API reference</h2>}
   {apiSections.length > 0 && <p class="docs-section-description">Generated from the OpenAPI source configured in <code>docsy.config.yaml</code>.</p>}
 
-  <div class="docs-sdk-grid">
-    {apiSections.map((section) => (
-      <a class="docs-sdk-card" href={section.href}>
-        <div class="docs-sdk-head">
-          <span class="docs-sdk-mark" aria-hidden="true">
-            <img src={assetPath('assets/sdks/bash.svg')} alt="" width="24" height="24" loading="lazy" />
-          </span>
-          <span class="docs-sdk-arrow" aria-hidden="true">&rarr;</span>
-        </div>
-        <h3>{section.title}</h3>
-        <p>{section.description}</p>
-        <div class="docs-sdk-meta">
-          {section.endpointCount} {section.endpointCount === 1 ? 'endpoint' : 'endpoints'}
-        </div>
-      </a>
-    ))}
-  </div>
+  {apiSections.length > 0 && (
+    <div class="docs-sdk-grid">
+      {apiSections.map((section) => (
+        <a class="docs-sdk-card" href={section.href}>
+          <div class="docs-sdk-head">
+            <span class="docs-sdk-mark" aria-hidden="true">
+              <img src={assetPath('assets/sdks/bash.svg')} alt="" width="24" height="24" loading="lazy" />
+            </span>
+            <span class="docs-sdk-arrow" aria-hidden="true">&rarr;</span>
+          </div>
+          <h3>{section.title}</h3>
+          <p>{section.description}</p>
+          <div class="docs-sdk-meta">
+            {section.endpointCount} {section.endpointCount === 1 ? 'endpoint' : 'endpoints'}
+          </div>
+        </a>
+      ))}
+    </div>
+  )}
 </DocsLayout>
 
 <style is:global>

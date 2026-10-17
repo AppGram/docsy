@@ -1,51 +1,45 @@
 # Content, branding, ingestion, navigation, and permission gates live here.
 # The interface itself remains editable source under src/.
 site:
-  name: Nager.Date API
+  name: Docsy
   docsLabel: docs
-  title: Nager.Date API Documentation
-  description: >-
-    The Nager.Date Community API is a public service that provides reliable information about public holidays for
-    countries around the world. It allows developers to query national holiday dates, check whether a specific day is a
-    public holiday and list upcoming holidays. By using the API, you agree to the Terms of Service.
-  origin: ${DOCSY_ORIGIN:-http://localhost:4321}
-  basePath: /docs
+  title: Docsy Documentation
+  description: Build, configure, customize, and self-host a source-owned documentation portal with Docsy.
+  origin: ${DOCSY_ORIGIN:-https://appgram.github.io}
+  basePath: /docsy
   language: en
-  homeUrl: /
+  homeUrl: /docsy/
   logo: assets/docsy-mark.svg
   favicon: assets/docsy-mark.svg
+  githubUrl: https://github.com/AppGram/docsy
 header:
   searchLabel: Search documentation
-  searchPlaceholder: Search docs and API endpoints
+  searchPlaceholder: Search Docsy guides and reference
   llmLabel: Markdown
+  cta:
+    label: View on GitHub
+    href: https://github.com/AppGram/docsy
 theme:
-  mode: dark
-  colors:
-    ink: "#f5f5f5"
-    muted: "#a3a3a3"
-    softMuted: "#696969"
-    line: "#262626"
-    paper: "#000000"
-    accent: "#ffffff"
-    accentDark: "#e5e5e5"
-    panel: "#050505"
-    success: "#ffffff"
-  fonts:
-    display: '"Aptos Display", "SF Pro Display", "Helvetica Neue", sans-serif'
-    body: '"Aptos", "SF Pro Text", "Helvetica Neue", sans-serif'
-    label: '"Aptos", "SF Pro Text", "Helvetica Neue", sans-serif'
-    mono: 'ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace'
+  mode: light
 home:
-  eyebrow: DOCUMENTATION
-  title: Build with Nager.Date API.
-  description: Query supported countries, public holidays, and date signals through a focused public API reference.
+  eyebrow: DOCSY DOCUMENTATION
+  title: Documentation you actually own.
+  description: Configure the content in YAML, write guides in Markdown, ingest API metadata, and ship an editable Astro site on your own infrastructure.
   primaryAction:
-    label: Explore the API →
-    href: /api/countries
-  sdkHeading: API reference
-  sdkDescription: Generated directly from the configured OpenAPI source.
+    label: Get started →
+    href: /guides/getting-started
+  secondaryAction:
+    label: Read the configuration guide
+    href: /guides/tutorials/yaml-configuration
+  sdkHeading: Documentation
+  sdkDescription: Guides and reference for building with Docsy.
 content:
   articles:
+    - slug: getting-started
+      source: content/getting-started.md
+      title: Get started with Docsy
+      description: Run the documentation portal, generate a new project, and understand what Docsy owns.
+      eyebrow: GET STARTED
     - slug: tutorials/yaml-configuration
       source: content/tutorials/yaml-configuration.md
       title: Configure Docsy with YAML
@@ -61,100 +55,77 @@ content:
       title: Ingest an OpenAPI document
       description: Turn a local or remote OpenAPI source into grouped, searchable API reference pages.
       eyebrow: TUTORIAL
+    - slug: ingestion/sdk-adapters
+      source: content/ingestion/sdk-adapters.md
+      title: Ingest SDK documentation
+      description: Normalize TypeDoc, Swift symbol, and Dart documentation into consistent SDK reference pages.
+      eyebrow: INGESTION
+    - slug: customization/default-ui
+      source: content/customization/default-ui.md
+      title: Customize the default UI
+      description: Change branding and theme tokens in YAML, then edit the source-owned Astro interface when needed.
+      eyebrow: CUSTOMIZATION
     - slug: tutorials/lock-mode
       source: content/tutorials/lock-mode.md
       title: Protect documentation by tier
       description: Configure server-side documentation permissions using ordered YAML rules.
       eyebrow: TUTORIAL
+    - slug: deployment/github-pages
+      source: content/deployment/github-pages.md
+      title: Deploy to GitHub Pages
+      description: Publish an open-mode Docsy site from GitHub Actions with the correct origin and base path.
+      eyebrow: DEPLOYMENT
+    - slug: deployment/self-hosting
+      source: content/deployment/self-hosting.md
+      title: Self-host Docsy
+      description: Deploy static documentation or run locked mode with the standalone Node server and Docker.
+      eyebrow: DEPLOYMENT
+    - slug: reference/cli
+      source: content/reference/cli.md
+      title: CLI reference
+      description: Generate projects, validate configuration, build releases, and run production previews.
+      eyebrow: REFERENCE
 access:
   mode: open
-  provider:
-    type: header
-    tierHeader: x-docsy-tiers
-    userHeader: x-docsy-user
-  tiers:
-    developer:
-      label: Developer
-      description: Standard API reference access.
-    enterprise:
-      label: Enterprise
-      description: Restricted API reference access.
-  rules:
-    - pattern: /api/versions
-      tiers:
-        - enterprise
-    - pattern: /api/**
-      tiers:
-        - developer
-        - enterprise
-  gate:
-    eyebrow: RESTRICTED DOCUMENTATION
-    title: This API reference is locked.
-    description: Sign in with an account whose documentation tier includes this reference.
-    loginLabel: Sign in to continue
-    returnToParam: returnTo
-    backLabel: Back to public docs
 navigation:
   - title: Introduction
     items:
       - title: Overview
         href: /
-  - title: Tutorials
+      - title: Get started
+        href: /guides/getting-started
+  - title: Content
     items:
       - title: YAML configuration
         href: /guides/tutorials/yaml-configuration
       - title: Authored articles
         href: /guides/tutorials/authored-articles
+  - title: Ingestion
+    items:
       - title: OpenAPI ingestion
         href: /guides/tutorials/openapi-ingestion
+      - title: SDK adapters
+        href: /guides/ingestion/sdk-adapters
+  - title: Customization
+    items:
+      - title: Default UI
+        href: /guides/customization/default-ui
+  - title: Access and deployment
+    items:
       - title: Lock mode
         href: /guides/tutorials/lock-mode
-  - title: API Reference
+      - title: GitHub Pages
+        href: /guides/deployment/github-pages
+      - title: Self-hosting
+        href: /guides/deployment/self-hosting
+  - title: Reference
     items:
-      - title: Countries
-        href: /api/countries
-      - title: Holidays
-        href: /api/holidays
-      - title: IoT Holidays
-        href: /api/iotholidays
-      - title: Versions
-        href: /api/versions
+      - title: CLI
+        href: /guides/reference/cli
 ingestion:
   sdks: []
   openapi:
-    enabled: true
+    enabled: false
     source: sources/openapi.json
-    apiBaseUrl: https://date.nager.at
-    sections:
-      - section: countries
-        title: Countries
-        description: >-
-          Provides access to detailed country information and the list of all countries supported by the API. This
-          includes general metadata such as country names, codes, regions, and related details.
-        tags: []
-        paths:
-          - /api/v4/Countries/{countryCode}
-          - /api/v4/Countries/Available
-      - section: holidays
-        title: Holidays
-        description: >-
-          Includes functionality for retrieving public-holiday data, checking whether a specific day is a public
-          holiday, and listing upcoming holidays.
-        tags: []
-        paths:
-          - /api/v4/Holidays/{countryCode}/{year}
-          - /api/v4/Holidays/{countryCode}/Next
-      - section: iotholidays
-        title: IoT Holidays
-        description: >-
-          Endpoints optimized for IoT devices and automation scripts. Returns only HTTP status codes (e.g., 200 OK or
-          204 No Content) without a response body to eliminate parsing overhead and reduce bandwidth.
-        tags: []
-        paths:
-          - /api/v4/IotHolidays/{isoCode}/IsToday/{offset}
-      - section: versions
-        title: Versions
-        description: Returns information about the current version of the Nager.Date API in use.
-        tags: []
-        paths:
-          - /api/v4/Versions
+    apiBaseUrl: https://api.example.com
+    sections: []

@@ -99,4 +99,4 @@ Available adapters are `typedoc`, `typedoc-lite`, `swift-symbols`, and `dartdoc`
 
 Commit private or air-gapped input beneath `sources/`, or provide it during the build. Never place a protected OpenAPI or SDK source under `public/`; public assets are served without lock-mode checks.
 
-Next: [protect documentation by tier](./lock-mode).
+Next: [protect documentation by tier](../lock-mode).

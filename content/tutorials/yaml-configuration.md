@@ -94,4 +94,4 @@ DOCSY_CONFIG=docsy.enterprise.yaml npm run build
 
 YAML intentionally does not describe arbitrary layout. The generated Astro components and CSS remain in the repository for deeper changes. This split keeps routine configuration safe while preserving full source ownership.
 
-Next: [write authored documentation](./authored-articles).
+Next: [write authored documentation](../authored-articles).

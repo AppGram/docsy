@@ -5,10 +5,11 @@
  *
  * Override any field via props on the layout call site.
  */
-import { assetPath, docsyConfig } from '../config';
+import { assetPath, docsPath, docsyConfig } from '../config';
 
 export const SITE_URL = docsyConfig.site.origin;
 export const SITE_NAME = docsyConfig.site.name;
+export const SITE_ROOT_URL = new URL(docsPath('/'), SITE_URL).toString();
 /*
  * Default OG image — a static 1200x630 card in public/. It used to be drawn on
  * request by functions/og-home.ts (workers-og), which cost a render and a
@@ -59,7 +60,7 @@ const organizationLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: SITE_NAME,
-  url: SITE_URL,
+  url: SITE_ROOT_URL,
   logo: new URL(assetPath(docsyConfig.site.logo), SITE_URL).toString(),
   sameAs: [docsyConfig.site.githubUrl].filter(Boolean),
 };
@@ -68,7 +69,7 @@ const websiteLd = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   name: SITE_NAME,
-  url: SITE_URL,
+  url: SITE_ROOT_URL,
   potentialAction: {
     '@type': 'SearchAction',
     target: `${new URL(assetPath(''), SITE_URL).toString()}?q={search_term_string}`,
