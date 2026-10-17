@@ -23,9 +23,16 @@ header:
   cta:
     label: Open dashboard
     href: https://app.example.com
+
+footer:
+  prefix: Built by
+  label: Acme
+  href: https://example.com
 ```
 
 Paths under `public/` are referenced without the `public` segment. Docsy adds `site.basePath` to local asset and documentation links.
+
+The footer is optional. Remove the entire `footer` block to render no attribution footer. ELv2 does not require visible Docsy or AppGram branding on your published documentation; its notice requirement applies to the license and copyright notices distributed with the software.
 
 ## Use the default visual tokens
 

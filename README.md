@@ -475,6 +475,7 @@ Docsy is **source-available**, not OSI-approved open-source software. It is lice
 
 - Self-host Docsy for your own public, private, personal, or commercial documentation.
 - Configure and modify the YAML, Markdown, Astro components, styles, adapters, and runtime.
+- Replace or remove visible Docsy and AppGram branding from your documentation pages, including the default footer and logo.
 - Copy, redistribute, and publish modified versions when you include ELv2 and clearly state that you changed the software.
 - Hire a consultant to configure or deploy Docsy for you.
 - Keep your Markdown, OpenAPI files, SDK metadata, branding, and other documentation content under terms of your choosing.
@@ -483,9 +484,9 @@ Docsy is **source-available**, not OSI-approved open-source software. It is lice
 
 - Offer Docsy to third parties as a hosted or managed documentation service that exposes a substantial set of Docsy's features.
 - Rebrand Docsy as your own competing SaaS documentation builder and charge customers to access it.
-- Remove or hide AppGram's licensing and copyright notices.
+- Remove or hide the `LICENSE` terms or copyright notices from the Docsy software or copies you redistribute.
 - Circumvent license-key functionality or protected features if Docsy adds them.
 
-ELv2 does not require you to publish private modifications. It also does not prohibit commercial activity generally: consulting, integration, and using Docsy for a commercial product's own documentation remain allowed. The restriction is providing Docsy itself as a hosted or managed service. The [license text](LICENSE) controls if this summary and ELv2 differ.
+ELv2 does not require a visible "Powered by Docsy" or "Built by AppGram" notice on your published documentation. It does require the legal notices to remain with the software. ELv2 also does not require you to publish private modifications or prohibit commercial activity generally: consulting, integration, and using Docsy for a commercial product's own documentation remain allowed. The restriction is providing Docsy itself as a hosted or managed service. The [license text](LICENSE) controls if this summary and ELv2 differ.
 
 Versions of Docsy previously received under MIT remain licensed under the MIT terms delivered with those versions. ELv2 applies to this version and later releases unless a release states otherwise.

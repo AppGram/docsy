@@ -16,6 +16,8 @@ You can change `docsy.config.yaml`, write Markdown articles, replace branding, c
 
 Your documentation inputs remain yours. Docsy does not claim ownership of your Markdown, OpenAPI documents, SDK metadata, images, or branding.
 
+You can also replace or remove visible Docsy and AppGram branding from the published documentation page. The default logo and `Built by AppGram` footer are configurable branding, not mandatory attribution.
+
 ### Redistribute a modified version
 
 You can copy and redistribute Docsy or a modified version when recipients also receive ELv2 and your modified copies contain a prominent notice explaining that you changed the software.
@@ -34,7 +36,7 @@ The restriction concerns providing Docsy itself as the hosted or managed product
 
 ### Remove legal notices
 
-You cannot remove or obscure AppGram's licensing, copyright, or other legal notices from the Docsy software.
+You cannot remove or obscure the `LICENSE` terms, copyright notices, or other legal notices from the Docsy software or copies you redistribute. This applies to legal notices shipped with the source, not optional branding rendered on your documentation website.
 
 ### Circumvent protected functionality
 
