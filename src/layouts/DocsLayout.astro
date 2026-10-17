@@ -1,0 +1,1375 @@
+---
+import '../styles/docsy.css';
+import '../styles/docsy-dark.css';
+import { docsNav, isNavItemActive } from '../data/docs-nav';
+import SEO from '../components/SEO.astro';
+import { assetPath, docsPath, docsyConfig } from '../config';
+
+interface Props {
+  title?: string;
+  description?: string;
+  eyebrow?: string;
+  wide?: boolean;
+  image?: string;
+  imageAlt?: string;
+  type?: 'website' | 'article' | 'product';
+  publishedAt?: string;
+  updatedAt?: string;
+  tags?: string[];
+  authorName?: string;
+  noindex?: boolean;
+  structuredData?: Record<string, unknown> | Array<Record<string, unknown>>;
+}
+
+const {
+  title = docsyConfig.site.title,
+  description = docsyConfig.site.description,
+  eyebrow,
+  wide = false,
+  image,
+  imageAlt,
+  type,
+  publishedAt,
+  updatedAt,
+  tags,
+  authorName,
+  noindex,
+  structuredData,
+} = Astro.props;
+
+const pathname = Astro.url.pathname.replace(/\/$/, '') || docsPath();
+
+/*
+ * Per-docs-page dynamic OG image. functions/og/[[path]].ts picks the right
+ * layout (SDK, API section, Getting Started) based on the path after /og/.
+ * - /docs               → /og/           (default docs card)
+ * - /docs/react-sdk     → /og/react-sdk
+ * - /docs/api/wishes    → /og/api/wishes
+ */
+const derivedOgImage = image ?? docsyConfig.site.ogImage;
+const { colors, fonts } = docsyConfig.theme;
+const themeStyle = [
+  `--ink:${colors.ink}`,
+  `--muted:${colors.muted}`,
+  `--soft-muted:${colors.softMuted}`,
+  `--line:${colors.line}`,
+  `--paper:${colors.paper}`,
+  `--violet:${colors.accent}`,
+  `--violet-dark:${colors.accentDark}`,
+  `--panel:${colors.panel}`,
+  `--green:${colors.success}`,
+  `--font-display:${fonts.display}`,
+  `--font-body:${fonts.body}`,
+  `--font-label:${fonts.label}`,
+  `--font-mono:${fonts.mono}`,
+].join(';');
+---
+
+<!doctype html>
+<html lang={docsyConfig.site.language} data-theme={docsyConfig.theme.mode} style={themeStyle}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <SEO
+      title={title}
+      description={description}
+      image={derivedOgImage}
+      imageAlt={imageAlt}
+      type={type}
+      publishedAt={publishedAt}
+      updatedAt={updatedAt}
+      tags={tags}
+      authorName={authorName}
+      noindex={noindex}
+      structuredData={structuredData}
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/styles/github-dark.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/highlight.min.js" is:inline></script>
+  </head>
+  <body
+    data-docs-base={docsPath()}
+    data-search-index={docsPath('/search-index.json')}
+    data-markdown-base={docsPath('/format-md')}
+  >
+    <header class="docs-topbar">
+      <div class="docs-topbar-inner">
+        <a class="docs-brand" href={docsyConfig.site.homeUrl} aria-label={`${docsyConfig.site.name} home`}>
+          <img src={assetPath(docsyConfig.site.logo)} alt="" width="26" height="26" />
+          <span>{docsyConfig.site.name} <span class="docs-brand-slash">/</span> <span class="docs-brand-slug">{docsyConfig.site.docsLabel}</span></span>
+        </a>
+
+        <button
+          type="button"
+          class="docs-search-trigger"
+          id="docs-search-trigger"
+          aria-label={docsyConfig.header.searchLabel}
+        >
+          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+            <circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.4" />
+            <path d="M11 11l3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+          </svg>
+          <span>{docsyConfig.header.searchLabel}</span>
+          <kbd>&#8984;K</kbd>
+        </button>
+
+        <div class="docs-topbar-actions">
+          <div class="docs-llm" id="docs-llm">
+            <button type="button" class="docs-llm-trigger" id="docs-llm-trigger" aria-haspopup="dialog" aria-expanded="false">
+              <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M2 3.5A1.5 1.5 0 0 1 3.5 2h9A1.5 1.5 0 0 1 14 3.5V10a1.5 1.5 0 0 1-1.5 1.5H8l-3 2.5v-2.5H3.5A1.5 1.5 0 0 1 2 10z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" /></svg>
+              {docsyConfig.header.llmLabel}
+            </button>
+
+            <div class="docs-llm-panel" id="docs-llm-panel" role="dialog" aria-label="LLM-friendly documentation" hidden>
+              <div class="docs-llm-head">
+                <p class="docs-llm-title">LLM-Friendly Documentation</p>
+                <p class="docs-llm-sub">Optimized for AI agents &amp; LLMs</p>
+              </div>
+              <p class="docs-llm-desc">Add <code>?format=md</code> to any docs URL to get raw markdown.</p>
+              <div class="docs-llm-url" id="docs-llm-url"></div>
+              <div class="docs-llm-actions">
+                <a class="docs-llm-btn" id="docs-llm-view" href="#" target="_blank" rel="noopener noreferrer">
+                  <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M4 2h6l3 3v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" /><path d="M10 2v3h3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" /></svg>
+                  View Markdown
+                </a>
+                <button type="button" class="docs-llm-btn" id="docs-llm-copy">
+                  <span class="docs-llm-btn-default">
+                    <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M4 4h7v7H4z M6 2h7v7" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" /></svg>
+                    Copy URL
+                  </span>
+                  <span class="docs-llm-btn-done">
+                    <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M4 8.5l2.5 2.5L12 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                    Copied!
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {docsyConfig.site.githubUrl && (
+            <a
+              class="docs-topbar-icon"
+              href={docsyConfig.site.githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${docsyConfig.site.name} on GitHub`}
+            >
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0012 2z"/>
+              </svg>
+            </a>
+          )}
+          {docsyConfig.header.cta && <a class="docs-topbar-cta" href={docsPath(docsyConfig.header.cta.href)}>{docsyConfig.header.cta.label}</a>}
+        </div>
+
+        <button
+          type="button"
+          class="docs-mobile-toggle"
+          id="docs-mobile-toggle"
+          aria-label="Open navigation"
+        >
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </header>
+
+    <div class:list={['docs-shell', wide && 'is-wide']}>
+      <aside class="docs-sidebar" id="docs-sidebar">
+        <nav aria-label="Documentation">
+          {docsNav.map((section) => (
+            <div class="docs-sidebar-section">
+              <p class="docs-sidebar-title">{section.title}</p>
+              <ul>
+                {section.items.map((item) => {
+                  const active = isNavItemActive(item, pathname);
+                  return (
+                    <li>
+                      <a
+                        href={item.href}
+                        class:list={['docs-sidebar-link', active && 'is-active']}
+                      >
+                        {item.icon && <img class="docs-sidebar-icon" src={item.icon} alt="" width="16" height="16" />}
+                        <span>{item.title}</span>
+                      </a>
+                      {item.items && active && (
+                        <ul class="docs-sidebar-sub">
+                          {item.items.map((sub) => (
+                            <li>
+                              <a
+                                href={sub.href}
+                                class:list={['docs-sidebar-link is-sub', sub.href === pathname && 'is-active']}
+                              >
+                                {sub.title}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+        </nav>
+      </aside>
+
+      <main class="docs-content">
+        {eyebrow && <p class="eyebrow docs-eyebrow"><span></span> {eyebrow}</p>}
+        <slot />
+      </main>
+
+      {wide && (
+        <aside class="docs-toc-rail" aria-label="On this page">
+          <slot name="toc" />
+        </aside>
+      )}
+    </div>
+
+    <div class="docs-search-modal" id="docs-search-modal" hidden role="dialog" aria-modal="true" aria-label="Search documentation">
+      <div class="docs-search-scrim" id="docs-search-scrim"></div>
+      <div class="docs-search-panel">
+        <div class="docs-search-input">
+          <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+            <circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.4" />
+            <path d="M11 11l3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+          </svg>
+          <input
+            type="search"
+            id="docs-search-field"
+            placeholder={docsyConfig.header.searchPlaceholder}
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <kbd>ESC</kbd>
+        </div>
+        <div class="docs-search-results" id="docs-search-results" data-empty-hint="Start typing to search."></div>
+        <div class="docs-search-foot">
+          <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd> to navigate</span>
+          <span><kbd>&crarr;</kbd> to select</span>
+          <span><kbd>ESC</kbd> to close</span>
+        </div>
+      </div>
+    </div>
+
+    <script is:inline>
+      // hljs highlight all code on load
+      const runHighlight = () => {
+        if (typeof window === 'undefined' || !window.hljs) return;
+        document.querySelectorAll('pre code[class*="language-"]:not([data-highlighted])').forEach((el) => {
+          window.hljs.highlightElement(el);
+          el.setAttribute('data-highlighted', 'yes');
+        });
+      };
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', runHighlight);
+      } else {
+        runHighlight();
+      }
+
+      // Copy buttons
+      document.querySelectorAll('[data-copy-target]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-copy-target');
+          const target = id ? document.getElementById(id) : null;
+          if (!target) return;
+          try {
+            await navigator.clipboard.writeText(target.textContent || '');
+            btn.classList.add('is-copied');
+            setTimeout(() => btn.classList.remove('is-copied'), 1600);
+          } catch {}
+        });
+      });
+
+      // Install controls live inside linked SDK cards. Keep copying from also
+      // following the card link without relying on inline event globals.
+      document.querySelectorAll('.docs-sdk-install').forEach((control) => {
+        control.addEventListener('click', (event) => event.stopPropagation());
+      });
+      document.querySelectorAll('.docs-sdk-copy').forEach((button) => {
+        button.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        });
+      });
+
+      // Mobile nav toggle
+      const mobileBtn = document.getElementById('docs-mobile-toggle');
+      const sidebar = document.getElementById('docs-sidebar');
+      mobileBtn?.addEventListener('click', () => {
+        const open = sidebar?.classList.toggle('is-open');
+        mobileBtn.setAttribute('aria-expanded', String(open));
+      });
+
+      // ?format=md interceptor — swap page body with the markdown response
+      (async function checkMarkdownMode() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('format') !== 'md') return;
+        const base = document.body.dataset.docsBase || '';
+        const markdownBase = document.body.dataset.markdownBase || `${base}/format-md`;
+        const path = window.location.pathname.slice(base.length).replace(/^\/+/, '');
+        try {
+          const res = await fetch(`${markdownBase}/${path}`);
+          const text = await res.text();
+          document.title = `Markdown — ${path}`;
+          document.body.innerHTML = '';
+          const pre = document.createElement('pre');
+          pre.style.margin = '0';
+          pre.style.padding = '32px';
+          pre.style.font = '13.5px/1.6 ui-monospace, "SF Mono", Menlo, monospace';
+          pre.style.color = '#111';
+          pre.style.background = '#fafafd';
+          pre.style.whiteSpace = 'pre-wrap';
+          pre.style.wordBreak = 'break-word';
+          pre.style.minHeight = '100vh';
+          pre.textContent = text;
+          document.body.appendChild(pre);
+        } catch (e) {
+          console.error('Markdown fetch failed', e);
+        }
+      })();
+
+      // LLM Docs popover
+      (function initDocsLlm() {
+        const wrap = document.getElementById('docs-llm');
+        const trigger = document.getElementById('docs-llm-trigger');
+        const panel = document.getElementById('docs-llm-panel');
+        const urlEl = document.getElementById('docs-llm-url');
+        const viewLink = document.getElementById('docs-llm-view');
+        const copyBtn = document.getElementById('docs-llm-copy');
+        if (!wrap || !trigger || !panel || !urlEl || !viewLink || !copyBtn) return;
+
+        const buildUrl = () => `${window.location.origin}${window.location.pathname}?format=md`;
+        const buildRawUrl = () => {
+          const base = document.body.dataset.docsBase || '';
+          const markdownBase = document.body.dataset.markdownBase || `${base}/format-md`;
+          const path = window.location.pathname.slice(base.length).replace(/^\/+/, '');
+          return `${window.location.origin}${markdownBase}/${path}`;
+        };
+
+        const refresh = () => {
+          urlEl.textContent = buildUrl();
+          viewLink.setAttribute('href', buildRawUrl());
+        };
+
+        const open = () => {
+          refresh();
+          panel.hidden = false;
+          trigger.setAttribute('aria-expanded', 'true');
+        };
+
+        const close = () => {
+          panel.hidden = true;
+          trigger.setAttribute('aria-expanded', 'false');
+        };
+
+        trigger.addEventListener('click', (e) => {
+          e.stopPropagation();
+          panel.hidden ? open() : close();
+        });
+
+        document.addEventListener('click', (e) => {
+          if (panel.hidden) return;
+          if (e.target instanceof Node && wrap.contains(e.target)) return;
+          close();
+        });
+
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && !panel.hidden) close();
+        });
+
+        copyBtn.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(buildUrl());
+            copyBtn.classList.add('is-copied');
+            setTimeout(() => copyBtn.classList.remove('is-copied'), 1600);
+          } catch {}
+        });
+      })();
+
+      // Search (cmd+K)
+      (function initDocsSearch() {
+        const modal = document.getElementById('docs-search-modal');
+        const scrim = document.getElementById('docs-search-scrim');
+        const field = document.getElementById('docs-search-field');
+        const results = document.getElementById('docs-search-results');
+        const trigger = document.getElementById('docs-search-trigger');
+        if (!modal || !scrim || !field || !results || !trigger) return;
+
+        let index = null;
+        let indexPromise = null;
+        let activeIndex = 0;
+
+        const loadIndex = () => {
+          if (index) return Promise.resolve(index);
+          if (indexPromise) return indexPromise;
+          indexPromise = fetch(document.body.dataset.searchIndex || '/search-index.json')
+            .then((r) => r.ok ? r.json() : null)
+            .then((data) => {
+              index = data?.entries || [];
+              return index;
+            })
+            .catch(() => (index = []));
+          return indexPromise;
+        };
+
+        const escapeHtml = (str) =>
+          String(str)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+        const kindClass = (entry) => {
+          if (entry.type === 'api') return 'is-api';
+          if (entry.type === 'sdk') return 'is-sdk';
+          return 'is-page';
+        };
+
+        const render = (query) => {
+          if (!index) {
+            results.innerHTML = '<p class="docs-search-hint">Loading index…</p>';
+            return;
+          }
+          const q = query.trim().toLowerCase();
+          if (!q) {
+            results.innerHTML = `<p class="docs-search-hint">${results.dataset.emptyHint || 'Start typing to search.'}</p>`;
+            return;
+          }
+          const scored = [];
+          for (const entry of index) {
+            const title = entry.title.toLowerCase();
+            const group = entry.group.toLowerCase();
+            const path = entry.path ? entry.path.toLowerCase() : '';
+            const summary = entry.summary ? entry.summary.toLowerCase() : '';
+            let score = 0;
+            if (title === q) score += 100;
+            else if (title.startsWith(q)) score += 60;
+            else if (title.includes(q)) score += 30;
+            if (path.includes(q)) score += 25;
+            if (group.includes(q)) score += 10;
+            if (summary.includes(q)) score += 5;
+            if (score > 0) scored.push({ entry, score });
+          }
+          scored.sort((a, b) => b.score - a.score);
+          const hits = scored.slice(0, 30);
+          activeIndex = 0;
+          if (hits.length === 0) {
+            results.innerHTML = `<p class="docs-search-hint">No results for &ldquo;${escapeHtml(query)}&rdquo;</p>`;
+            return;
+          }
+          results.innerHTML = hits.map(({ entry }, i) => {
+            const badge = entry.type === 'api'
+              ? `<span class="docs-search-method is-${(entry.method || 'get').toLowerCase()}">${escapeHtml(entry.method || '')}</span>`
+              : `<span class="docs-search-badge ${kindClass(entry)}">${entry.type === 'sdk' ? escapeHtml(entry.kind || 'sdk') : 'Page'}</span>`;
+            const subtitle = entry.type === 'api'
+              ? `<span class="docs-search-sub"><span class="docs-search-path">${escapeHtml(entry.path || '')}</span> · ${escapeHtml(entry.group)}</span>`
+              : `<span class="docs-search-sub">${escapeHtml(entry.group)}</span>`;
+            return `
+              <a class="docs-search-hit ${i === 0 ? 'is-active' : ''}" href="${escapeHtml(entry.url)}" data-idx="${i}">
+                <div class="docs-search-hit-main">
+                  ${badge}
+                  <span class="docs-search-hit-title">${escapeHtml(entry.title)}</span>
+                </div>
+                ${subtitle}
+              </a>`;
+          }).join('');
+        };
+
+        const setActive = (i) => {
+          const hits = results.querySelectorAll('.docs-search-hit');
+          if (!hits.length) return;
+          activeIndex = (i + hits.length) % hits.length;
+          hits.forEach((el, idx) => el.classList.toggle('is-active', idx === activeIndex));
+          const active = hits[activeIndex];
+          active?.scrollIntoView({ block: 'nearest' });
+        };
+
+        const open = async () => {
+          modal.hidden = false;
+          document.body.style.overflow = 'hidden';
+          field.value = '';
+          await loadIndex();
+          render('');
+          requestAnimationFrame(() => field.focus());
+        };
+
+        const close = () => {
+          modal.hidden = true;
+          document.body.style.overflow = '';
+        };
+
+        trigger.addEventListener('click', open);
+        scrim.addEventListener('click', close);
+
+        document.addEventListener('keydown', (e) => {
+          const isMod = e.metaKey || e.ctrlKey;
+          if (isMod && e.key.toLowerCase() === 'k') {
+            e.preventDefault();
+            modal.hidden ? open() : close();
+            return;
+          }
+          if (modal.hidden) return;
+          if (e.key === 'Escape') { e.preventDefault(); close(); }
+          if (e.key === 'ArrowDown') { e.preventDefault(); setActive(activeIndex + 1); }
+          if (e.key === 'ArrowUp') { e.preventDefault(); setActive(activeIndex - 1); }
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            const hits = results.querySelectorAll('.docs-search-hit');
+            const active = hits[activeIndex];
+            if (active) window.location.href = active.getAttribute('href');
+          }
+        });
+
+        field.addEventListener('input', (e) => render(e.target.value));
+
+        results.addEventListener('mousemove', (e) => {
+          const hit = e.target.closest('.docs-search-hit');
+          if (!hit) return;
+          const idx = Number(hit.dataset.idx);
+          if (!Number.isNaN(idx)) setActive(idx);
+        });
+      })();
+    </script>
+
+    <style is:global>
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: var(--font-body);
+      }
+
+      .docs-topbar {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: saturate(1.4) blur(14px);
+        -webkit-backdrop-filter: saturate(1.4) blur(14px);
+        border-bottom: 1px solid #ebebf1;
+      }
+
+      .docs-topbar-inner {
+        max-width: 1400px;
+        margin: 0 auto;
+        height: 56px;
+        padding: 0 24px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .docs-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-family: var(--font-display);
+        font-size: 15px;
+        font-weight: 550;
+        color: var(--ink);
+        flex-shrink: 0;
+      }
+
+      .docs-brand img {
+        display: block;
+      }
+
+      .docs-brand-slash {
+        color: var(--soft-muted);
+        font-weight: 400;
+        margin: 0 2px;
+      }
+
+      .docs-brand-slug {
+        color: var(--muted);
+        font-weight: 500;
+      }
+
+      .docs-search-trigger {
+        flex: 0 0 auto;
+        width: 320px;
+        max-width: 40vw;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 7px 12px;
+        border-radius: 8px;
+        background: #f4f4f8;
+        border: 1px solid transparent;
+        color: var(--muted);
+        font: inherit;
+        font-size: 13px;
+        cursor: pointer;
+        transition: background 0.15s ease, border-color 0.15s ease;
+      }
+
+      .docs-search-trigger:hover {
+        background: #eeeff5;
+        border-color: rgba(15, 16, 21, 0.08);
+      }
+
+      .docs-search-trigger kbd {
+        margin-left: auto;
+        padding: 2px 6px;
+        background: #fff;
+        border: 1px solid #e1e2ea;
+        border-radius: 4px;
+        font: inherit;
+        font-size: 11px;
+        color: var(--soft-muted);
+      }
+
+      .docs-topbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+        margin-left: auto;
+      }
+
+      .docs-topbar-icon {
+        display: inline-grid;
+        place-items: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        color: var(--muted);
+        transition: background 0.15s ease, color 0.15s ease;
+      }
+
+      .docs-topbar-icon:hover {
+        background: rgba(15, 16, 21, 0.06);
+        color: var(--ink);
+      }
+
+      .docs-topbar-cta {
+        display: inline-flex;
+        align-items: center;
+        height: 32px;
+        padding: 0 14px;
+        border-radius: 8px;
+        background: var(--ink);
+        color: #fff;
+        font-size: 12.5px;
+        font-weight: 650;
+
+        transition: background 0.15s ease;
+      }
+
+      .docs-topbar-cta:hover {
+        background: #22242c;
+      }
+
+      .docs-llm {
+        position: relative;
+      }
+
+      .docs-llm-trigger {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 26px;
+        padding: 0 10px;
+        border-radius: 7px;
+        background: transparent;
+        border: 1px solid #e1e2ea;
+        color: var(--muted);
+        font: inherit;
+        font-size: 11px;
+        font-weight: 650;
+
+        cursor: pointer;
+        transition: border-color 0.15s ease, color 0.15s ease;
+      }
+
+      .docs-llm-trigger:hover {
+        border-color: rgba(81, 136, 255, 0.4);
+        color: var(--ink);
+      }
+
+      .docs-llm-panel {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        width: 320px;
+        padding: 16px;
+        background: #fff;
+        border: 1px solid rgba(15, 16, 21, 0.08);
+        border-radius: 12px;
+        box-shadow: 0 16px 40px -18px rgba(15, 16, 21, 0.25);
+        z-index: 50;
+      }
+
+      .docs-llm-head {
+        margin-bottom: 10px;
+      }
+
+      .docs-llm-title {
+        margin: 0;
+        color: var(--ink);
+        font-size: 13.5px;
+        font-weight: 650;
+      }
+
+      .docs-llm-sub {
+        margin: 2px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .docs-llm-desc {
+        margin: 0 0 10px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .docs-llm-desc code {
+        padding: 1px 5px;
+        border-radius: 4px;
+        background: #f2f3f8;
+        color: var(--ink);
+        font-family: var(--font-mono);
+        font-size: 11px;
+      }
+
+      .docs-llm-url {
+        margin: 0 0 12px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        background: #f4f4f8;
+        color: var(--ink);
+        font-family: var(--font-mono);
+        font-size: 11px;
+        word-break: break-all;
+        overflow: hidden;
+      }
+
+      .docs-llm-actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .docs-llm-btn {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        height: 30px;
+        padding: 0 10px;
+        border-radius: 7px;
+        border: 1px solid #e1e2ea;
+        background: #fff;
+        color: var(--muted);
+        font: inherit;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none !important;
+        transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+      }
+
+      .docs-llm-btn:hover {
+        background: #fafafd;
+        color: var(--ink);
+      }
+
+      .docs-llm-btn.is-copied {
+        background: rgba(87, 196, 104, 0.1);
+        border-color: rgba(87, 196, 104, 0.4);
+        color: #2c8b3a;
+      }
+
+      .docs-llm-btn-default {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .docs-llm-btn-done {
+        display: none;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .docs-llm-btn.is-copied .docs-llm-btn-default {
+        display: none;
+      }
+
+      .docs-llm-btn.is-copied .docs-llm-btn-done {
+        display: inline-flex;
+      }
+
+      .docs-mobile-toggle {
+        display: none;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        background: transparent;
+        border: 0;
+        cursor: pointer;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .docs-mobile-toggle span {
+        display: block;
+        width: 18px;
+        height: 1.5px;
+        background: var(--ink);
+        border-radius: 2px;
+      }
+
+      /*
+       * Deliberately has NO overflow of its own. .docs-sidebar and
+       * .docs-toc-rail are sticky children: per spec `overflow-x: clip` leaves
+       * the other axis alone, but Safari computes overflow-y to `auto`, which
+       * turns this into a scroll container. The rails then stick to that
+       * scrollport instead of the viewport and visibly drift while scrolling —
+       * fine in Chrome, broken in Safari.
+       *
+       * Nothing is lost: `minmax(0, 1fr)` already stops the content column
+       * blowing out the grid, and .docs-content guards its own children.
+       */
+      .docs-shell {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 24px;
+        display: grid;
+        grid-template-columns: 240px minmax(0, 1fr);
+        gap: 48px;
+        align-items: start;
+      }
+
+      .docs-shell.is-wide {
+        max-width: 1600px;
+        grid-template-columns: 240px minmax(0, 1fr) 220px;
+        gap: 40px;
+      }
+
+      .docs-shell.is-wide .docs-content {
+        max-width: none;
+      }
+
+      .docs-toc-rail {
+        position: sticky;
+        /* The band above the topbar moves both of these down with it. */
+        top: calc(72px + var(--fit-banner-h, 0px));
+        max-height: calc(100vh - 72px - var(--fit-banner-h, 0px));
+        overflow-y: auto;
+        padding: 40px 0 40px;
+      }
+
+      .docs-sidebar {
+        position: sticky;
+        top: calc(56px + var(--fit-banner-h, 0px));
+        max-height: calc(100vh - 56px - var(--fit-banner-h, 0px));
+        overflow-y: auto;
+        padding: 32px 0 56px;
+      }
+
+      .docs-sidebar-section + .docs-sidebar-section {
+        margin-top: 28px;
+      }
+
+      .docs-sidebar-title {
+        margin: 0 8px 8px;
+        color: var(--soft-muted);
+        font-family: var(--font-display);
+        font-size: 12.5px;
+        font-weight: 500;
+      }
+
+      .docs-sidebar ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 2px;
+      }
+
+      .docs-sidebar-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        padding: 6px 10px;
+        border-radius: 7px;
+        color: var(--muted);
+        font-size: 13.5px;
+        line-height: 1.4;
+        transition: background 0.12s ease, color 0.12s ease;
+      }
+
+      .docs-sidebar-link:hover {
+        background: rgba(15, 16, 21, 0.04);
+        color: var(--ink);
+      }
+
+      .docs-sidebar-link.is-active {
+        background: rgba(81, 136, 255, 0.1);
+        color: var(--violet-dark);
+        font-weight: 600;
+      }
+
+      .docs-sidebar-link.is-sub {
+        padding-left: 12px;
+        font-size: 13px;
+      }
+
+      .docs-sidebar-icon {
+        width: 16px;
+        height: 16px;
+        display: block;
+        object-fit: contain;
+        flex-shrink: 0;
+      }
+
+      .docs-sidebar-sub {
+        margin: 4px 0 4px 22px !important;
+        padding-left: 10px !important;
+        border-left: 1px solid #ebebf1;
+      }
+
+      /*
+       * Also no overflow here, for the same Safari reason as .docs-shell: the
+       * sticky code panels (.ep-code in EndpointCard, .sdk-item-side in
+       * SDKPageBody) are descendants and would stick to this box instead of
+       * the viewport. min-width/max-width plus the `> *` rule below already
+       * contain the column, and code blocks scroll inside themselves.
+       */
+      .docs-content {
+        padding: 40px 0 96px;
+        min-width: 0;
+        max-width: 820px;
+      }
+
+      /* Guarantee no direct child of the docs-content escapes horizontally.
+         Grid items and flex children need explicit min-width: 0 to shrink. */
+      .docs-content > * {
+        max-width: 100%;
+        min-width: 0;
+      }
+
+      .docs-eyebrow {
+        margin: 0 0 16px !important;
+      }
+
+      /* Content typography */
+      .docs-content h1 {
+        margin: 0 0 12px;
+        font-family: var(--font-display);
+        font-size: clamp(36px, 3.6vw, 52px);
+        line-height: 1.05;
+        font-weight: 430;
+        color: var(--ink);
+
+      }
+
+      .docs-content h2 {
+        margin: 48px 0 12px;
+        font-family: var(--font-display);
+        font-size: 26px;
+        font-weight: 460;
+        color: var(--ink);
+        line-height: 1.2;
+      }
+
+      .docs-content h3 {
+        margin: 32px 0 10px;
+        font-family: var(--font-display);
+        font-size: 19px;
+        font-weight: 500;
+        color: var(--ink);
+      }
+
+      .docs-content h4 {
+        margin: 24px 0 8px;
+        font-size: 15px;
+        font-weight: 650;
+        color: var(--ink);
+      }
+
+      .docs-content p {
+        margin: 0 0 16px;
+        color: #23252d;
+        font-size: 16px;
+        line-height: 1.65;
+      }
+
+      .docs-content p.lead {
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.55;
+        margin-bottom: 24px;
+      }
+
+      .docs-content a {
+        color: var(--violet-dark);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        text-decoration-color: rgba(61, 111, 230, 0.35);
+        transition: text-decoration-color 0.15s ease;
+      }
+
+      /*
+        A button is not a prose link. The rule above is `.docs-content a`, which
+        outranks `.button-dark`/`.button-light` on specificity, so every button
+        inside the content came out underlined in link violet — a black CTA with
+        blue text in it. These put the button's own colours back.
+      */
+      .docs-content a.button {
+        text-decoration: none;
+      }
+
+      .docs-content a.button-dark {
+        color: #fff;
+      }
+
+      .docs-content a.button-light {
+        color: #22242c;
+      }
+
+      .docs-content a:hover {
+        text-decoration-color: currentColor;
+      }
+
+      .docs-content ul,
+      .docs-content ol {
+        margin: 0 0 18px;
+        padding-left: 22px;
+        color: #23252d;
+        font-size: 15.5px;
+        line-height: 1.6;
+      }
+
+      .docs-content li {
+        margin-bottom: 6px;
+      }
+
+      .docs-content code {
+        padding: 1px 6px;
+        border-radius: 5px;
+        background: #f2f3f8;
+        color: #333542;
+        font-family: var(--font-mono);
+        font-size: 13.5px;
+      }
+
+      .docs-content hr {
+        margin: 40px 0;
+        border: 0;
+        border-top: 1px solid #ebebf1;
+      }
+
+      .docs-callout {
+        margin: 24px 0;
+        padding: 16px 20px;
+        border-radius: 12px;
+        border: 1px solid rgba(81, 136, 255, 0.22);
+        background: linear-gradient(180deg, rgba(81, 136, 255, 0.06) 0%, rgba(81, 136, 255, 0.02) 100%);
+      }
+
+      .docs-callout p {
+        margin: 0;
+      }
+
+      .docs-callout p + p {
+        margin-top: 6px;
+      }
+
+      .docs-callout strong {
+        color: var(--ink);
+      }
+
+      .docs-search-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 60;
+        display: grid;
+        place-items: start center;
+        padding: 12vh 24px 24px;
+      }
+
+      .docs-search-modal[hidden] {
+        display: none;
+      }
+
+      .docs-search-scrim {
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 16, 21, 0.45);
+        backdrop-filter: blur(3px);
+      }
+
+      .docs-search-panel {
+        position: relative;
+        width: min(640px, 100%);
+        max-height: 70vh;
+        display: flex;
+        flex-direction: column;
+        border-radius: 14px;
+        background: #fff;
+        border: 1px solid rgba(15, 16, 21, 0.08);
+        box-shadow: 0 24px 64px -16px rgba(15, 16, 21, 0.3);
+        overflow: hidden;
+      }
+
+      .docs-search-input {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 18px;
+        border-bottom: 1px solid #ebebf1;
+        color: var(--muted);
+      }
+
+      .docs-search-input input {
+        flex: 1;
+        border: 0;
+        outline: none;
+        background: transparent;
+        color: var(--ink);
+        font: inherit;
+        font-size: 15px;
+      }
+
+      .docs-search-input input::placeholder {
+        color: var(--soft-muted);
+      }
+
+      .docs-search-input kbd {
+        padding: 2px 6px;
+        background: #f4f4f8;
+        border: 1px solid #e1e2ea;
+        border-radius: 4px;
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        color: var(--soft-muted);
+      }
+
+      .docs-search-results {
+        flex: 1;
+        overflow-y: auto;
+        padding: 8px;
+      }
+
+      .docs-search-hint {
+        margin: 0;
+        padding: 32px 24px;
+        text-align: center;
+        color: var(--soft-muted);
+        font-size: 13.5px;
+      }
+
+      .docs-search-hit {
+        display: block;
+        padding: 10px 12px;
+        border-radius: 8px;
+        text-decoration: none !important;
+        color: inherit !important;
+        transition: background 0.1s ease;
+      }
+
+      .docs-search-hit + .docs-search-hit {
+        margin-top: 2px;
+      }
+
+      .docs-search-hit.is-active {
+        background: rgba(81, 136, 255, 0.08);
+      }
+
+      .docs-search-hit-main {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+
+      .docs-search-hit-title {
+        color: var(--ink);
+        font-size: 14px;
+        font-weight: 550;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1;
+        min-width: 0;
+      }
+
+      .docs-search-sub {
+        display: block;
+        margin-left: 42px;
+        margin-top: 2px;
+        color: var(--soft-muted);
+        font-size: 12px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .docs-search-path {
+        font-family: var(--font-mono);
+        color: var(--muted);
+      }
+
+      .docs-search-badge {
+        display: inline-flex;
+        align-items: center;
+        height: 18px;
+        padding: 0 8px;
+        border-radius: 999px;
+        font-family: var(--font-label);
+        font-size: 10px;
+        font-weight: 700;
+
+        text-transform: uppercase;
+        flex-shrink: 0;
+        background: #f2f3f8;
+        color: var(--muted);
+      }
+
+      .docs-search-badge.is-page {
+        background: rgba(81, 136, 255, 0.12);
+        color: var(--violet-dark);
+      }
+
+      .docs-search-badge.is-sdk {
+        background: rgba(126, 108, 255, 0.14);
+        color: #5f57e0;
+      }
+
+      .docs-search-method {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        height: 18px;
+        padding: 0 8px;
+        border-radius: 5px;
+        color: #fff;
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        font-weight: 700;
+
+      }
+
+      .docs-search-method.is-get    { background: #2b7cff; }
+      .docs-search-method.is-post   { background: #2c8b3a; }
+      .docs-search-method.is-put    { background: #b96f00; }
+      .docs-search-method.is-patch  { background: #b96f00; }
+      .docs-search-method.is-delete { background: #c73f28; }
+
+      .docs-search-foot {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 16px;
+        padding: 10px 18px;
+        border-top: 1px solid #ebebf1;
+        color: var(--soft-muted);
+        font-size: 11.5px;
+      }
+
+      .docs-search-foot kbd {
+        padding: 1px 6px;
+        background: #f4f4f8;
+        border: 1px solid #e1e2ea;
+        border-radius: 4px;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        color: var(--muted);
+        margin-right: 4px;
+      }
+
+      @media (max-width: 1200px) {
+        .docs-shell.is-wide {
+          grid-template-columns: 240px minmax(0, 1fr);
+        }
+
+        .docs-toc-rail {
+          display: none;
+        }
+      }
+
+      @media (max-width: 900px) {
+        .docs-shell,
+        .docs-shell.is-wide {
+          grid-template-columns: 1fr;
+          gap: 0;
+        }
+
+        .docs-sidebar {
+          position: fixed;
+          top: 56px;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: #fff;
+          padding: 24px;
+          transform: translateY(-100%);
+          transition: transform 0.2s ease;
+          z-index: 30;
+          border-bottom: 1px solid #ebebf1;
+        }
+
+        .docs-sidebar.is-open {
+          transform: translateY(0);
+        }
+
+        .docs-mobile-toggle {
+          display: flex;
+        }
+
+        /* Drop the LLM pill first (least used on the go) but keep GitHub + Dashboard. */
+        .docs-llm {
+          display: none;
+        }
+
+        .docs-topbar-inner {
+          gap: 12px;
+          padding: 0 16px;
+        }
+
+        .docs-brand-slug {
+          display: none;
+        }
+
+        .docs-brand-slash {
+          display: none;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .docs-topbar-cta {
+          display: none;
+        }
+
+        .docs-search-trigger {
+          width: auto;
+          flex: 1;
+        }
+
+        .docs-search-trigger span {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .docs-search-trigger kbd {
+          display: none;
+        }
+      }
+
+      @media (max-width: 420px) {
+        .docs-topbar-icon {
+          display: none;
+        }
+      }
+    </style>
+
+  </body>
+</html>

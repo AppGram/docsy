@@ -1,0 +1,128 @@
+# Content, branding, ingestion, navigation, and permission gates live here.
+# The interface itself remains editable source under src/.
+site:
+  name: Nager.Date API
+  docsLabel: docs
+  title: Nager.Date API Documentation
+  description: >-
+    The Nager.Date Community API is a public service that provides reliable information about public holidays for
+    countries around the world. It allows developers to query national holiday dates, check whether a specific day is a
+    public holiday and list upcoming holidays. By using the API, you agree to the Terms of Service.
+  origin: ${DOCSY_ORIGIN:-http://localhost:4321}
+  basePath: /docs
+  language: en
+  homeUrl: /
+  logo: assets/docsy-mark.svg
+  favicon: assets/docsy-mark.svg
+header:
+  searchLabel: Search documentation
+  searchPlaceholder: Search docs and API endpoints
+  llmLabel: Markdown
+theme:
+  mode: dark
+  colors:
+    ink: "#f5f5f5"
+    muted: "#a3a3a3"
+    softMuted: "#696969"
+    line: "#262626"
+    paper: "#000000"
+    accent: "#ffffff"
+    accentDark: "#e5e5e5"
+    panel: "#050505"
+    success: "#ffffff"
+  fonts:
+    display: '"Aptos Display", "SF Pro Display", "Helvetica Neue", sans-serif'
+    body: '"Aptos", "SF Pro Text", "Helvetica Neue", sans-serif'
+    label: '"Aptos", "SF Pro Text", "Helvetica Neue", sans-serif'
+    mono: 'ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace'
+home:
+  eyebrow: DOCUMENTATION
+  title: Build with Nager.Date API.
+  description: Query supported countries, public holidays, and date signals through a focused public API reference.
+  primaryAction:
+    label: Explore the API →
+    href: /api/countries
+  sdkHeading: API reference
+  sdkDescription: Generated directly from the configured OpenAPI source.
+access:
+  mode: open
+  provider:
+    type: header
+    tierHeader: x-docsy-tiers
+    userHeader: x-docsy-user
+  tiers:
+    developer:
+      label: Developer
+      description: Standard API reference access.
+    enterprise:
+      label: Enterprise
+      description: Restricted API reference access.
+  rules:
+    - pattern: /api/versions
+      tiers:
+        - enterprise
+    - pattern: /api/**
+      tiers:
+        - developer
+        - enterprise
+  gate:
+    eyebrow: RESTRICTED DOCUMENTATION
+    title: This API reference is locked.
+    description: Sign in with an account whose documentation tier includes this reference.
+    loginLabel: Sign in to continue
+    returnToParam: returnTo
+    backLabel: Back to public docs
+navigation:
+  - title: Introduction
+    items:
+      - title: Overview
+        href: /
+  - title: API Reference
+    items:
+      - title: Countries
+        href: /api/countries
+      - title: Holidays
+        href: /api/holidays
+      - title: IoT Holidays
+        href: /api/iotholidays
+      - title: Versions
+        href: /api/versions
+ingestion:
+  sdks: []
+  openapi:
+    enabled: true
+    source: sources/openapi.json
+    apiBaseUrl: https://date.nager.at
+    sections:
+      - section: countries
+        title: Countries
+        description: >-
+          Provides access to detailed country information and the list of all countries supported by the API. This
+          includes general metadata such as country names, codes, regions, and related details.
+        tags: []
+        paths:
+          - /api/v4/Countries/{countryCode}
+          - /api/v4/Countries/Available
+      - section: holidays
+        title: Holidays
+        description: >-
+          Includes functionality for retrieving public-holiday data, checking whether a specific day is a public
+          holiday, and listing upcoming holidays.
+        tags: []
+        paths:
+          - /api/v4/Holidays/{countryCode}/{year}
+          - /api/v4/Holidays/{countryCode}/Next
+      - section: iotholidays
+        title: IoT Holidays
+        description: >-
+          Endpoints optimized for IoT devices and automation scripts. Returns only HTTP status codes (e.g., 200 OK or
+          204 No Content) without a response body to eliminate parsing overhead and reduce bandwidth.
+        tags: []
+        paths:
+          - /api/v4/IotHolidays/{isoCode}/IsToday/{offset}
+      - section: versions
+        title: Versions
+        description: Returns information about the current version of the Nager.Date API in use.
+        tags: []
+        paths:
+          - /api/v4/Versions

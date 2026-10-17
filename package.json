@@ -1,0 +1,58 @@
+{
+  "name": "@appgram/docsy",
+  "version": "0.1.0",
+  "private": false,
+  "description": "Source-owned Astro documentation generated from OpenAPI and SDK metadata.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AppGram/.sY.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AppGram/.sY/issues"
+  },
+  "homepage": "https://github.com/AppGram/.sY#readme",
+  "type": "module",
+  "bin": {
+    "docsy": "scripts/docsy.mjs",
+    "create-docsy": "scripts/create-docsy.mjs"
+  },
+  "files": [
+    "src",
+    "public",
+    "scripts",
+    ".dockerignore",
+    ".gitignore",
+    "astro.config.mjs",
+    "compose.yaml",
+    "Dockerfile",
+    "docsy.config.yaml",
+    "README.md",
+    "tsconfig.json"
+  ],
+  "scripts": {
+    "docsy": "node scripts/docsy.mjs",
+    "create": "node scripts/create-docsy.mjs",
+    "dev": "node scripts/docsy.mjs dev",
+    "validate": "node scripts/docsy.mjs validate",
+    "build": "node scripts/docsy.mjs build",
+    "stage": "node scripts/stage-deployment.mjs",
+    "preview": "node scripts/docsy.mjs preview",
+    "check": "node scripts/docsy.mjs validate"
+  },
+  "dependencies": {
+    "@astrojs/node": "^9.5.5",
+    "astro": "^5.18.2",
+    "js-yaml": "^4.2.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^24.7.2",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

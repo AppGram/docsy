@@ -1,0 +1,155 @@
+html[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+html[data-theme="dark"] body {
+  background: var(--paper);
+}
+
+html[data-theme="dark"] .docs-topbar {
+  background: color-mix(in srgb, var(--paper) 92%, transparent) !important;
+  border-color: var(--line) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] .docs-brand img {
+  filter: grayscale(1) invert(1) contrast(1.2);
+}
+
+html[data-theme="dark"] .docs-search-trigger,
+html[data-theme="dark"] .docs-search-trigger:hover,
+html[data-theme="dark"] .docs-search-trigger kbd,
+html[data-theme="dark"] .docs-llm-trigger,
+html[data-theme="dark"] .docs-llm-panel,
+html[data-theme="dark"] .docs-llm-btn,
+html[data-theme="dark"] .docs-llm-url,
+html[data-theme="dark"] .docs-llm-desc code,
+html[data-theme="dark"] .docs-search-dialog,
+html[data-theme="dark"] .docs-search-input-wrap,
+html[data-theme="dark"] .docs-search-footer kbd {
+  color: var(--muted) !important;
+  background: color-mix(in srgb, var(--paper) 96%, var(--ink)) !important;
+  border-color: var(--line) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] .docs-search-trigger:hover,
+html[data-theme="dark"] .docs-llm-trigger:hover,
+html[data-theme="dark"] .docs-llm-btn:hover {
+  color: var(--ink) !important;
+  border-color: var(--muted) !important;
+}
+
+html[data-theme="dark"] .docs-sidebar-link:hover {
+  color: var(--ink) !important;
+  background: color-mix(in srgb, var(--paper) 94%, var(--ink)) !important;
+}
+
+html[data-theme="dark"] .docs-sidebar-link.is-active {
+  color: var(--ink) !important;
+  background: color-mix(in srgb, var(--paper) 92%, var(--ink)) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] .eyebrow,
+html[data-theme="dark"] .docs-eyebrow,
+html[data-theme="dark"] .ep-tag {
+  color: var(--muted) !important;
+}
+
+html[data-theme="dark"] .button-dark {
+  color: var(--paper) !important;
+  background: var(--ink) !important;
+  border-color: var(--ink) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] .button-dark:hover {
+  color: var(--ink) !important;
+  background: var(--paper) !important;
+}
+
+html[data-theme="dark"] .docs-intro-art {
+  filter: grayscale(1) invert(1) contrast(1.18) !important;
+  mix-blend-mode: screen !important;
+  opacity: 0.58;
+}
+
+html[data-theme="dark"] .docs-sdk-card,
+html[data-theme="dark"] .docs-sdk-mark,
+html[data-theme="dark"] .ep-hero-pill,
+html[data-theme="dark"] .ep-empty,
+html[data-theme="dark"] .ep-toc,
+html[data-theme="dark"] .ep-bar,
+html[data-theme="dark"] .ep-copy-page,
+html[data-theme="dark"] .ep-desc code,
+html[data-theme="dark"] .ep-param-head code,
+html[data-theme="dark"] .ep-param-loc,
+html[data-theme="dark"] .sdk-item,
+html[data-theme="dark"] .sdk-detail-tag.is-optional {
+  color: var(--muted) !important;
+  background: color-mix(in srgb, var(--paper) 97%, var(--ink)) !important;
+  border-color: var(--line) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] .docs-sdk-card:hover,
+html[data-theme="dark"] .ep-copy-page:hover {
+  color: var(--ink) !important;
+  border-color: var(--muted) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] .docs-sdk-meta,
+html[data-theme="dark"] .ep,
+html[data-theme="dark"] .ep-section h3,
+html[data-theme="dark"] .ep-section-head,
+html[data-theme="dark"] .ep-param + .ep-param,
+html[data-theme="dark"] .docs-sidebar-sub,
+html[data-theme="dark"] .docs-toc-rail {
+  border-color: var(--line) !important;
+}
+
+html[data-theme="dark"] .ep-hero-version,
+html[data-theme="dark"] .ep-param-type,
+html[data-theme="dark"] .docs-rail-method,
+html[data-theme="dark"] .ep-toc-method,
+html[data-theme="dark"] .ep-method,
+html[data-theme="dark"] .docs-search-method {
+  color: var(--paper) !important;
+  background: var(--ink) !important;
+}
+
+html[data-theme="dark"] .ep-param-req {
+  color: var(--ink) !important;
+  background: color-mix(in srgb, var(--paper) 88%, var(--ink)) !important;
+}
+
+html[data-theme="dark"] .cb {
+  border-color: var(--line) !important;
+  background: color-mix(in srgb, var(--paper) 97%, var(--ink)) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] .cb code,
+html[data-theme="dark"] .cb-copy.is-copied {
+  color: var(--ink) !important;
+}
+
+html[data-theme="dark"] .docs-content .ep .ep-tag,
+html[data-theme="dark"] .docs-content .ep-copy-page.is-copied,
+html[data-theme="dark"] .cb .cb-copy.is-copied {
+  color: var(--muted) !important;
+}
+
+html[data-theme="dark"] .docs-content .ep .ep-param-head code {
+  color: var(--paper) !important;
+  background: var(--ink) !important;
+  border: 1px solid var(--ink) !important;
+}
+
+html[data-theme="dark"] .docs-content p code {
+  color: var(--ink) !important;
+  background: color-mix(in srgb, var(--paper) 92%, var(--ink)) !important;
+  border: 1px solid var(--line) !important;
+}

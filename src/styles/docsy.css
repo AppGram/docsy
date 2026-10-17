@@ -1,0 +1,98 @@
+:root {
+  --ink: #111116;
+  --muted: #4f515c;
+  --soft-muted: #777985;
+  --line: #dfdfe8;
+  --paper: #ffffff;
+  --violet: #5188ff;
+  --violet-dark: #3d6fe6;
+  --panel: #191a20;
+  --green: #57c468;
+  --font-display: "Aptos Display", "SF Pro Display", "Helvetica Neue", sans-serif;
+  --font-body: "Aptos", "SF Pro Text", "Helvetica Neue", sans-serif;
+  --font-label: "Aptos", "SF Pro Text", "Helvetica Neue", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  text-rendering: optimizeLegibility;
+  font-kerning: normal;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: var(--paper);
+  overflow-x: clip;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+a.button {
+  font: inherit;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 0 22px;
+  border-radius: 5px;
+  border: 1px solid #1b1c22;
+  font-size: 14px;
+  font-weight: 720;
+}
+
+.button-dark {
+  color: #fff;
+  background: #111217;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.button-light {
+  color: #22242c;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px rgba(50, 52, 62, 0.18);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 21px;
+  color: #333542;
+  font-family: var(--font-display);
+  font-size: 12.5px;
+  line-height: 1;
+  font-weight: 500;
+}
+
+.eyebrow span {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 9px solid var(--violet);
+}

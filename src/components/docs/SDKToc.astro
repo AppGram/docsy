@@ -1,0 +1,81 @@
+---
+import type { SDKDoc } from '../../lib/sdk-loaders';
+
+interface Props {
+  doc: SDKDoc;
+}
+
+const { doc } = Astro.props;
+---
+
+{doc.categories.length > 0 && (
+  <nav class="docs-rail" aria-label="On this page">
+    <p class="docs-rail-label">On this page</p>
+    <ul>
+      {doc.categories.map((c) => {
+        const anchor = c.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        return (
+          <li>
+            <a href={`#${anchor}`}>
+              <span>{c.title}</span>
+              <span class="docs-rail-count">{c.items.length}</span>
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+  </nav>
+)}
+
+<style is:global>
+  .docs-rail {
+    padding-left: 4px;
+  }
+
+  .docs-rail-label {
+    margin: 0 0 12px !important;
+    color: var(--soft-muted) !important;
+    font-family: var(--font-display);
+    font-size: 12.5px !important;
+    font-weight: 500 !important;
+  }
+
+  .docs-rail ul {
+    list-style: none;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: grid;
+    gap: 2px;
+    border-left: 1px solid #ebebf1;
+  }
+
+  .docs-rail li {
+    margin: 0 !important;
+  }
+
+  .docs-rail a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 5px 12px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--muted) !important;
+    font-size: 12.5px;
+    line-height: 1.4;
+    text-decoration: none !important;
+    transition: color 0.12s ease, border-color 0.12s ease;
+  }
+
+  .docs-rail a:hover {
+    color: var(--ink) !important;
+    border-left-color: var(--ink);
+  }
+
+  .docs-rail-count {
+    color: var(--soft-muted);
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+  }
+</style>

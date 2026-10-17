@@ -1,0 +1,688 @@
+---
+import type { SDKDoc } from '../../lib/sdk-loaders';
+import CodeBlock from './CodeBlock.astro';
+
+interface Props {
+  doc: SDKDoc;
+  icon?: string;
+  installLanguage?: string;
+  builtWith?: {
+    label: string;
+    href: string;
+  };
+}
+
+const { doc, icon, installLanguage = 'bash', builtWith } = Astro.props;
+---
+
+<div class="sdk-hero">
+  {icon && (
+    <span class="sdk-hero-mark" aria-hidden="true">
+      <img src={icon} alt="" width="32" height="32" />
+    </span>
+  )}
+  <div class="sdk-hero-copy">
+    <div class="sdk-hero-title-row">
+      <h1>{doc.name}</h1>
+      {builtWith && (
+        <a
+          class="ai-border-glow"
+          href={builtWith.href}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {builtWith.label}
+        </a>
+      )}
+    </div>
+    <p class="lead">{doc.overview}</p>
+  </div>
+</div>
+
+<CodeBlock language={installLanguage} title="Install" code={doc.install} />
+
+<div class="sdk-meta-row">
+  <span class="sdk-meta-pill">
+    <strong>{doc.itemCount}</strong> {doc.itemCount === 1 ? 'symbol' : 'symbols'}
+  </span>
+  <span class="sdk-meta-pill">
+    <strong>{doc.categories.length}</strong> {doc.categories.length === 1 ? 'category' : 'categories'}
+  </span>
+  <span class="sdk-meta-pill sdk-meta-lang">{doc.language}</span>
+</div>
+
+{doc.categories.length === 0 ? (
+  <div class="sdk-empty">
+    <p>Reference JSON isn&rsquo;t available locally. Regenerate the SDK docs to populate this page.</p>
+  </div>
+) : (
+  <>
+    {doc.categories.map((cat) => {
+      const anchor = cat.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      return (
+        <section class="sdk-category" id={anchor}>
+          <h2>{cat.title}</h2>
+          {cat.items.map((item) => (
+            <article class="sdk-item" id={item.id}>
+              <header class="sdk-item-head">
+                <div class="sdk-item-head-row">
+                  <span class:list={['sdk-item-kind', `is-${item.kind.toLowerCase()}`]}>{item.kind}</span>
+                  <h3>
+                    <a href={`#${item.id}`}>{item.name}</a>
+                  </h3>
+                </div>
+                {item.summary && <p class="sdk-item-summary">{item.summary}</p>}
+              </header>
+
+              {item.deprecated && (
+                <div class="sdk-deprecated">
+                  <p>
+                    <strong>Deprecated.</strong>
+                    {typeof item.deprecated === 'string' ? ' ' + item.deprecated : ''}
+                  </p>
+                </div>
+              )}
+
+              <div class="sdk-item-grid">
+                <div class="sdk-item-doc">
+                  {item.parameters && item.parameters.length > 0 && (
+                    <section class="sdk-detail">
+                      <h4>Parameters</h4>
+                      <div class="sdk-detail-list">
+                        {item.parameters.map((p) => (
+                          <div class="sdk-detail-row">
+                            <div class="sdk-detail-row-head">
+                              <code class="sdk-detail-name">{p.name}</code>
+                              <span class="sdk-detail-type">{p.type}</span>
+                              {p.optional && <span class="sdk-detail-tag is-optional">optional</span>}
+                            </div>
+                            {p.description && <p>{p.description}</p>}
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+                  )}
+
+                  {item.returnType && (
+                    <section class="sdk-detail">
+                      <h4>Returns</h4>
+                      <div class="sdk-detail-row">
+                        <div class="sdk-detail-row-head">
+                          <code class="sdk-detail-type is-return">{item.returnType}</code>
+                        </div>
+                        {item.returnsDoc && <p>{item.returnsDoc}</p>}
+                      </div>
+                    </section>
+                  )}
+
+                  {item.values && item.values.length > 0 && (
+                    <section class="sdk-detail">
+                      <h4>Values</h4>
+                      <div class="sdk-values">
+                        {item.values.map((v) => (
+                          <code>{v}</code>
+                        ))}
+                      </div>
+                    </section>
+                  )}
+
+                  {item.properties && item.properties.length > 0 && (
+                    <section class="sdk-detail">
+                      <h4>Properties</h4>
+                      <div class="sdk-detail-list">
+                        {item.properties.map((p) => (
+                          <div class="sdk-detail-row">
+                            <div class="sdk-detail-row-head">
+                              <code class="sdk-detail-name">{p.name}</code>
+                              <span class="sdk-detail-type">{p.type}</span>
+                              {p.optional && <span class="sdk-detail-tag is-optional">optional</span>}
+                            </div>
+                            {p.description && <p>{p.description}</p>}
+                            {p.defaultValue && (
+                              <p class="sdk-detail-default">Default: <code>{p.defaultValue}</code></p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+                  )}
+
+                  {item.methods && item.methods.length > 0 && (
+                    <section class="sdk-detail">
+                      <h4>Methods</h4>
+                      <div class="sdk-detail-list">
+                        {item.methods.map((m) => (
+                          <div class="sdk-detail-row">
+                            <div class="sdk-detail-row-head">
+                              <code class="sdk-detail-name">{m.name}</code>
+                              {m.isAsync && <span class="sdk-detail-tag is-async">async</span>}
+                              {m.isStatic && <span class="sdk-detail-tag is-static">static</span>}
+                              {m.returnType && <span class="sdk-detail-return">&rarr; {m.returnType}</span>}
+                            </div>
+                            {m.description && <p>{m.description}</p>}
+                            {m.parameters.length > 0 && (
+                              <ul class="sdk-detail-params">
+                                {m.parameters.map((p) => (
+                                  <li>
+                                    <code>{p.name}</code>
+                                    <span>: {p.type}</span>
+                                    {p.optional && <span class="sdk-detail-tag is-optional">optional</span>}
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+                  )}
+                </div>
+
+                <aside class="sdk-item-side">
+                  {item.declaration && (
+                    <CodeBlock language={item.language} title="Declaration" code={item.declaration} />
+                  )}
+                  {item.example && (
+                    <CodeBlock language={item.language} title="Example" code={item.example} />
+                  )}
+                </aside>
+              </div>
+            </article>
+          ))}
+        </section>
+      );
+    })}
+  </>
+)}
+
+<style is:global>
+  .sdk-hero {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+
+  .sdk-hero-mark {
+    display: inline-grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: #fafafd;
+    border: 1px solid #ebebf1;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  .sdk-hero-copy {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .sdk-hero-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .sdk-hero h1 {
+    margin: 0 !important;
+  }
+
+  @property --border-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+  }
+
+  @keyframes ai-border-rotate {
+    to { --border-angle: 360deg; }
+  }
+
+  .ai-border-glow {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 10px;
+    border-radius: 6px;
+    background: #fff;
+    color: var(--ink) !important;
+    font-family: var(--font-label);
+    font-size: 10px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    text-decoration: none !important;
+    white-space: nowrap;
+    isolation: isolate;
+    transition: opacity 0.15s ease;
+  }
+
+  .ai-border-glow:hover {
+    opacity: 0.85;
+  }
+
+  .ai-border-glow::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 7px;
+    padding: 1px;
+    background: conic-gradient(
+      from var(--border-angle),
+      transparent 0%,
+      transparent 25%,
+      #00B4D8 30%,
+      #38bdf8 35%,
+      #90E0EF 40%,
+      transparent 45%,
+      transparent 100%
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    animation: ai-border-rotate 3s linear infinite;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ai-border-glow::before {
+      animation: none;
+    }
+  }
+
+  .sdk-meta-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 16px 0 32px;
+  }
+
+  .sdk-meta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #f4f4f8;
+    color: var(--muted);
+    font-size: 12.5px;
+    line-height: 1;
+  }
+
+  .sdk-meta-pill strong {
+    color: var(--ink);
+    font-weight: 650;
+  }
+
+  .sdk-meta-lang {
+    font-family: var(--font-mono);
+    font-size: 11px !important;
+    text-transform: uppercase;
+
+    color: var(--violet-dark) !important;
+    background: rgba(81, 136, 255, 0.12) !important;
+  }
+
+  .sdk-toc {
+    margin: 24px 0 40px;
+    padding: 16px 20px;
+    border-radius: 12px;
+    background: #fafafd;
+    border: 1px solid #ebebf1;
+  }
+
+  .sdk-toc-label {
+    margin: 0 0 10px !important;
+    color: var(--soft-muted) !important;
+    font-family: var(--font-display);
+    font-size: 12.5px !important;
+    font-weight: 500;
+  }
+
+  .sdk-toc ul {
+    list-style: none;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 6px 16px;
+  }
+
+  .sdk-toc li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 0 !important;
+    padding: 4px 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .sdk-toc li a {
+    text-decoration: none !important;
+    color: var(--ink) !important;
+  }
+
+  .sdk-toc li a:hover {
+    color: var(--violet-dark) !important;
+  }
+
+  .sdk-toc li span {
+    color: var(--soft-muted);
+    font-size: 11.5px;
+    font-family: var(--font-mono);
+  }
+
+  .sdk-category {
+    margin: 56px 0 0;
+    scroll-margin-top: 72px;
+  }
+
+  .sdk-category h2 {
+    margin: 0 0 24px !important;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #ebebf1;
+    font-family: var(--font-display);
+    font-size: 22px !important;
+    font-weight: 460;
+  }
+
+  .sdk-item {
+    padding: 24px 0 32px;
+    border-bottom: 1px solid #f2f3f8;
+    scroll-margin-top: 72px;
+  }
+
+  .sdk-item:last-child {
+    border-bottom: 0;
+  }
+
+  .sdk-item:target .sdk-item-head-row h3 a {
+    color: var(--violet-dark) !important;
+  }
+
+  .sdk-item-head {
+    margin-bottom: 16px;
+  }
+
+  .sdk-item-head-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .sdk-item-head-row h3 {
+    margin: 0 !important;
+    font-family: var(--font-mono);
+    font-size: 16px !important;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.35 !important;
+  }
+
+  .sdk-item-head-row h3 a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+
+  .sdk-item-head-row h3 a:hover {
+    color: var(--violet-dark) !important;
+  }
+
+  .sdk-item-kind {
+    display: inline-flex;
+    align-items: center;
+    height: 18px;
+    padding: 0 8px;
+    border-radius: 999px;
+    background: #f2f3f8;
+    color: var(--muted);
+    font-family: var(--font-label);
+    font-size: 10px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .sdk-item-kind.is-hook       { background: rgba(81, 136, 255, 0.14); color: var(--violet-dark); }
+  .sdk-item-kind.is-component  { background: rgba(126, 108, 255, 0.14); color: #5f57e0; }
+  .sdk-item-kind.is-class      { background: rgba(240, 81, 56, 0.12); color: #c73f28; }
+  .sdk-item-kind.is-struct     { background: rgba(240, 81, 56, 0.12); color: #c73f28; }
+  .sdk-item-kind.is-enum       { background: rgba(87, 196, 104, 0.16); color: #2c8b3a; }
+  .sdk-item-kind.is-interface  { background: rgba(2, 86, 155, 0.14); color: #02569b; }
+  .sdk-item-kind.is-function   { background: rgba(66, 165, 245, 0.14); color: #1a7bc2; }
+  .sdk-item-kind.is-type,
+  .sdk-item-kind.is-alias      { background: rgba(255, 179, 71, 0.16); color: #b96f00; }
+  .sdk-item-kind.is-protocol   { background: rgba(126, 108, 255, 0.14); color: #5f57e0; }
+  .sdk-item-kind.is-extension  { background: rgba(66, 165, 245, 0.14); color: #1a7bc2; }
+  .sdk-item-kind.is-property   { background: rgba(87, 196, 104, 0.14); color: #2c8b3a; }
+  .sdk-item-kind.is-method     { background: rgba(66, 165, 245, 0.14); color: #1a7bc2; }
+  .sdk-item-kind.is-variable   { background: #f2f3f8; color: var(--muted); }
+  .sdk-item-kind.is-constant   { background: rgba(255, 179, 71, 0.16); color: #b96f00; }
+
+  .sdk-item-summary {
+    margin: 4px 0 0 !important;
+    color: var(--muted) !important;
+    font-size: 14px !important;
+    line-height: 1.55 !important;
+  }
+
+  .sdk-deprecated {
+    margin: 0 0 16px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    background: rgba(255, 179, 71, 0.12);
+    border: 1px solid rgba(255, 179, 71, 0.35);
+    color: #7a5000;
+  }
+
+  .sdk-deprecated p {
+    margin: 0 !important;
+    color: inherit !important;
+    font-size: 13.5px !important;
+    line-height: 1.5 !important;
+  }
+
+  .sdk-deprecated strong {
+    color: #8a4b00;
+  }
+
+  .sdk-item-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: 28px;
+    align-items: start;
+  }
+
+  .sdk-item-doc {
+    min-width: 0;
+  }
+
+  .sdk-item-side {
+    position: sticky;
+    top: 72px;
+    display: grid;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .sdk-item-side .cb {
+    margin: 0;
+  }
+
+  .sdk-item-doc > .sdk-detail + .sdk-detail {
+    margin-top: 20px;
+  }
+
+  .sdk-detail h4 {
+    margin: 0 0 10px !important;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #ebebf1;
+    font-family: var(--font-display);
+    font-size: 13px !important;
+    font-weight: 500;
+    color: var(--ink);
+
+    text-transform: none;
+  }
+
+  .sdk-detail-list {
+    display: grid;
+    gap: 12px;
+  }
+
+  .sdk-detail-row + .sdk-detail-row {
+    padding-top: 12px;
+    border-top: 1px solid #f2f3f8;
+  }
+
+  .sdk-detail-row-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+
+  .sdk-detail-name {
+    padding: 2px 6px !important;
+    border-radius: 5px !important;
+    background: transparent !important;
+    color: #2c8b3a !important;
+    font-family: var(--font-mono);
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+  }
+
+  .sdk-detail-type {
+    padding: 1px 7px;
+    border-radius: 4px;
+    background: rgba(81, 136, 255, 0.12);
+    color: var(--violet-dark);
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 550;
+  }
+
+  .sdk-detail-type.is-return {
+    background: rgba(87, 196, 104, 0.14);
+    color: #2c8b3a;
+  }
+
+  .sdk-detail-tag {
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: var(--font-label);
+    font-size: 10px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+  }
+
+  .sdk-detail-tag.is-optional { background: #f2f3f8; color: var(--soft-muted); }
+  .sdk-detail-tag.is-async    { background: rgba(126, 108, 255, 0.14); color: #5f57e0; }
+  .sdk-detail-tag.is-static   { background: rgba(87, 196, 104, 0.14); color: #2c8b3a; }
+
+  .sdk-detail-return {
+    color: var(--soft-muted);
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    margin-left: auto;
+  }
+
+  .sdk-detail-row p {
+    margin: 4px 0 0 !important;
+    color: var(--muted) !important;
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+  }
+
+  .sdk-detail-default {
+    color: var(--soft-muted) !important;
+    font-size: 12px !important;
+  }
+
+  .sdk-detail-default code {
+    padding: 1px 5px !important;
+    border-radius: 4px !important;
+    background: #f2f3f8 !important;
+    font-family: var(--font-mono);
+    font-size: 11.5px !important;
+  }
+
+  .sdk-detail-params {
+    list-style: none;
+    margin: 6px 0 0 !important;
+    padding: 6px 0 0 12px !important;
+    border-left: 2px solid #ebebf1;
+    display: grid;
+    gap: 4px;
+  }
+
+  .sdk-detail-params li {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0 !important;
+    font-size: 12px;
+    color: var(--soft-muted);
+  }
+
+  .sdk-detail-params li code {
+    padding: 1px 5px !important;
+    background: transparent !important;
+    color: #2c8b3a !important;
+    font-family: var(--font-mono);
+    font-size: 12px !important;
+    font-weight: 550 !important;
+  }
+
+  .sdk-values {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .sdk-values code {
+    padding: 3px 8px !important;
+    border-radius: 5px !important;
+    background: #f2f3f8 !important;
+    color: var(--ink) !important;
+    font-family: var(--font-mono);
+    font-size: 12px !important;
+  }
+
+  .sdk-empty {
+    padding: 32px;
+    text-align: center;
+    border-radius: 12px;
+    border: 1px dashed #d8d8e0;
+    background: #fafafd;
+    color: var(--muted);
+  }
+
+  .sdk-empty p {
+    margin: 0 !important;
+    font-size: 14px !important;
+  }
+
+  @media (max-width: 1100px) {
+    .sdk-item-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .sdk-item-side {
+      position: static;
+    }
+  }
+</style>

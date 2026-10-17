@@ -1,0 +1,521 @@
+---
+import CodeBlock from './CodeBlock.astro';
+import { docsyConfig } from '../../config';
+import { API_BASE_URL, type NormalizedEndpoint, type SwaggerParam } from '../../lib/swagger-loader';
+
+interface Props {
+  endpoint: NormalizedEndpoint;
+}
+
+const { endpoint } = Astro.props;
+const method = endpoint.method.toUpperCase();
+
+const paramType = (p: SwaggerParam) => p.type || p.schema?.type || 'string';
+
+const renderPath = (path: string) => {
+  return path.split(/(\{[^}]+\})/g).filter(Boolean).map((seg) => {
+    const isParam = /^\{[^}]+\}$/.test(seg);
+    return { seg, isParam };
+  });
+};
+
+const segments = renderPath(endpoint.path);
+
+const escapeHtml = (str: string) =>
+  str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+// Minimal inline-markdown for endpoint descriptions:
+// - backtick code -> <code>
+// - **bold** -> <strong>
+// - [text](url) -> <a>
+// - blank lines split paragraphs
+const renderMarkdown = (text?: string): string => {
+  if (!text) return '';
+  const paragraphs = text.trim().split(/\n{2,}/);
+  return paragraphs
+    .map((raw) => {
+      // Preserve newlines within a paragraph as <br>
+      let p = escapeHtml(raw);
+      // Code (do before other transforms so we don't process content inside)
+      p = p.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+      // Bold
+      p = p.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      // Links — [text](url), only http(s):// or / paths
+      p = p.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+|\/[^\s)]*)\)/g, '<a href="$2" rel="noopener noreferrer">$1</a>');
+      // Intra-paragraph newlines -> <br>
+      p = p.replace(/\n/g, '<br>');
+      return `<p>${p}</p>`;
+    })
+    .join('');
+};
+
+const descriptionHtml = renderMarkdown(endpoint.description);
+
+// Content for the Copy page button — plain-text summary of everything on the card
+const copyPayload = [
+  endpoint.summary || endpoint.path,
+  '',
+  endpoint.description || '',
+  '',
+  `${method} ${API_BASE_URL}${endpoint.path}`,
+  '',
+  endpoint.curl,
+].filter(Boolean).join('\n').trim();
+const copyId = `ep-copy-${endpoint.id}`;
+---
+
+<article class="ep" id={endpoint.id}>
+  <header class="ep-head">
+    <div class="ep-head-copy">
+      {endpoint.tag && <p class="ep-tag">{endpoint.tag}</p>}
+      <h2>{endpoint.summary || endpoint.path}</h2>
+      {endpoint.description && <div class="ep-desc" set:html={descriptionHtml} />}
+    </div>
+    <button
+      type="button"
+      class="ep-copy-page"
+      data-copy-target={copyId}
+      aria-label="Copy endpoint reference to clipboard"
+    >
+      <span class="ep-copy-page-default">
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 4h7v7H4z M6 2h7v7" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" /></svg>
+        Copy page
+      </span>
+      <span class="ep-copy-page-done">
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 8.5l2.5 2.5L12 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        Copied
+      </span>
+    </button>
+    <pre id={copyId} class="ep-copy-payload" hidden>{copyPayload}</pre>
+  </header>
+
+  <div class="ep-bar">
+    <span class:list={['ep-method', `is-${endpoint.method}`]}>{method}</span>
+    <span class="ep-path">
+      {segments.map(({ seg, isParam }) => (
+        <span class:list={[isParam && 'is-param']}>{seg}</span>
+      ))}
+    </span>
+  </div>
+
+  <div class="ep-grid">
+    <div class="ep-doc">
+      {endpoint.needsAuth && (
+        <section class="ep-section">
+          <h3>Authorizations</h3>
+          <div class="ep-params">
+            <div class="ep-param">
+              <div class="ep-param-head">
+                <code>Authorization</code>
+                <span class="ep-param-type">string</span>
+                <span class="ep-param-loc">header</span>
+                <span class="ep-param-req">required</span>
+              </div>
+              <p>Bearer token for {docsyConfig.site.name}. Keep it in your server environment and never expose it in client code.</p>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {endpoint.pathParams.length > 0 && (
+        <section class="ep-section">
+          <h3>Path parameters</h3>
+          <div class="ep-params">
+            {endpoint.pathParams.map((p) => (
+              <div class="ep-param">
+                <div class="ep-param-head">
+                  <code>{p.name}</code>
+                  <span class="ep-param-type">{paramType(p)}</span>
+                  <span class="ep-param-loc">path</span>
+                  {p.required && <span class="ep-param-req">required</span>}
+                </div>
+                {p.description && <p>{p.description}</p>}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {endpoint.queryParams.length > 0 && (
+        <section class="ep-section">
+          <h3>Query parameters</h3>
+          <div class="ep-params">
+            {endpoint.queryParams.map((p) => (
+              <div class="ep-param">
+                <div class="ep-param-head">
+                  <code>{p.name}</code>
+                  <span class="ep-param-type">{paramType(p)}</span>
+                  <span class="ep-param-loc">query</span>
+                  {p.required && <span class="ep-param-req">required</span>}
+                </div>
+                {p.description && <p>{p.description}</p>}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {endpoint.headerParams.length > 0 && (
+        <section class="ep-section">
+          <h3>Header parameters</h3>
+          <div class="ep-params">
+            {endpoint.headerParams.map((p) => (
+              <div class="ep-param">
+                <div class="ep-param-head">
+                  <code>{p.name}</code>
+                  <span class="ep-param-type">{paramType(p)}</span>
+                  <span class="ep-param-loc">header</span>
+                  {p.required && <span class="ep-param-req">required</span>}
+                </div>
+                {p.description && <p>{p.description}</p>}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {endpoint.bodyProperties.length > 0 && (
+        <section class="ep-section">
+          <div class="ep-section-head">
+            <h3>Body</h3>
+            <span class="ep-media">application/json</span>
+          </div>
+          <div class="ep-params">
+            {endpoint.bodyProperties.map((p) => (
+              <div class="ep-param">
+                <div class="ep-param-head">
+                  <code>{p.name}</code>
+                  <span class="ep-param-type">{p.type}</span>
+                  {p.required && <span class="ep-param-req">required</span>}
+                </div>
+                {p.description && <p>{p.description}</p>}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+
+    <div class="ep-code">
+      <CodeBlock language="bash" title={`${method} ${endpoint.path}`} code={endpoint.curl} />
+      {endpoint.responseExample && (
+        <CodeBlock
+          language="json"
+          title={`Response · ${endpoint.successCode ?? '200'}`}
+          code={endpoint.responseExample}
+        />
+      )}
+    </div>
+  </div>
+</article>
+
+<style is:global>
+  .ep {
+    margin: 0 0 64px;
+    padding: 0 0 48px;
+    border-bottom: 1px solid #ebebf1;
+    scroll-margin-top: 72px;
+  }
+
+  .ep:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+    margin-bottom: 32px;
+  }
+
+  .ep-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .ep-head-copy {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ep-tag {
+    margin: 0 0 6px !important;
+    color: #2c8b3a !important;
+    font-family: var(--font-label);
+    font-size: 11px !important;
+    font-weight: 700 !important;
+
+    text-transform: uppercase;
+  }
+
+  .ep-head h2 {
+    margin: 0 0 8px !important;
+    font-family: var(--font-display);
+    font-size: 22px !important;
+    font-weight: 460;
+    color: var(--ink);
+    line-height: 1.2 !important;
+  }
+
+  .ep-desc {
+    margin: 0 !important;
+    color: var(--muted) !important;
+    font-size: 14.5px !important;
+    line-height: 1.6 !important;
+  }
+
+  .ep-desc p {
+    margin: 0 0 10px !important;
+    color: inherit !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
+  }
+
+  .ep-desc p:last-child {
+    margin-bottom: 0 !important;
+  }
+
+  .ep-desc code {
+    padding: 1px 6px !important;
+    border-radius: 4px !important;
+    background: #f2f3f8 !important;
+    color: var(--ink) !important;
+    font-family: var(--font-mono);
+    font-size: 12.5px !important;
+    font-weight: 550;
+  }
+
+  .ep-desc strong {
+    color: var(--ink);
+    font-weight: 650;
+  }
+
+  .ep-desc a {
+    color: var(--violet-dark) !important;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: rgba(61, 111, 230, 0.35);
+  }
+
+  .ep-copy-page {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 30px;
+    padding: 0 12px;
+    border-radius: 8px;
+    border: 1px solid #e1e2ea;
+    background: #fff;
+    color: var(--muted);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  }
+
+  .ep-copy-page:hover {
+    background: #fafafd;
+    border-color: rgba(15, 16, 21, 0.2);
+    color: var(--ink);
+  }
+
+  .ep-copy-page.is-copied {
+    color: #2c8b3a;
+    border-color: rgba(87, 196, 104, 0.35);
+    background: rgba(87, 196, 104, 0.08);
+  }
+
+  .ep-copy-page-done {
+    display: none;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ep-copy-page.is-copied .ep-copy-page-default {
+    display: none;
+  }
+
+  .ep-copy-page.is-copied .ep-copy-page-done {
+    display: inline-flex;
+  }
+
+  .ep-copy-page-default {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ep-copy-payload {
+    display: none !important;
+  }
+
+  .ep-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: #fafafd;
+    border: 1px solid #ebebf1;
+    margin-bottom: 24px;
+    overflow-x: auto;
+  }
+
+  .ep-method {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 10px;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+
+    color: #fff;
+  }
+
+  .ep-method.is-get    { background: #2b7cff; }
+  .ep-method.is-post   { background: #2c8b3a; }
+  .ep-method.is-put    { background: #b96f00; }
+  .ep-method.is-patch  { background: #b96f00; }
+  .ep-method.is-delete { background: #c73f28; }
+
+  .ep-path {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  .ep-path .is-param {
+    color: var(--violet-dark);
+    font-weight: 650;
+  }
+
+  .ep-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 32px;
+    align-items: start;
+  }
+
+  .ep-doc {
+    min-width: 0;
+  }
+
+  .ep-code {
+    position: sticky;
+    top: 72px;
+    display: grid;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .ep-code .cb {
+    margin: 0;
+  }
+
+  .ep-section + .ep-section {
+    margin-top: 24px;
+  }
+
+  .ep-section h3,
+  .ep-section-head h3 {
+    margin: 0 0 12px !important;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #ebebf1;
+    font-family: var(--font-display);
+    font-size: 14px !important;
+    font-weight: 500;
+    color: var(--ink);
+
+  }
+
+  .ep-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #ebebf1;
+  }
+
+  .ep-section-head h3 {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+  }
+
+  .ep-media {
+    color: var(--soft-muted);
+    font-family: var(--font-mono);
+    font-size: 11px;
+
+  }
+
+  .ep-params {
+    display: grid;
+    gap: 14px;
+  }
+
+  .ep-param + .ep-param {
+    padding-top: 14px;
+    border-top: 1px solid #f2f3f8;
+  }
+
+  .ep-param-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+
+  .ep-param-head code {
+    padding: 2px 6px !important;
+    border-radius: 5px !important;
+    background: #f2f3f8 !important;
+    color: var(--ink) !important;
+    font-family: var(--font-mono);
+    font-size: 12.5px !important;
+    font-weight: 600;
+  }
+
+  .ep-param-type,
+  .ep-param-loc,
+  .ep-param-req {
+    display: inline-flex;
+    align-items: center;
+    height: 16px;
+    padding: 0 6px;
+    border-radius: 4px;
+    font-family: var(--font-label);
+    font-size: 10px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+  }
+
+  .ep-param-type { background: rgba(81, 136, 255, 0.12); color: var(--violet-dark); }
+  .ep-param-loc  { background: #f2f3f8; color: var(--muted); }
+  .ep-param-req  { background: rgba(199, 63, 40, 0.14); color: #c73f28; }
+
+  .ep-param p {
+    margin: 0 !important;
+    color: var(--muted) !important;
+    font-size: 13.5px !important;
+    line-height: 1.55 !important;
+  }
+
+  @media (max-width: 1100px) {
+    .ep-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .ep-code {
+      position: static;
+    }
+  }
+</style>

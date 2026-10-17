@@ -1,0 +1,9 @@
+services:
+  docsy:
+    build:
+      context: .
+      args:
+        DOCSY_CONFIG: ${DOCSY_CONFIG:-docsy.config.yaml}
+    ports:
+      - "8080:8080"
+    restart: unless-stopped

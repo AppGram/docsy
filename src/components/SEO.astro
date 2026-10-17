@@ -1,0 +1,119 @@
+---
+/*
+ * Central SEO block — meta + canonical + Open Graph + Twitter + JSON-LD.
+ * Included from every layout so every page gets consistent discovery metadata.
+ *
+ * Override any field via props on the layout call site.
+ */
+import { assetPath, docsyConfig } from '../config';
+
+export const SITE_URL = docsyConfig.site.origin;
+export const SITE_NAME = docsyConfig.site.name;
+/*
+ * Default OG image — a static 1200x630 card in public/. It used to be drawn on
+ * request by functions/og-home.ts (workers-og), which cost a render and a
+ * favicon fetch on every scrape to produce the same picture every time.
+ *
+ * Blog posts still pass their own og_image_url and docs pages pass /og/{slug},
+ * both of which vary per page and stay dynamic — see functions/og/[[path]].ts
+ * and functions/og-blog/[[path]].ts.
+ */
+export const DEFAULT_OG_IMAGE = docsyConfig.site.ogImage;
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  imageAlt?: string;
+  type?: 'website' | 'article' | 'product';
+  publishedAt?: string;
+  updatedAt?: string;
+  tags?: string[];
+  authorName?: string;
+  noindex?: boolean;
+  structuredData?: Record<string, unknown> | Array<Record<string, unknown>>;
+}
+
+const {
+  title = docsyConfig.site.title,
+  description = docsyConfig.site.description,
+  image = DEFAULT_OG_IMAGE,
+  imageAlt = `${docsyConfig.site.name} documentation`,
+  type = 'website',
+  publishedAt,
+  updatedAt,
+  tags,
+  authorName,
+  noindex = false,
+  structuredData,
+} = Astro.props;
+
+const pathname = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const canonicalUrl = new URL(pathname, SITE_URL).toString();
+const absoluteImage = image
+  ? image.startsWith('http') ? image : new URL(assetPath(image), SITE_URL).toString()
+  : undefined;
+
+/* Site-wide JSON-LD: Organization + WebSite (with SearchAction). */
+const organizationLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: SITE_NAME,
+  url: SITE_URL,
+  logo: new URL(assetPath(docsyConfig.site.logo), SITE_URL).toString(),
+  sameAs: [docsyConfig.site.githubUrl].filter(Boolean),
+};
+
+const websiteLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE_NAME,
+  url: SITE_URL,
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: `${new URL(assetPath(''), SITE_URL).toString()}?q={search_term_string}`,
+    'query-input': 'required name=search_term_string',
+  },
+};
+
+/* Per-page structured data — passed in from the calling layout for blog posts,
+ * help articles, product pages, etc. */
+const extraLd = Array.isArray(structuredData)
+  ? structuredData
+  : structuredData
+    ? [structuredData]
+    : [];
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalUrl} />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+<link rel="icon" href={assetPath(docsyConfig.site.favicon ?? docsyConfig.site.logo)} />
+<link rel="apple-touch-icon" href={assetPath(docsyConfig.site.favicon ?? docsyConfig.site.logo)} />
+<meta name="theme-color" content={docsyConfig.theme.colors.ink} />
+
+<meta property="og:site_name" content={SITE_NAME} />
+<meta property="og:type" content={type} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonicalUrl} />
+{absoluteImage && <meta property="og:image" content={absoluteImage} />}
+{absoluteImage && <meta property="og:image:alt" content={imageAlt} />}
+<meta property="og:locale" content="en_US" />
+{publishedAt && <meta property="article:published_time" content={publishedAt} />}
+{updatedAt && <meta property="article:modified_time" content={updatedAt} />}
+{authorName && <meta property="article:author" content={authorName} />}
+{tags?.map((t) => <meta property="article:tag" content={t} />)}
+
+<meta name="twitter:card" content="summary_large_image" />
+{docsyConfig.site.twitterHandle && <meta name="twitter:site" content={docsyConfig.site.twitterHandle} />}
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+{absoluteImage && <meta name="twitter:image" content={absoluteImage} />}
+{absoluteImage && <meta name="twitter:image:alt" content={imageAlt} />}
+
+<script type="application/ld+json" set:html={JSON.stringify(organizationLd)} />
+<script type="application/ld+json" set:html={JSON.stringify(websiteLd)} />
+{extraLd.map((ld) => <script type="application/ld+json" set:html={JSON.stringify(ld)} />)}
