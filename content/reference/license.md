@@ -46,10 +46,6 @@ You cannot disable or bypass license-key functionality or remove functionality p
 
 Issues and pull requests are welcome. Contributions accepted into Docsy are distributed under ELv2. By submitting a contribution, you must have the right to provide it under those terms.
 
-## Earlier MIT versions
-
-Changing the license does not revoke rights already granted. A version of Docsy that someone previously received under MIT remains available to that recipient under the MIT terms that accompanied it. ELv2 applies to the current version and later releases unless a release states otherwise.
-
 ## When to contact AppGram
 
 Contact AppGram before launching a product that gives customers substantial access to Docsy itself. A separate commercial agreement may permit a use that ELv2 does not.

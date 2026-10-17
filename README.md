@@ -488,5 +488,3 @@ Docsy is **source-available**, not OSI-approved open-source software. It is lice
 - Circumvent license-key functionality or protected features if Docsy adds them.
 
 ELv2 does not require a visible "Powered by Docsy" or "Built by AppGram" notice on your published documentation. It does require the legal notices to remain with the software. ELv2 also does not require you to publish private modifications or prohibit commercial activity generally: consulting, integration, and using Docsy for a commercial product's own documentation remain allowed. The restriction is providing Docsy itself as a hosted or managed service. The [license text](LICENSE) controls if this summary and ELv2 differ.
-
-Versions of Docsy previously received under MIT remain licensed under the MIT terms delivered with those versions. ELv2 applies to this version and later releases unless a release states otherwise.
