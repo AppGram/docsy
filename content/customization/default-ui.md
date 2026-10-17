@@ -1,4 +1,4 @@
-Every generated project starts with Docsy's default interface: responsive sidebar navigation, search, Markdown export controls, content cards, API and SDK layouts, and an on-page heading rail. The interface is normal Astro source in the generated repository.
+Every generated project starts with Docsy's default interface: responsive sidebar navigation with remembered scroll position, search, Markdown export controls, content cards, API and SDK layouts, and an on-page heading rail. The interface is normal Astro source in the generated repository.
 
 ## Configure branding in YAML
 

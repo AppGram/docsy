@@ -365,6 +365,22 @@ const themeStyle = [
         mobileBtn.setAttribute('aria-expanded', String(open));
       });
 
+      // Keep the reader's place in long documentation navigation between pages.
+      if (sidebar) {
+        const sidebarScrollKey = `docsy-sidebar-scroll:${document.body.dataset.docsBase || '/'}`;
+        const saveSidebarScroll = () => {
+          try { localStorage.setItem(sidebarScrollKey, String(sidebar.scrollTop)); } catch {}
+        };
+        try {
+          const savedSidebarScroll = Number(localStorage.getItem(sidebarScrollKey));
+          if (Number.isFinite(savedSidebarScroll) && savedSidebarScroll >= 0) {
+            sidebar.scrollTop = savedSidebarScroll;
+          }
+        } catch {}
+        sidebar.addEventListener('scroll', saveSidebarScroll, { passive: true });
+        window.addEventListener('pagehide', saveSidebarScroll);
+      }
+
       // ?format=md interceptor — swap page body with the markdown response
       (async function checkMarkdownMode() {
         const params = new URLSearchParams(window.location.search);
