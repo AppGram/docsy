@@ -6,12 +6,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AppGram/.sY.git"
+    "url": "git+https://github.com/AppGram/docsy.git"
   },
   "bugs": {
-    "url": "https://github.com/AppGram/.sY/issues"
+    "url": "https://github.com/AppGram/docsy/issues"
   },
-  "homepage": "https://github.com/AppGram/.sY#readme",
+  "homepage": "https://github.com/AppGram/docsy#readme",
   "type": "module",
   "bin": {
     "docsy": "scripts/docsy.mjs",

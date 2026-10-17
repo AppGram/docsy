@@ -64,7 +64,7 @@ Docsy never requires a hosted control plane. A generated project builds and runs
 Run the included public-API example:
 
 ```bash
-git clone https://github.com/AppGram/.sY.git docsy
+git clone https://github.com/AppGram/docsy.git docsy
 cd docsy
 npm ci
 npm run dev
