@@ -27,12 +27,6 @@ These screenshots come from the included Nager.Date OpenAPI example—not from A
 
 Both are the same generated OpenAPI page. Switching `theme.mode` and the YAML color tokens changes the presentation without replacing the interface.
 
-### YAML to UI
-
-![Docsy configuration shown beside the branded documentation UI it produces](docs/assets/docsy-configurable.png)
-
-Brand, product copy, navigation, OpenAPI ingestion, access mode, colors, and system font stacks are configured in one file. The generated Astro source remains available when deeper component changes are needed.
-
 ### Permission gate
 
 ![A Docsy API page protected by a configured documentation tier](docs/assets/docsy-lock-mode.png)
