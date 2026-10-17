@@ -47,17 +47,28 @@ const pathname = Astro.url.pathname.replace(/\/$/, '') || docsPath();
  * - /docs/api/wishes    → /og/api/wishes
  */
 const derivedOgImage = image ?? docsyConfig.site.ogImage;
-const { colors, fonts } = docsyConfig.theme;
+const { mode, colors, lightColors, darkColors, fonts } = docsyConfig.theme;
+const lightPalette = mode === 'light' ? colors : lightColors;
+const darkPalette = mode === 'dark' ? colors : darkColors;
 const themeStyle = [
-  `--ink:${colors.ink}`,
-  `--muted:${colors.muted}`,
-  `--soft-muted:${colors.softMuted}`,
-  `--line:${colors.line}`,
-  `--paper:${colors.paper}`,
-  `--violet:${colors.accent}`,
-  `--violet-dark:${colors.accentDark}`,
-  `--panel:${colors.panel}`,
-  `--green:${colors.success}`,
+  `--light-ink:${lightPalette.ink}`,
+  `--light-muted:${lightPalette.muted}`,
+  `--light-soft-muted:${lightPalette.softMuted}`,
+  `--light-line:${lightPalette.line}`,
+  `--light-paper:${lightPalette.paper}`,
+  `--light-violet:${lightPalette.accent}`,
+  `--light-violet-dark:${lightPalette.accentDark}`,
+  `--light-panel:${lightPalette.panel}`,
+  `--light-green:${lightPalette.success}`,
+  `--dark-ink:${darkPalette.ink}`,
+  `--dark-muted:${darkPalette.muted}`,
+  `--dark-soft-muted:${darkPalette.softMuted}`,
+  `--dark-line:${darkPalette.line}`,
+  `--dark-paper:${darkPalette.paper}`,
+  `--dark-violet:${darkPalette.accent}`,
+  `--dark-violet-dark:${darkPalette.accentDark}`,
+  `--dark-panel:${darkPalette.panel}`,
+  `--dark-green:${darkPalette.success}`,
   `--font-display:${fonts.display}`,
   `--font-body:${fonts.body}`,
   `--font-label:${fonts.label}`,
@@ -70,6 +81,14 @@ const themeStyle = [
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script is:inline>
+      try {
+        const savedTheme = localStorage.getItem('docsy-theme');
+        if (savedTheme === 'light' || savedTheme === 'dark') {
+          document.documentElement.dataset.theme = savedTheme;
+        }
+      } catch {}
+    </script>
     <SEO
       title={title}
       description={description}
@@ -97,7 +116,10 @@ const themeStyle = [
     <header class="docs-topbar">
       <div class="docs-topbar-inner">
         <a class="docs-brand" href={docsyConfig.site.homeUrl} aria-label={`${docsyConfig.site.name} home`}>
-          <img src={assetPath(docsyConfig.site.logo)} alt="" width="26" height="26" />
+          <img class="docs-brand-logo" src={assetPath(docsyConfig.site.logo)} alt="" width="26" height="26" />
+          {docsyConfig.site.logoDark && (
+            <img class="docs-brand-logo docs-brand-logo-dark" src={assetPath(docsyConfig.site.logoDark)} alt="" width="26" height="26" />
+          )}
           <span>{docsyConfig.site.name} <span class="docs-brand-slash">/</span> <span class="docs-brand-slug">{docsyConfig.site.docsLabel}</span></span>
         </a>
 
@@ -116,6 +138,22 @@ const themeStyle = [
         </button>
 
         <div class="docs-topbar-actions">
+          <button
+            type="button"
+            class="docs-topbar-icon docs-theme-toggle"
+            id="docs-theme-toggle"
+            aria-label="Switch to dark theme"
+            title="Switch theme"
+          >
+            <svg class="docs-theme-icon docs-theme-icon-moon" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+              <path d="M20.2 15.1A8.6 8.6 0 0 1 8.9 3.8 8.6 8.6 0 1 0 20.2 15.1Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <svg class="docs-theme-icon docs-theme-icon-sun" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
+              <circle cx="12" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="1.7" />
+              <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+            </svg>
+          </button>
+
           <div class="docs-llm" id="docs-llm">
             <button type="button" class="docs-llm-trigger" id="docs-llm-trigger" aria-haspopup="dialog" aria-expanded="false">
               <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M2 3.5A1.5 1.5 0 0 1 3.5 2h9A1.5 1.5 0 0 1 14 3.5V10a1.5 1.5 0 0 1-1.5 1.5H8l-3 2.5v-2.5H3.5A1.5 1.5 0 0 1 2 10z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" /></svg>
@@ -266,6 +304,19 @@ const themeStyle = [
     </div>
 
     <script is:inline>
+      const themeToggle = document.getElementById('docs-theme-toggle');
+      const syncThemeToggle = () => {
+        const currentTheme = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
+        themeToggle?.setAttribute('aria-label', `Switch to ${currentTheme === 'dark' ? 'light' : 'dark'} theme`);
+      };
+      syncThemeToggle();
+      themeToggle?.addEventListener('click', () => {
+        const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        document.documentElement.dataset.theme = nextTheme;
+        try { localStorage.setItem('docsy-theme', nextTheme); } catch {}
+        syncThemeToggle();
+      });
+
       // hljs highlight all code on load
       const runHighlight = () => {
         if (typeof window === 'undefined' || !window.hljs) return;
@@ -544,6 +595,31 @@ const themeStyle = [
     </script>
 
     <style is:global>
+      html[data-theme="light"] {
+        --ink: var(--light-ink);
+        --muted: var(--light-muted);
+        --soft-muted: var(--light-soft-muted);
+        --line: var(--light-line);
+        --paper: var(--light-paper);
+        --violet: var(--light-violet);
+        --violet-dark: var(--light-violet-dark);
+        --panel: var(--light-panel);
+        --green: var(--light-green);
+        color-scheme: light;
+      }
+
+      html[data-theme="dark"] {
+        --ink: var(--dark-ink);
+        --muted: var(--dark-muted);
+        --soft-muted: var(--dark-soft-muted);
+        --line: var(--dark-line);
+        --paper: var(--dark-paper);
+        --violet: var(--dark-violet);
+        --violet-dark: var(--dark-violet-dark);
+        --panel: var(--dark-panel);
+        --green: var(--dark-green);
+      }
+
       body {
         margin: 0;
         background: var(--paper);
@@ -584,6 +660,10 @@ const themeStyle = [
 
       .docs-brand img {
         display: block;
+      }
+
+      .docs-brand-logo-dark {
+        display: none !important;
       }
 
       .docs-brand-slash {
@@ -647,6 +727,23 @@ const themeStyle = [
         border-radius: 8px;
         color: var(--muted);
         transition: background 0.15s ease, color 0.15s ease;
+      }
+
+      button.docs-topbar-icon {
+        padding: 0;
+        border: 0;
+        background: transparent;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      .docs-theme-icon {
+        grid-area: 1 / 1;
+      }
+
+      html[data-theme="light"] .docs-theme-icon-sun,
+      html[data-theme="dark"] .docs-theme-icon-moon {
+        display: none;
       }
 
       .docs-topbar-icon:hover {
@@ -1399,7 +1496,7 @@ const themeStyle = [
       }
 
       @media (max-width: 420px) {
-        .docs-topbar-icon {
+        .docs-topbar-icon:not(.docs-theme-toggle) {
           display: none;
         }
       }

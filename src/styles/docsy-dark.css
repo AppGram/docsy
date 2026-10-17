@@ -12,8 +12,39 @@ html[data-theme="dark"] .docs-topbar {
   box-shadow: none !important;
 }
 
-html[data-theme="dark"] .docs-brand img {
+html[data-theme="dark"] .docs-sidebar {
+  background: var(--paper) !important;
+  border-color: var(--line) !important;
+}
+
+html[data-theme="dark"] .docs-brand img:not(.docs-brand-logo-dark) {
   filter: grayscale(1) invert(1) contrast(1.2);
+}
+
+html[data-theme="dark"] .docs-brand-logo-dark {
+  display: block !important;
+  filter: none;
+}
+
+html[data-theme="dark"] .docs-brand-logo-dark + span {
+  margin-left: 0;
+}
+
+html[data-theme="dark"] .docs-brand-logo:not(.docs-brand-logo-dark) {
+  display: none;
+}
+
+html[data-theme="dark"] .docs-topbar-icon:hover {
+  background: color-mix(in srgb, var(--paper) 92%, var(--ink)) !important;
+}
+
+html[data-theme="dark"] .docs-topbar-cta {
+  color: var(--paper) !important;
+  background: var(--ink) !important;
+}
+
+html[data-theme="dark"] .docs-topbar-cta:hover {
+  background: var(--muted) !important;
 }
 
 html[data-theme="dark"] .docs-search-trigger,

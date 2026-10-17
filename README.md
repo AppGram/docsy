@@ -49,6 +49,7 @@ Both are the same generated OpenAPI page. Switching `theme.mode` and the YAML co
 - Generated API pages, navigation, search data, curl examples, response examples, and Markdown exports.
 - First-class authored Markdown articles for guides, tutorials, concepts, and migration notes.
 - One YAML file for branding, content, navigation, routes, ingestion, theme tokens, and access rules.
+- A persisted light/dark theme toggle with independently configurable palettes.
 - Open mode for static hosting and lock mode for server-side permission checks.
 - Header-based identity for trusted auth proxies or webhook authorization for an existing application.
 - Docker and Docker Compose files for a short self-hosting path.

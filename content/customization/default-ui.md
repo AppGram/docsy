@@ -36,6 +36,8 @@ theme:
   mode: light
 ```
 
+The header includes a light/dark toggle. `theme.mode` is the first-visit default, and the visitor's selection is saved locally for later pages and sessions.
+
 Override individual tokens when the product needs them:
 
 ```yaml
@@ -52,6 +54,21 @@ theme:
     display: '"Aptos Display", "SF Pro Display", "Helvetica Neue", sans-serif'
     body: '"Aptos", "SF Pro Text", "Helvetica Neue", sans-serif'
     mono: 'ui-monospace, "SF Mono", Menlo, monospace'
+```
+
+`theme.colors` customizes the configured default mode. Use `darkColors` when the default is light, or `lightColors` when the default is dark, to customize the alternate palette:
+
+```yaml
+theme:
+  mode: light
+  colors:
+    paper: "#ffffff"
+    ink: "#111116"
+    accent: "#5188ff"
+  darkColors:
+    paper: "#000000"
+    ink: "#f5f5f5"
+    accent: "#ffffff"
 ```
 
 Docsy uses system font stacks by default. It does not require a hosted font service or typographic tracking.

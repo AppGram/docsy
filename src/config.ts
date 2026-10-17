@@ -93,6 +93,42 @@ const accessSchema = z.object({
   }).default({}),
 }).default({});
 
+const LIGHT_THEME_COLORS = {
+  ink: '#111116',
+  muted: '#4f515c',
+  softMuted: '#777985',
+  line: '#dfdfe8',
+  paper: '#ffffff',
+  accent: '#5188ff',
+  accentDark: '#3d6fe6',
+  panel: '#191a20',
+  success: '#57c468',
+};
+
+const DARK_THEME_COLORS = {
+  ink: '#f5f5f5',
+  muted: '#a3a3a3',
+  softMuted: '#696969',
+  line: '#262626',
+  paper: '#000000',
+  accent: '#ffffff',
+  accentDark: '#e5e5e5',
+  panel: '#050505',
+  success: '#ffffff',
+};
+
+const themeColorsSchema = (defaults: typeof LIGHT_THEME_COLORS) => z.object({
+  ink: z.string().default(defaults.ink),
+  muted: z.string().default(defaults.muted),
+  softMuted: z.string().default(defaults.softMuted),
+  line: z.string().default(defaults.line),
+  paper: z.string().default(defaults.paper),
+  accent: z.string().default(defaults.accent),
+  accentDark: z.string().default(defaults.accentDark),
+  panel: z.string().default(defaults.panel),
+  success: z.string().default(defaults.success),
+}).default({});
+
 const configSchema = z.object({
   site: z.object({
     name: z.string().min(1),
@@ -104,6 +140,7 @@ const configSchema = z.object({
     language: z.string().default('en'),
     homeUrl: z.string().min(1).default('/'),
     logo: z.string().min(1),
+    logoDark: z.string().min(1).optional(),
     favicon: z.string().optional(),
     ogImage: z.string().optional(),
     githubUrl: z.string().url().optional(),
@@ -122,17 +159,9 @@ const configSchema = z.object({
   }).optional(),
   theme: z.object({
     mode: z.enum(['light', 'dark']).default('light'),
-    colors: z.object({
-      ink: z.string().default('#111116'),
-      muted: z.string().default('#4f515c'),
-      softMuted: z.string().default('#777985'),
-      line: z.string().default('#dfdfe8'),
-      paper: z.string().default('#ffffff'),
-      accent: z.string().default('#5188ff'),
-      accentDark: z.string().default('#3d6fe6'),
-      panel: z.string().default('#191a20'),
-      success: z.string().default('#57c468'),
-    }).default({}),
+    colors: themeColorsSchema(LIGHT_THEME_COLORS),
+    lightColors: themeColorsSchema(LIGHT_THEME_COLORS),
+    darkColors: themeColorsSchema(DARK_THEME_COLORS),
     fonts: z.object({
       display: z.string().default('"Aptos Display", "SF Pro Display", "Helvetica Neue", sans-serif'),
       body: z.string().default('"Aptos", "SF Pro Text", "Helvetica Neue", sans-serif'),
