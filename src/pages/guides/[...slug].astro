@@ -1,0 +1,79 @@
+---
+import ArticlePage from '../../components/docs/ArticlePage.astro';
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import { docsPath, docsyConfig, type ArticleConfig } from '../../config';
+import { findArticle, getArticleSources, loadArticle, type ArticleDoc } from '../../lib/article-loader';
+
+export const prerender = docsyConfig.access.mode !== 'locked';
+
+export async function getStaticPaths() {
+  return Promise.all(getArticleSources().map(async (source) => ({
+    params: { slug: source.slug },
+    props: { source, article: await loadArticle(source) },
+  })));
+}
+
+const source = (Astro.props as { source?: ArticleConfig }).source
+  ?? findArticle(Astro.params.slug ?? '');
+if (!source) return Astro.redirect(docsPath(), 302);
+const article = (Astro.props as { article?: ArticleDoc }).article ?? await loadArticle(source);
+const toc = article.headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+---
+
+<DocsLayout
+  title={`${article.config.title} — ${docsyConfig.site.name} Docs`}
+  description={article.config.description || docsyConfig.site.description}
+  eyebrow={article.config.eyebrow}
+  type="article"
+  wide={article.headings.some((heading) => heading.depth === 2 || heading.depth === 3)}
+>
+  <ArticlePage article={article} />
+  {toc.length > 0 && (
+    <nav slot="toc" class="article-toc" aria-label="On this page">
+      <p>On this page</p>
+      <ul>
+        {toc.map((heading) => (
+          <li class:list={[heading.depth === 3 && 'is-nested']}>
+            <a href={`#${heading.slug}`}>{heading.text}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )}
+</DocsLayout>
+
+<style>
+  .article-toc > p {
+    margin: 0 0 12px;
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 650;
+  }
+
+  .article-toc ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .article-toc li {
+    margin: 0;
+  }
+
+  .article-toc li.is-nested {
+    padding-left: 12px;
+  }
+
+  .article-toc a {
+    display: block;
+    padding: 5px 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.35;
+    text-decoration: none;
+  }
+
+  .article-toc a:hover {
+    color: var(--ink);
+  }
+</style>

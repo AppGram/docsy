@@ -1,12 +1,14 @@
 import type { APIRoute } from 'astro';
 import { docsPath, docsyConfig } from '../../config';
 import { generateMarkdown } from '../../lib/markdown-export';
+import { articleRoute, getArticleSources } from '../../lib/article-loader';
 import { getSdkSources } from '../../lib/sdk-loaders';
 import { API_SECTIONS } from '../../lib/swagger-loader';
 
 export const prerender = docsyConfig.access.mode !== 'locked';
 
 const allowedTargets = () => [
+  ...getArticleSources().map(articleRoute),
   ...getSdkSources().map((sdk) => `/${sdk.slug}`),
   ...API_SECTIONS.map((section) => `/api/${section.section}`),
 ];

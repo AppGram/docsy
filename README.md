@@ -45,6 +45,7 @@ Both are the same generated OpenAPI page. Switching `theme.mode` and the YAML co
 - OpenAPI 3 and Swagger 2 ingestion from local JSON/YAML or an HTTPS URL.
 - SDK adapters for TypeDoc, TypeDoc-lite, Swift symbol JSON, and Dartdoc.
 - Generated API pages, navigation, search data, curl examples, response examples, and Markdown exports.
+- First-class authored Markdown articles for guides, tutorials, concepts, and migration notes.
 - One YAML file for branding, content, navigation, routes, ingestion, theme tokens, and access rules.
 - Open mode for static hosting and lock mode for server-side permission checks.
 - Header-based identity for trusted auth proxies or webhook authorization for an existing application.
@@ -54,10 +55,10 @@ Both are the same generated OpenAPI page. Switching `theme.mode` and the YAML co
 ## The mental model
 
 ```text
-OpenAPI / SDK JSON
+Markdown / OpenAPI / SDK metadata
         │
         ▼
- ingestion adapters ──► normalized docs model
+ content loaders/adapters ──► normalized docs model
         │
         ▼
  docsy.config.yaml ───► routes, navigation, theme, access rules
@@ -73,10 +74,21 @@ The important boundary is simple:
 
 - YAML owns durable configuration and content wiring.
 - Astro and CSS own the interface.
-- Ingestion adapters own source-format differences.
+- The article loader and ingestion adapters own source-format differences.
 - Lock mode owns request-time authorization, not user authentication itself.
 
 Docsy never requires a hosted control plane. A generated project builds and runs from its own repository.
+
+## Tutorials
+
+These articles are both readable on GitHub and rendered by the included Docsy example through `content.articles`:
+
+| Tutorial | What it explains |
+| --- | --- |
+| [Configure Docsy with YAML](content/tutorials/yaml-configuration.md) | The configuration lifecycle, top-level sections, paths, and environment values |
+| [Write authored documentation](content/tutorials/authored-articles.md) | Markdown articles, YAML registration, navigation, search, exports, and permissions |
+| [Ingest an OpenAPI document](content/tutorials/openapi-ingestion.md) | Local and remote sources, section matching, navigation, and SDK adapters |
+| [Protect documentation by tier](content/tutorials/lock-mode.md) | Ordered access rules, trusted headers, webhooks, and locked deployment |
 
 ## Quick start
 
@@ -158,6 +170,14 @@ theme:
     body: '"Aptos", "SF Pro Text", "Helvetica Neue", sans-serif'
     mono: 'ui-monospace, "SF Mono", Menlo, monospace'
 
+content:
+  articles:
+    - slug: getting-started
+      source: content/getting-started.md
+      title: Getting started
+      description: Make your first authenticated request.
+      eyebrow: GUIDE
+
 navigation:
   - title: API Reference
     items:
@@ -185,6 +205,38 @@ Configuration errors fail with their exact YAML path. Run this before committing
 ```bash
 npm run validate
 ```
+
+## Authored Markdown articles
+
+Docsy can render documentation you write directly; OpenAPI and SDK ingestion are optional companions, not the only content model.
+
+Create a Markdown file outside `public/`:
+
+```text
+content/guides/authentication.md
+```
+
+Register it in YAML:
+
+```yaml
+content:
+  articles:
+    - slug: authentication
+      source: content/guides/authentication.md
+      title: Authentication
+      description: Create a token and authenticate API requests.
+      eyebrow: GUIDE
+
+navigation:
+  - title: Guides
+    items:
+      - title: Authentication
+        href: /guides/authentication
+```
+
+Docsy serves it at `/guides/authentication` underneath `site.basePath`. Nested slugs such as `platform/security/authentication` create nested guide URLs. Level-two and level-three headings populate the page rail.
+
+Authored articles automatically participate in navigation, search, Markdown export, and lock-mode permission rules. Keep protected Markdown outside `public/`, because files under `public/` are served as unprotected static assets.
 
 ## OpenAPI ingestion
 
@@ -371,6 +423,7 @@ Put the process behind the trusted authentication proxy described above. Rebuild
 ```text
 .
 ├── docsy.config.yaml       # Product, theme, ingestion, navigation, access
+├── content/                # Authored Markdown articles
 ├── sources/                # Private build-time OpenAPI and SDK inputs
 ├── public/                 # Public assets only
 ├── src/

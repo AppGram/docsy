@@ -320,7 +320,7 @@ const makeConfig = ({ projectName, description, basePath, accessMode, apiBase, c
     title: section.title,
     href: `/api/${section.section}`,
   }));
-  const firstApiPath = apiItems[0]?.href ?? '/';
+  const firstApiPath = apiItems[0]?.href ?? '/guides/getting-started';
   const rules = [];
   if (sections.length > 1) {
     rules.push({ pattern: `/api/${sections.at(-1).section}`, tiers: ['enterprise'] });
@@ -373,6 +373,17 @@ const makeConfig = ({ projectName, description, basePath, accessMode, apiBase, c
       sdkHeading: 'API reference',
       sdkDescription: 'Generated directly from the configured OpenAPI source.',
     },
+    content: {
+      articles: [
+        {
+          slug: 'getting-started',
+          source: 'content/getting-started.md',
+          title: 'Getting started',
+          description: `Start building with ${projectName}.`,
+          eyebrow: 'GUIDE',
+        },
+      ],
+    },
     access: {
       mode: accessMode,
       provider: {
@@ -403,7 +414,10 @@ const makeConfig = ({ projectName, description, basePath, accessMode, apiBase, c
     navigation: [
       {
         title: 'Introduction',
-        items: [{ title: 'Overview', href: '/' }],
+        items: [
+          { title: 'Overview', href: '/' },
+          { title: 'Getting started', href: '/guides/getting-started' },
+        ],
       },
       ...(apiItems.length ? [{ title: 'API Reference', items: apiItems }] : []),
     ],
@@ -444,6 +458,7 @@ Open \`http://localhost:4321${basePath === '/' ? '/' : `${basePath}/`}\`.
 ## Configure
 
 - \`docsy.config.yaml\` controls product copy, navigation, visual tokens, OpenAPI/SDK sources, and permission tiers.
+- \`content/\` contains Markdown guides registered under \`content.articles\` in YAML.
 - \`src/layouts/DocsLayout.astro\`, \`src/components/docs/\`, and \`src/styles/docsy.css\` are the editable interface.
 - \`sources/\` contains local ingestion inputs.
 - \`DOCSY_BRIEF.md\` tells an AI coding agent what it may customize without drifting from the reference UI.
@@ -457,6 +472,26 @@ npm run preview
 \`\`\`
 
 The generated access mode is \`${accessMode}\`. In locked mode, put Docsy behind a trusted identity proxy that removes client-supplied identity headers before setting \`x-docsy-tiers\`.
+`;
+
+  const gettingStarted = `Start here, then replace this article with the onboarding path for ${projectName}.
+
+## Configure the project
+
+Open \`docsy.config.yaml\` to change product copy, navigation, authored articles, ingestion sources, theme tokens, and access rules.
+
+## Run locally
+
+\`\`\`bash
+npm run dev
+\`\`\`
+
+## Validate before deployment
+
+\`\`\`bash
+npm run validate
+npm run build
+\`\`\`
 `;
 
   const agents = `# Docsy project rules
@@ -483,7 +518,7 @@ The generated access mode is \`${accessMode}\`. In locked mode, put Docsy behind
 
 ## Responsibility boundary
 
-YAML owns product copy, navigation, ingestion, colors, font stacks, and access rules. Astro/CSS source owns the interface. Start from the generated interface and change only what the request calls for.
+YAML owns product copy, authored article registration, navigation, ingestion, colors, font stacks, and access rules. Markdown owns guide content. Astro/CSS source owns the interface. Start from the generated interface and change only what the request calls for.
 
 ## Suggested AI kickoff
 
@@ -491,6 +526,8 @@ Read \`AGENTS.md\`, \`DOCSY_BRIEF.md\`, and \`docsy.config.yaml\`. Inspect the e
 `;
 
   writeFileSync(resolve(target, 'README.md'), readme);
+  mkdirSync(resolve(target, 'content'), { recursive: true });
+  writeFileSync(resolve(target, 'content/getting-started.md'), gettingStarted);
   writeFileSync(resolve(target, 'AGENTS.md'), agents);
   writeFileSync(resolve(target, 'DOCSY_BRIEF.md'), brief);
 };

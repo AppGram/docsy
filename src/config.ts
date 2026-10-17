@@ -47,6 +47,14 @@ const apiSectionSchema = z.object({
   paths: z.array(z.string()).default([]),
 });
 
+const articleSchema = z.object({
+  slug: z.string().regex(/^[a-z0-9]+(?:[\/-][a-z0-9]+)*$/),
+  source: z.string().min(1),
+  title: z.string().min(1),
+  description: z.string().default(''),
+  eyebrow: z.string().default('GUIDE'),
+});
+
 const accessProviderSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('header'),
@@ -136,6 +144,9 @@ const configSchema = z.object({
     sdkHeading: z.string().default('Choose your platform'),
     sdkDescription: z.string().default('Official SDKs with full type support and identical primitives across every runtime.'),
   }),
+  content: z.object({
+    articles: z.array(articleSchema).default([]),
+  }).default({}),
   access: accessSchema,
   navigation: z.array(z.object({
     title: z.string().min(1),
@@ -152,6 +163,18 @@ const configSchema = z.object({
     }),
   }),
 }).superRefine((config, context) => {
+  const articleSlugs = new Set<string>();
+  config.content.articles.forEach((article, articleIndex) => {
+    if (articleSlugs.has(article.slug)) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['content', 'articles', articleIndex, 'slug'],
+        message: `Duplicate article slug "${article.slug}"`,
+      });
+    }
+    articleSlugs.add(article.slug);
+  });
+
   const knownTiers = new Set(Object.keys(config.access.tiers));
   config.access.rules.forEach((rule, ruleIndex) => {
     rule.tiers.forEach((tier, tierIndex) => {
@@ -184,6 +207,7 @@ export const docsyConfig = parsed.data;
 export type DocsyConfig = z.infer<typeof configSchema>;
 export type SdkSourceConfig = DocsyConfig['ingestion']['sdks'][number];
 export type ApiSectionConfig = DocsyConfig['ingestion']['openapi']['sections'][number];
+export type ArticleConfig = DocsyConfig['content']['articles'][number];
 
 export const DOCSY_ROOT = projectRoot;
 

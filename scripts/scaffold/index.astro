@@ -2,6 +2,7 @@
 import DocsLayout from '../layouts/DocsLayout.astro';
 import { assetPath, docsPath, docsyConfig } from '../config';
 import { API_SECTIONS, filterEndpoints, loadSwagger } from '../lib/swagger-loader';
+import { articleUrl, getArticleSources } from '../lib/article-loader';
 
 const spec = await loadSwagger();
 const apiSections = API_SECTIONS.map((section) => ({
@@ -9,6 +10,7 @@ const apiSections = API_SECTIONS.map((section) => ({
   endpointCount: filterEndpoints(spec, section).length,
   href: docsPath(`/api/${section.section}`),
 }));
+const articles = getArticleSources().map((article) => ({ ...article, href: articleUrl(article) }));
 ---
 
 <DocsLayout
@@ -38,8 +40,28 @@ const apiSections = API_SECTIONS.map((section) => ({
     />
   </div>
 
-  <h2>API reference</h2>
-  <p class="docs-section-description">Generated from the OpenAPI source configured in <code>docsy.config.yaml</code>.</p>
+  {articles.length > 0 && (
+    <>
+      <h2>Guides</h2>
+      <p class="docs-section-description">Authored Markdown registered under <code>content.articles</code> in <code>docsy.config.yaml</code>.</p>
+      <div class="docs-sdk-grid">
+        {articles.map((article) => (
+          <a class="docs-sdk-card" href={article.href}>
+            <div class="docs-sdk-head">
+              <span class="docs-sdk-mark docs-article-mark" aria-hidden="true">¶</span>
+              <span class="docs-sdk-arrow" aria-hidden="true">&rarr;</span>
+            </div>
+            <h3>{article.title}</h3>
+            <p>{article.description}</p>
+            <div class="docs-sdk-meta">Article</div>
+          </a>
+        ))}
+      </div>
+    </>
+  )}
+
+  {apiSections.length > 0 && <h2>API reference</h2>}
+  {apiSections.length > 0 && <p class="docs-section-description">Generated from the OpenAPI source configured in <code>docsy.config.yaml</code>.</p>}
 
   <div class="docs-sdk-grid">
     {apiSections.map((section) => (
@@ -131,6 +153,13 @@ const apiSections = API_SECTIONS.map((section) => ({
     border-radius: 10px;
     background: #fafafd;
     border: 1px solid #ebebf1;
+  }
+
+  .docs-article-mark {
+    color: var(--violet-dark);
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
   }
 
   .docs-sdk-arrow {

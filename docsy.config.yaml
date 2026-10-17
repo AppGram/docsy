@@ -44,6 +44,28 @@ home:
     href: /api/countries
   sdkHeading: API reference
   sdkDescription: Generated directly from the configured OpenAPI source.
+content:
+  articles:
+    - slug: tutorials/yaml-configuration
+      source: content/tutorials/yaml-configuration.md
+      title: Configure Docsy with YAML
+      description: Understand how docsy.config.yaml controls product copy, navigation, visual tokens, content, and access.
+      eyebrow: TUTORIAL
+    - slug: tutorials/authored-articles
+      source: content/tutorials/authored-articles.md
+      title: Write authored documentation
+      description: Add Markdown guides and articles beside generated API and SDK reference pages.
+      eyebrow: TUTORIAL
+    - slug: tutorials/openapi-ingestion
+      source: content/tutorials/openapi-ingestion.md
+      title: Ingest an OpenAPI document
+      description: Turn a local or remote OpenAPI source into grouped, searchable API reference pages.
+      eyebrow: TUTORIAL
+    - slug: tutorials/lock-mode
+      source: content/tutorials/lock-mode.md
+      title: Protect documentation by tier
+      description: Configure server-side documentation permissions using ordered YAML rules.
+      eyebrow: TUTORIAL
 access:
   mode: open
   provider:
@@ -77,6 +99,16 @@ navigation:
     items:
       - title: Overview
         href: /
+  - title: Tutorials
+    items:
+      - title: YAML configuration
+        href: /guides/tutorials/yaml-configuration
+      - title: Authored articles
+        href: /guides/tutorials/authored-articles
+      - title: OpenAPI ingestion
+        href: /guides/tutorials/openapi-ingestion
+      - title: Lock mode
+        href: /guides/tutorials/lock-mode
   - title: API Reference
     items:
       - title: Countries

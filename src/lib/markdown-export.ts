@@ -2,6 +2,7 @@ import type { SDKDoc, NormalizedItem, NormalizedCategory } from './sdk-loaders';
 import { getSdkSources, loadSdk } from './sdk-loaders';
 import { docsPath, docsyConfig, type ApiSectionConfig } from '../config';
 import { loadSwagger, filterEndpoints, API_SECTIONS, type NormalizedEndpoint } from './swagger-loader';
+import { articleMarkdownExport, articleRoute, getArticleSources } from './article-loader';
 
 const codeFence = (lang: string, body: string) => `\`\`\`${lang}\n${body}\n\`\`\``;
 
@@ -132,6 +133,9 @@ export const generateMarkdown = async (path: string, origin: string): Promise<st
   const source = `${origin}${docsPath(relative)}`;
 
   if (STATIC_PAGES[relative]) return STATIC_PAGES[relative];
+
+  const article = getArticleSources().find((candidate) => articleRoute(candidate) === relative);
+  if (article) return articleMarkdownExport(article);
 
   const sdkSource = getSdkSources().find((sdk) => `/${sdk.slug}` === relative);
   if (sdkSource) return sdkToMarkdown(loadSdk(sdkSource), source);

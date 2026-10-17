@@ -1,0 +1,95 @@
+---
+import type { ArticleDoc } from '../../lib/article-loader';
+
+interface Props {
+  article: ArticleDoc;
+}
+
+const { article } = Astro.props;
+---
+
+<article class="article-page">
+  <header class="article-header">
+    <h1>{article.config.title}</h1>
+    {article.config.description && <p class="article-description">{article.config.description}</p>}
+  </header>
+  <div class="article-body" set:html={article.html} />
+</article>
+
+<style>
+  .article-header {
+    margin-bottom: 40px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .article-description {
+    max-width: 680px;
+    margin-bottom: 0 !important;
+    color: var(--muted) !important;
+    font-size: 18px !important;
+    line-height: 1.55 !important;
+  }
+
+  .article-body :global(h2),
+  .article-body :global(h3) {
+    scroll-margin-top: 90px;
+  }
+
+  .article-body :global(p),
+  .article-body :global(li) {
+    color: var(--muted);
+  }
+
+  .article-body :global(blockquote) {
+    margin: 24px 0;
+    padding: 2px 0 2px 18px;
+    border-left: 3px solid var(--violet);
+  }
+
+  .article-body :global(blockquote p) {
+    margin: 0;
+  }
+
+  .article-body :global(pre) {
+    max-width: 100%;
+    margin: 22px 0 28px;
+    overflow: auto;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--panel);
+  }
+
+  .article-body :global(pre code) {
+    display: block;
+    min-width: max-content;
+    padding: 20px 22px;
+    border-radius: 0;
+    background: transparent;
+    color: #f3f4f6;
+    font-size: 13px;
+    line-height: 1.65;
+  }
+
+  .article-body :global(table) {
+    width: 100%;
+    margin: 22px 0 30px;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  .article-body :global(th),
+  .article-body :global(td) {
+    padding: 11px 12px;
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .article-body :global(th) {
+    color: var(--ink);
+    font-weight: 650;
+  }
+
+</style>
