@@ -260,6 +260,7 @@ const copyTemplate = (target) => {
     'tsconfig.json',
     'Dockerfile',
     'compose.yaml',
+    'LICENSE',
     '.dockerignore',
     '.gitignore',
   ];
@@ -287,6 +288,7 @@ const makePackageJson = (target, projectName) => {
     name: packageName,
     version: '0.1.0',
     private: true,
+    license: 'Elastic-2.0',
     type: 'module',
     scripts: {
       docsy: 'node scripts/docsy.mjs',
@@ -462,6 +464,11 @@ Open \`http://localhost:4321${basePath === '/' ? '/' : `${basePath}/`}\`.
 - \`src/layouts/DocsLayout.astro\`, \`src/components/docs/\`, and \`src/styles/docsy.css\` are the editable interface.
 - \`sources/\` contains local ingestion inputs.
 - \`DOCSY_BRIEF.md\` tells an AI coding agent what it may customize without drifting from the reference UI.
+
+The included Docsy software is licensed under the Elastic License 2.0. You may
+self-host and customize it for your own documentation, but you may not offer
+substantial Docsy functionality to third parties as a hosted or managed service.
+See \`LICENSE\` for the controlling terms.
 
 Useful commands:
 

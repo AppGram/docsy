@@ -30,3 +30,7 @@ Do not introduce an external font service or typographic tracking.
 ## Pull requests
 
 Describe the behavior being changed, include screenshots for visible changes, and mention whether you tested both open and locked access modes.
+
+## Contribution terms
+
+Docsy is source-available under the [Elastic License 2.0](LICENSE). By submitting a contribution, you confirm that you have the right to submit it and agree that it will be distributed under ELv2 with the rest of Docsy. Your submission must not include code under terms that conflict with ELv2.

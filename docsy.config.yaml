@@ -90,6 +90,11 @@ content:
       title: CLI reference
       description: Generate projects, validate configuration, build releases, and run production previews.
       eyebrow: REFERENCE
+    - slug: reference/license
+      source: content/reference/license.md
+      title: Docsy license
+      description: Understand what ELv2 permits, what it prohibits, and how it applies to self-hosting and contributions.
+      eyebrow: REFERENCE
 access:
   mode: open
 navigation:
@@ -127,6 +132,8 @@ navigation:
     items:
       - title: CLI
         href: /guides/reference/cli
+      - title: License
+        href: /guides/reference/license
 ingestion:
   sdks: []
   openapi:

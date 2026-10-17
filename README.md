@@ -8,7 +8,7 @@
 
 <h1 align="center">Docsy</h1>
 
-<p align="center"><strong>Build a polished, self-hosted documentation site from Markdown, OpenAPI, and SDK metadata—then own every line of the result.</strong></p>
+<p align="center"><strong>Build a polished, self-hosted documentation site from Markdown, OpenAPI, and SDK metadata—then control every line of the result.</strong></p>
 
 <p align="center"><a href="https://appgram.github.io/docsy/">Documentation</a> · <a href="https://github.com/AppGram/docsy/issues">Issues</a></p>
 
@@ -97,6 +97,7 @@ The repository is its own Docsy documentation portal. Every article is readable 
 | [Protect documentation by tier](content/tutorials/lock-mode.md) | Ordered access rules, trusted headers, webhooks, and locked deployment |
 | [Deploy to GitHub Pages](content/deployment/github-pages.md) | Static Pages configuration and the included Actions workflow |
 | [Self-host Docsy](content/deployment/self-hosting.md) | Static, Node, and Docker deployment shapes |
+| [Understand the Docsy license](content/reference/license.md) | What ELv2 permits, what it prohibits, and how it applies to generated sites |
 | [CLI reference](content/reference/cli.md) | Project generation, validation, building, and production startup |
 
 ## Quick start
@@ -464,6 +465,27 @@ npm run build
 
 Please preserve the configuration/source boundary, keep permission checks server-side, and avoid external font services or typographic tracking.
 
+Contributions are distributed under ELv2. By submitting a pull request, you confirm that you have the right to contribute the code under those terms. See [CONTRIBUTING.md](CONTRIBUTING.md) for the complete project contribution guidance.
+
 ## License
 
-[MIT](LICENSE) © AppGram
+Docsy is **source-available**, not OSI-approved open-source software. It is licensed under the [Elastic License 2.0](LICENSE) © AppGram.
+
+### You may
+
+- Self-host Docsy for your own public, private, personal, or commercial documentation.
+- Configure and modify the YAML, Markdown, Astro components, styles, adapters, and runtime.
+- Copy, redistribute, and publish modified versions when you include ELv2 and clearly state that you changed the software.
+- Hire a consultant to configure or deploy Docsy for you.
+- Keep your Markdown, OpenAPI files, SDK metadata, branding, and other documentation content under terms of your choosing.
+
+### You may not
+
+- Offer Docsy to third parties as a hosted or managed documentation service that exposes a substantial set of Docsy's features.
+- Rebrand Docsy as your own competing SaaS documentation builder and charge customers to access it.
+- Remove or hide AppGram's licensing and copyright notices.
+- Circumvent license-key functionality or protected features if Docsy adds them.
+
+ELv2 does not require you to publish private modifications. It also does not prohibit commercial activity generally: consulting, integration, and using Docsy for a commercial product's own documentation remain allowed. The restriction is providing Docsy itself as a hosted or managed service. The [license text](LICENSE) controls if this summary and ELv2 differ.
+
+Versions of Docsy previously received under MIT remain licensed under the MIT terms delivered with those versions. ELv2 applies to this version and later releases unless a release states otherwise.
