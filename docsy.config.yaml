@@ -9,8 +9,8 @@ site:
   basePath: /docsy
   language: en
   homeUrl: /docsy/
-  logo: assets/docsy-mark.svg
-  favicon: assets/docsy-mark.svg
+  logo: assets/docsy-logo.png
+  favicon: assets/docsy-logo.png
   githubUrl: https://github.com/AppGram/docsy
 header:
   searchLabel: Search documentation
