@@ -1,6 +1,10 @@
-# Docsy
+<p align="center">
+  <img src="docs/assets/docsy-logo.png" alt="Docsy logo" width="200" />
+</p>
 
-**Generate a polished, self-hosted documentation site from OpenAPI and SDK metadata—then own every line of the result.**
+<h1 align="center">Docsy</h1>
+
+<p align="center"><strong>Generate a polished, self-hosted documentation site from OpenAPI and SDK metadata—then own every line of the result.</strong></p>
 
 Docsy is an Astro-based documentation generator for teams that want a strong default interface without giving up control of their source. Product copy, navigation, visual tokens, ingestion, and access rules live in `docsy.config.yaml`. The generated Astro components and CSS stay in your repository and can be edited normally by a developer or coding agent.
 
