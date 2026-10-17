@@ -12,9 +12,26 @@ Docsy can ship as a fully static site or as a server-rendered Node application w
 
 These screenshots come from the included Nager.Date OpenAPI example—not from AppGram product documentation.
 
-### OpenAPI reference
+### Light and dark
 
-![A generated Docsy API reference showing an endpoint, parameters, a curl example, and a JSON response](docs/assets/docsy-openapi.png)
+<table>
+  <tr>
+    <th width="50%">Light</th>
+    <th width="50%">Dark</th>
+  </tr>
+  <tr>
+    <td><img src="docs/assets/docsy-light.png" alt="Docsy OpenAPI reference using the light theme" /></td>
+    <td><img src="docs/assets/docsy-dark.png" alt="Docsy OpenAPI reference using the dark theme" /></td>
+  </tr>
+</table>
+
+Both are the same generated OpenAPI page. Switching `theme.mode` and the YAML color tokens changes the presentation without replacing the interface.
+
+### YAML to UI
+
+![Docsy configuration shown beside the branded documentation UI it produces](docs/assets/docsy-configurable.png)
+
+Brand, product copy, navigation, OpenAPI ingestion, access mode, colors, and system font stacks are configured in one file. The generated Astro source remains available when deeper component changes are needed.
 
 ### Permission gate
 
