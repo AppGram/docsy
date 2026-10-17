@@ -228,6 +228,17 @@ const themeStyle = [
       )}
     </div>
 
+    {docsyConfig.footer && (
+      <footer class="docs-footer">
+        <p>
+          <span>{docsyConfig.footer.prefix}</span>{' '}
+          <a href={docsyConfig.footer.href} target="_blank" rel="noopener noreferrer">
+            {docsyConfig.footer.label}
+          </a>
+        </p>
+      </footer>
+    )}
+
     <div class="docs-search-modal" id="docs-search-modal" hidden role="dialog" aria-modal="true" aria-label="Search documentation">
       <div class="docs-search-scrim" id="docs-search-scrim"></div>
       <div class="docs-search-panel">
@@ -953,6 +964,29 @@ const themeStyle = [
       .docs-content > * {
         max-width: 100%;
         min-width: 0;
+      }
+
+      .docs-footer {
+        border-top: 1px solid var(--line);
+        padding: 22px 24px 28px;
+      }
+
+      .docs-footer p {
+        max-width: 1400px;
+        margin: 0 auto;
+        color: var(--soft-muted);
+        font-size: 12px;
+        text-align: center;
+      }
+
+      .docs-footer a {
+        color: var(--ink);
+        font-weight: 650;
+        text-decoration: none;
+      }
+
+      .docs-footer a:hover {
+        color: var(--violet-dark);
       }
 
       .docs-eyebrow {

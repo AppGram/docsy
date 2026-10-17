@@ -19,6 +19,10 @@ header:
   cta:
     label: View on GitHub
     href: https://github.com/AppGram/docsy
+footer:
+  prefix: Built by
+  label: AppGram
+  href: https://github.com/AppGram
 theme:
   mode: light
 home:

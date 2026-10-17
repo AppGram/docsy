@@ -115,6 +115,11 @@ const configSchema = z.object({
     llmLabel: z.string().default('LLM Docs'),
     cta: actionSchema.optional(),
   }).default({}),
+  footer: z.object({
+    prefix: z.string().default('Built by'),
+    label: z.string().min(1),
+    href: z.string().url(),
+  }).optional(),
   theme: z.object({
     mode: z.enum(['light', 'dark']).default('light'),
     colors: z.object({
