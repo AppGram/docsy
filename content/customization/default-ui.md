@@ -34,6 +34,22 @@ Paths under `public/` are referenced without the `public` segment. Docsy adds `s
 
 The footer is optional. Remove the entire `footer` block to render no attribution footer. ELv2 does not require visible Docsy or AppGram branding on your published documentation; its notice requirement applies to the license and copyright notices distributed with the software.
 
+## Add an optional overview image
+
+The overview has no image by default. To display your own, put it under `public/` and add `home.image` in YAML:
+
+```yaml
+home:
+  # Keep your existing title, description, and actions.
+  image:
+    src: assets/overview.png
+    alt: A preview of the Acme platform
+    width: 1200
+    height: 800
+```
+
+`width` and `height` are optional. Remove the `image` block to return to the full-width text layout. Images retain their original colors in light and dark themes.
+
 ## Use the default visual tokens
 
 Set only the mode to use Docsy's defaults:

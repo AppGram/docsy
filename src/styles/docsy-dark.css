@@ -100,12 +100,6 @@ html[data-theme="dark"] .button-dark:hover {
   background: var(--paper) !important;
 }
 
-html[data-theme="dark"] .docs-intro-art {
-  filter: grayscale(1) invert(1) contrast(1.18) !important;
-  mix-blend-mode: screen !important;
-  opacity: 0.58;
-}
-
 html[data-theme="dark"] .docs-sdk-card,
 html[data-theme="dark"] .docs-sdk-mark,
 html[data-theme="dark"] .ep-hero-pill,

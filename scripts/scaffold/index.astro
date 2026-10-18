@@ -18,7 +18,7 @@ const articles = getArticleSources().map((article) => ({ ...article, href: artic
   description={docsyConfig.site.description}
   eyebrow={docsyConfig.home.eyebrow}
 >
-  <div class="docs-intro">
+  <div class:list={['docs-intro', { 'has-image': Boolean(docsyConfig.home.image) }]}>
     <div class="docs-intro-copy">
       <h1>{docsyConfig.home.title}</h1>
       <p class="lead">{docsyConfig.home.description}</p>
@@ -31,13 +31,15 @@ const articles = getArticleSources().map((article) => ({ ...article, href: artic
       </div>
     </div>
 
-    <img
-      class="docs-intro-art"
-      src={assetPath('assets/illustrations/docs-building-blocks.svg')}
-      alt=""
-      width="1536"
-      height="1024"
-    />
+    {docsyConfig.home.image && (
+      <img
+        class="docs-intro-art"
+        src={assetPath(docsyConfig.home.image.src)}
+        alt={docsyConfig.home.image.alt}
+        width={docsyConfig.home.image.width}
+        height={docsyConfig.home.image.height}
+      />
+    )}
   </div>
 
   {articles.length > 0 && (
@@ -85,7 +87,7 @@ const articles = getArticleSources().map((article) => ({ ...article, href: artic
 </DocsLayout>
 
 <style is:global>
-  .docs-intro {
+  .docs-intro.has-image {
     display: grid;
     grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.35fr);
     gap: 28px;
@@ -100,8 +102,6 @@ const articles = getArticleSources().map((article) => ({ ...article, href: artic
     width: 100%;
     height: auto;
     justify-self: end;
-    margin-right: calc(-1 * min(120px, max(0px, 100vw - 1180px)));
-    mix-blend-mode: multiply;
   }
 
   .docs-cta-row {
@@ -199,14 +199,13 @@ const articles = getArticleSources().map((article) => ({ ...article, href: artic
   }
 
   @media (max-width: 1000px) {
-    .docs-intro {
+    .docs-intro.has-image {
       grid-template-columns: 1fr;
       gap: 8px;
     }
 
     .docs-intro-art {
       justify-self: start;
-      margin-right: 0;
       max-width: 640px;
     }
   }

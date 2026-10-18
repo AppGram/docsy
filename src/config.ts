@@ -176,6 +176,12 @@ const configSchema = z.object({
     description: z.string().min(1),
     primaryAction: actionSchema,
     secondaryAction: actionSchema.optional(),
+    image: z.object({
+      src: z.string().min(1),
+      alt: z.string().default(''),
+      width: z.number().int().positive().optional(),
+      height: z.number().int().positive().optional(),
+    }).optional(),
     sdkHeading: z.string().default('Choose your platform'),
     sdkDescription: z.string().default('Official SDKs with full type support and identical primitives across every runtime.'),
   }),
