@@ -69,6 +69,13 @@ const withExecutables = (_root, executables, callback) => {
   try { return callback(); } finally { process.env.PATH = priorPath; }
 };
 
+const withEnvironment = (values, callback) => {
+  const previous = Object.fromEntries(Object.keys(values).map((key) => [key, process.env[key]]));
+  const apply = (entries) => { for (const [key, value] of Object.entries(entries)) { if (value === undefined) delete process.env[key]; else process.env[key] = value; } };
+  apply(values);
+  try { return callback(); } finally { apply(previous); }
+};
+
 test('YAML defaults and glob matching cover root and nested Markdown', () => {
   assert.equal(maintenanceSchema.parse(undefined).enabled, false);
   assert.equal(matchesGlob('content/intro.md', 'content/**/*.md'), true);
@@ -298,7 +305,7 @@ test('no-op agent output creates no validation run or PR patch', () => {
   assert.equal(read(root, '.docsy/maintenance/validated.patch'), '');
 });
 test('rendered preview metadata excludes server builds and reports the exact example-validation boundary', () => {
-  for (const server of [true, false]) {
+  for (const github of [false, true]) for (const server of [true, false]) {
     const { root, base } = fixture();
     const config = load(read(root, 'docsy.config.yaml'));
     config.access.mode = server ? 'locked' : 'open';
@@ -307,11 +314,15 @@ test('rendered preview metadata excludes server builds and reports the exact exa
     const head = commit(root); const plan = planMaintenance(root, { base, head });
     write(root, 'content/widgets.md', '# Updated widgets');
     write(root, 'dist/index.html', '<html>Rendered preview</html>');
-    withExecutables(root, { npm: 'process.exit(0);' }, () => verifyMaintenance(root, plan));
+    withEnvironment({ GITHUB_RUN_ID: github ? '1234' : undefined, GITHUB_REPOSITORY: github ? 'example/docs' : undefined, GITHUB_SERVER_URL: 'https://ci.example.test' }, () => {
+      withExecutables(root, { npm: 'process.exit(0);' }, () => verifyMaintenance(root, plan));
+    });
     const preview = JSON.parse(read(root, '.docsy/maintenance/preview.json'));
     assert.equal(preview.available, !server); assert.equal(preview.published, false);
     assert.match(read(root, '.docsy/maintenance/pr-body.md'), /No executable example checks configured/);
-    assert.match(read(root, '.docsy/maintenance/pr-body.md'), server ? /intentionally unavailable/ : /npm run preview/);
+    const body = read(root, '.docsy/maintenance/pr-body.md');
+    assert.match(body, server ? /intentionally unavailable/ : github ? /https:\/\/ci.example.test\/example\/docs\/actions\/runs\/1234/ : /npm run preview/);
+    if (!server && github) assert.match(body, /docsy-static-preview/);
   }
 });
 
