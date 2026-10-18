@@ -1,4 +1,4 @@
-Docsy generates a polished documentation portal without putting your content or interface behind a hosted control plane. You keep the YAML, Markdown, ingestion sources, Astro components, and deployment configuration in your own repository.
+Docsy is documentation built for humans and coding agents. People read searchable guides and API or SDK reference pages in the documentation portal. Coding agents can read the same content as Markdown and help maintain the YAML, articles, and editable Astro interface in your repository.
 
 ## Run this documentation portal
 
@@ -35,6 +35,14 @@ npm run create -- ../acme-docs \
 
 The generated directory is an independent Astro project. It includes a starter guide, the default interface, validated YAML configuration, deployment files, and an AI customization brief.
 
+## Bring your coding agent
+
+Open the generated repository with your coding agent and give it `AGENTS.md`, `DOCSY_BRIEF.md`, and `docsy.config.yaml` as context. Describe the content or behavior you want to change, then review the resulting diff and build.
+
+For agents consuming published documentation, the portal's Markdown menu links to the current page's export. Direct `/format-md/...` URLs let HTTP clients fetch authored articles and generated API or SDK reference as Markdown.
+
+The **Coding agents** guide walks through reading published docs, writing articles, and maintaining documentation after an API change.
+
 ## Understand the ownership boundary
 
 Docsy has three deliberately separate layers:
@@ -61,6 +69,7 @@ Open mode produces a static Astro build. Locked mode produces a standalone Node 
 ## Choose the next guide
 
 - Configure the portal through `docsy.config.yaml` in **YAML configuration**.
+- Read and maintain documentation with an agent in **Coding agents**.
 - Add first-class Markdown pages in **Authored articles**.
 - Generate reference pages in **OpenAPI ingestion** and **SDK adapters**.
 - Publish the static portal in **GitHub Pages** or run it yourself using **Self-hosting**.

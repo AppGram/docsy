@@ -8,15 +8,38 @@
 
 <h1 align="center">Docsy</h1>
 
-<p align="center"><strong>Build a polished, self-hosted documentation site from Markdown, OpenAPI, and SDK metadata—then control every line of the result.</strong></p>
+<p align="center"><strong>Documentation built for humans and coding agents.</strong></p>
 
 <p align="center"><a href="https://appgram.github.io/docsy/">Documentation</a> · <a href="https://github.com/AppGram/docsy/issues">Issues</a></p>
 
-Docsy is an Astro-based documentation generator for teams that want a strong default interface without giving up control of their source. Product copy, navigation, visual tokens, ingestion, and access rules live in `docsy.config.yaml`. The generated Astro components and CSS stay in your repository and can be edited normally by a developer or coding agent.
+Docsy turns Markdown, OpenAPI, and SDK metadata into a self-hosted documentation portal. Readers get searchable guides and reference pages in a polished interface. Coding agents get Markdown exports to read, structured configuration to edit, and a local validation and build workflow to check their changes.
+
+Product copy, navigation, visual tokens, ingestion, and access rules live in `docsy.config.yaml`. The generated Astro components and CSS stay in your repository, alongside `AGENTS.md` and `DOCSY_BRIEF.md` to guide your coding agent.
 
 Docsy can ship as a fully static site or as a server-rendered Node application with permission-gated documentation tiers.
 
 > This project is independent of the Hugo theme with a similar name.
+
+## For humans and coding agents
+
+For readers, Docsy brings authored guides, API endpoints, and SDK reference together with navigation, search, code examples, and light/dark themes.
+
+For coding agents, the same documentation is available as Markdown. An agent working in the generated repository can update articles, configure ingestion and branding in YAML, or edit the Astro interface. The CLI includes project instructions and a customization brief, and `npm run validate` plus `npm run build` check the result before review.
+
+Give your coding agent a concrete task:
+
+```text
+Read AGENTS.md, DOCSY_BRIEF.md, and docsy.config.yaml.
+Use sources/openapi.json to write a first-request guide in content/.
+Register it in YAML and add it to the sidebar.
+Use the API source for endpoint names, parameters, and examples.
+Preserve the existing UI and access rules.
+Run npm run validate and npm run build, then summarize the diff.
+```
+
+Use `/format-md/...` exports when an agent needs to fetch documentation over HTTP. The Markdown menu exposes the current page's export; `?format=md` opens its Markdown view in the browser. Your chosen coding agent works with the repository, and you review and publish its changes through your normal Git workflow.
+
+See [Work with coding agents](content/tutorials/coding-agents.md) for both reading and authoring workflows.
 
 ## Preview
 
@@ -43,7 +66,7 @@ Both are the same generated OpenAPI page. Switching `theme.mode` and the YAML co
 
 ## What Docsy gives you
 
-- An editable Astro project, not a remote theme or hosted page builder.
+- An editable Astro project with `AGENTS.md` and `DOCSY_BRIEF.md` for coding agents.
 - OpenAPI 3 and Swagger 2 ingestion from local JSON/YAML or an HTTPS URL.
 - SDK adapters for TypeDoc, TypeDoc-lite, Swift symbol JSON, and Dartdoc.
 - Generated API pages, navigation, search data, curl examples, response examples, and Markdown exports.
@@ -89,6 +112,7 @@ The repository is its own Docsy documentation portal. Every article is readable 
 | Article | What it explains |
 | --- | --- |
 | [Get started with Docsy](content/getting-started.md) | Run the portal, generate a project, and understand the ownership boundary |
+| [Work with coding agents](content/tutorials/coding-agents.md) | Read Markdown exports, give an agent a project brief, and validate documentation changes |
 | [Configure Docsy with YAML](content/tutorials/yaml-configuration.md) | The configuration lifecycle, top-level sections, paths, and environment values |
 | [Write authored documentation](content/tutorials/authored-articles.md) | Markdown articles, YAML registration, navigation, search, exports, and permissions |
 | [Ingest an OpenAPI document](content/tutorials/openapi-ingestion.md) | Local and remote sources, section matching, and navigation |

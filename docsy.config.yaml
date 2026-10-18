@@ -3,8 +3,8 @@
 site:
   name: Docsy
   docsLabel: docs
-  title: Docsy Documentation
-  description: Build, configure, customize, and self-host a source-owned documentation portal with Docsy.
+  title: Docsy — Documentation built for humans and coding agents
+  description: Self-host documentation for humans and coding agents. Write Markdown, ingest API and SDK metadata, and customize your site through YAML and editable Astro source.
   origin: ${DOCSY_ORIGIN:-https://appgram.github.io}
   basePath: /docsy
   language: en
@@ -28,23 +28,28 @@ theme:
   mode: light
 home:
   eyebrow: DOCSY DOCUMENTATION
-  title: Documentation you actually own.
-  description: Configure the content in YAML, write guides in Markdown, ingest API metadata, and ship an editable Astro site on your own infrastructure.
+  title: Documentation built for humans and coding agents.
+  description: Give readers a polished documentation portal and coding agents Markdown exports, structured YAML, and editable source. Write guides, ingest API and SDK reference, and host it yourself.
   primaryAction:
     label: Get started →
     href: /guides/getting-started
   secondaryAction:
-    label: Read the configuration guide
-    href: /guides/tutorials/yaml-configuration
+    label: Work with coding agents
+    href: /guides/tutorials/coding-agents
   sdkHeading: Documentation
-  sdkDescription: Guides and reference for building with Docsy.
+  sdkDescription: Guides and reference for building documentation with your team and coding agents.
 content:
   articles:
     - slug: getting-started
       source: content/getting-started.md
       title: Get started with Docsy
-      description: Run the documentation portal, generate a new project, and understand what Docsy owns.
+      description: Build documentation for humans and coding agents, generate a project, and understand its editable source.
       eyebrow: GET STARTED
+    - slug: tutorials/coding-agents
+      source: content/tutorials/coding-agents.md
+      title: Work with coding agents
+      description: Read Markdown exports, guide your coding agent with project instructions, and validate documentation changes.
+      eyebrow: WORKFLOW
     - slug: tutorials/yaml-configuration
       source: content/tutorials/yaml-configuration.md
       title: Configure Docsy with YAML
@@ -104,6 +109,8 @@ navigation:
         href: /
       - title: Get started
         href: /guides/getting-started
+      - title: Coding agents
+        href: /guides/tutorials/coding-agents
   - title: Content
     items:
       - title: YAML configuration
