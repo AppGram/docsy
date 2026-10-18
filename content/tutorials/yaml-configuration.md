@@ -28,6 +28,7 @@ npm run validate
 | `navigation` | Sidebar groups and links |
 | `ingestion` | OpenAPI and SDK metadata sources |
 | `access` | Open or locked mode, tiers, providers, and ordered rules |
+| `maintenance` | Watched source paths, editable Markdown, migration notes, and the coding agent's optional model |
 
 The minimum useful configuration connects these responsibilities rather than duplicating them:
 

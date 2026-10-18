@@ -26,6 +26,8 @@ For readers, Docsy brings authored guides, API endpoints, and SDK reference toge
 
 For coding agents, the same documentation is available as Markdown. An agent working in the generated repository can update articles, configure ingestion and branding in YAML, or edit the Astro interface. The CLI includes project instructions and a customization brief, and `npm run validate` plus `npm run build` check the result before review.
 
+Docsy also includes a maintenance loop: a committed API or code change triggers an impact report, agent updates to articles and examples, independent validation, and a draft pull request with migration notes and unresolved questions.
+
 Give your coding agent a concrete task:
 
 ```text
@@ -67,6 +69,7 @@ Both are the same generated OpenAPI page. Switching `theme.mode` and the YAML co
 ## What Docsy gives you
 
 - An editable Astro project with `AGENTS.md` and `DOCSY_BRIEF.md` for coding agents.
+- A YAML-configured maintenance workflow that turns source changes into validated draft documentation PRs.
 - OpenAPI 3 and Swagger 2 ingestion from local JSON/YAML or an HTTPS URL.
 - SDK adapters for TypeDoc, TypeDoc-lite, Swift symbol JSON, and Dartdoc.
 - Generated API pages, navigation, search data, curl examples, response examples, and Markdown exports.
@@ -113,6 +116,7 @@ The repository is its own Docsy documentation portal. Every article is readable 
 | --- | --- |
 | [Get started with Docsy](content/getting-started.md) | Run the portal, generate a project, and understand the ownership boundary |
 | [Work with coding agents](content/tutorials/coding-agents.md) | Read Markdown exports, give an agent a project brief, and validate documentation changes |
+| [Maintain documentation automatically](content/tutorials/documentation-maintenance.md) | Detect affected docs, correct stale examples, explain breaking changes, and open validated draft PRs |
 | [Configure Docsy with YAML](content/tutorials/yaml-configuration.md) | The configuration lifecycle, top-level sections, paths, and environment values |
 | [Write authored documentation](content/tutorials/authored-articles.md) | Markdown articles, YAML registration, navigation, search, exports, and permissions |
 | [Ingest an OpenAPI document](content/tutorials/openapi-ingestion.md) | Local and remote sources, section matching, and navigation |
@@ -178,6 +182,31 @@ Without `--yes`, the CLI asks for the project directory, OpenAPI source, product
 7. Installs dependencies unless `--no-install` is supplied.
 
 Run `node scripts/create-docsy.mjs --help` for every option.
+
+## Close the documentation maintenance loop
+
+Generated projects include a GitHub workflow and a local maintenance command. Enable the workflow through YAML:
+
+```yaml
+maintenance:
+  enabled: true
+  watch: [sources/**, src/**]
+  docs: [content/**/*.md, README.md]
+  breakingChangesFile: content/maintenance/breaking-changes.md
+```
+
+Add the `OPENAI_API_KEY` Actions secret and allow GitHub Actions to create pull requests. On a default-branch source change, the workflow compares revisions, finds likely affected docs and stale examples, and runs Codex to prepare updates. A fresh job checks the allowed diff and runs validation and the production build. A final job opens a draft PR on a dedicated branch. Empty updates produce no PR; a failed check stops publication.
+
+Inspect or run it locally:
+
+```bash
+npm run maintain -- plan --base HEAD~1
+npm run maintain -- run --base HEAD~1
+# With authenticated gh, also create and push a draft PR:
+npm run maintain -- run --base HEAD~1 --pr
+```
+
+The planner compares local OpenAPI and Swagger contracts, flags likely breaking changes, and maps changed paths and symbols to Markdown articles. The agent uses the source diff to update guides and explain migrations. Use committed snapshots to track remote ingestion changes; the workflow reacts to Git changes rather than polling upstream URLs. [Setup, scope, and review details](content/tutorials/documentation-maintenance.md).
 
 ## Configure it with YAML
 
@@ -457,6 +486,9 @@ Put the process behind the trusted authentication proxy described above. Rebuild
 | `npm run build` | Validate, build, and stage production output |
 | `npm run preview` | Serve the staged static build or locked Node build |
 | `npm run create -- <dir>` | Generate a new editable project |
+| `npm run maintain -- plan --base <ref>` | Inspect source changes and documentation impact |
+| `npm run maintain -- run --base <ref>` | Update docs with the agent and validate the result |
+| `npm test` | Run maintenance workflow regression tests |
 
 ## Project structure
 

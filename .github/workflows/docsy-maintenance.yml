@@ -1,0 +1,179 @@
+name: Maintain documentation
+
+on:
+  push:
+    branches-ignore: ['codex/**']
+  workflow_dispatch:
+    inputs:
+      base:
+        description: Git ref to compare against (defaults to the preceding commit)
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docsy-maintenance-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  update:
+    if: github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    outputs:
+      has_patch: ${{ steps.patch.outputs.has_patch }}
+      base: ${{ steps.plan.outputs.base }}
+      head: ${{ steps.plan.outputs.head }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then npm ci --ignore-scripts; else npm install --ignore-scripts --package-lock=false; fi
+
+      - name: Detect documentation impact
+        id: plan
+        env:
+          DOCSY_EVENT_BEFORE: ${{ github.event.before }}
+          DOCSY_REQUESTED_BASE: ${{ inputs.base }}
+          DOCSY_HEAD: ${{ github.sha }}
+        shell: bash
+        run: |
+          base="$DOCSY_REQUESTED_BASE"
+          if [ -z "$base" ]; then base="$DOCSY_EVENT_BEFORE"; fi
+          if [ -z "$base" ] || [[ "$base" =~ ^0+$ ]]; then
+            base=$(git rev-parse "$DOCSY_HEAD^" 2>/dev/null || printf '%s' "$DOCSY_HEAD")
+          fi
+          node scripts/maintenance.mjs plan --base "$base" --head "$DOCSY_HEAD"
+
+      - name: Check agent setup
+        id: setup
+        if: steps.plan.outputs.relevant == 'true'
+        env:
+          DOCSY_AGENT_AVAILABLE: ${{ secrets.OPENAI_API_KEY != '' }}
+        run: |
+          if [ "$DOCSY_AGENT_AVAILABLE" = 'true' ]; then
+            echo 'ready=true' >> "$GITHUB_OUTPUT"
+          else
+            echo '::notice::Add the OPENAI_API_KEY Actions secret to enable the documentation agent.'
+            echo 'Documentation impact detected. Add the OPENAI_API_KEY Actions secret and rerun this workflow to generate a draft PR.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Update documentation with Codex
+        id: agent
+        if: steps.plan.outputs.relevant == 'true' && steps.setup.outputs.ready == 'true'
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          prompt-file: .docsy/maintenance/prompt.md
+          output-file: .docsy/maintenance/agent-result.json
+          sandbox: workspace-write
+          safety-strategy: drop-sudo
+          model: ${{ steps.plan.outputs.model }}
+          codex-args: '["--output-schema", "scripts/maintenance/result.schema.json", "--ephemeral"]'
+
+      # After the agent, only serialize its diff. Validation runs in a fresh job.
+      - name: Capture proposed patch
+        id: patch
+        if: steps.agent.outcome == 'success'
+        env:
+          DOCSY_HEAD: ${{ steps.plan.outputs.head }}
+        run: |
+          git add -N .
+          git diff --binary "$DOCSY_HEAD" > .docsy/maintenance/proposed.patch
+          if [ -s .docsy/maintenance/proposed.patch ]; then
+            echo 'has_patch=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'No documentation updates were needed.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload proposed patch
+        if: steps.patch.outputs.has_patch == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: proposed-docsy-maintenance
+          path: |
+            .docsy/maintenance/proposed.patch
+            .docsy/maintenance/agent-result.json
+          include-hidden-files: true
+          retention-days: 7
+
+  validate:
+    needs: update
+    if: needs.update.outputs.has_patch == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      changed: ${{ steps.verify.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.update.outputs.head }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then npm ci --ignore-scripts; else npm install --ignore-scripts --package-lock=false; fi
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: proposed-docsy-maintenance
+          path: .docsy/maintenance
+
+      - name: Guard and validate documentation changes
+        id: verify
+        env:
+          DOCSY_BASE: ${{ needs.update.outputs.base }}
+          DOCSY_HEAD: ${{ needs.update.outputs.head }}
+        run: node scripts/maintenance.mjs verify --base "$DOCSY_BASE" --head "$DOCSY_HEAD" --patch .docsy/maintenance/proposed.patch
+
+      - uses: actions/upload-artifact@v7
+        if: steps.verify.outputs.changed == 'true'
+        with:
+          name: validated-docsy-maintenance
+          path: |
+            .docsy/maintenance/validated.patch
+            .docsy/maintenance/pr-body.md
+          include-hidden-files: true
+          retention-days: 7
+
+  open_pr:
+    needs: [update, validate]
+    if: needs.validate.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.update.outputs.head }}
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: validated-docsy-maintenance
+          path: .docsy/maintenance
+
+      - name: Open draft maintenance PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DOCSY_SOURCE_SHA: ${{ needs.update.outputs.head }}
+          DOCSY_TARGET_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          node scripts/maintenance/publish.mjs

@@ -52,9 +52,16 @@ For a visual change, describe the branding and layout you want. The agent can ch
 
 ## Maintain docs after an API change
 
-When the OpenAPI document or SDK metadata changes, ask the agent to compare the old and new sources, find articles that mention the affected endpoints or symbols, and prepare updates. Docsy regenerates the reference pages from the configured input during the build.
+Enable `maintenance.enabled` in YAML to use the included GitHub workflow. When watched API or code sources change on the default branch, Docsy prepares an impact report and asks the agent to update affected articles, correct examples, and explain migrations. A fresh job validates the patch and production build before a separate job opens a draft PR.
 
-Ask the agent to explain breaking changes, update relevant examples, and identify missing information using the API source and repository code as evidence. Then review the diff and rendered documentation before publishing.
+You can also inspect or run the loop locally:
+
+```bash
+npm run maintain -- plan --base HEAD~1
+npm run maintain -- run --base HEAD~1
+```
+
+The **Documentation maintenance** guide covers YAML settings, the GitHub API secret, allowed edit paths, draft PRs, and source comparison boundaries. Docsy regenerates the reference pages from the configured ingestion input during the build.
 
 ## Validate and review
 

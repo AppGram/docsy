@@ -261,6 +261,7 @@ const copyTemplate = (target) => {
     'Dockerfile',
     'compose.yaml',
     'LICENSE',
+    '.github/workflows/docsy-maintenance.yml',
     '.dockerignore',
     '.gitignore',
   ];
@@ -298,6 +299,7 @@ const makePackageJson = (target, projectName) => {
       build: 'node scripts/docsy.mjs build',
       stage: 'node scripts/stage-deployment.mjs',
       preview: 'node scripts/docsy.mjs preview',
+      maintain: 'node scripts/docsy.mjs maintain',
     },
     dependencies: template.dependencies,
     devDependencies: template.devDependencies,
@@ -385,6 +387,12 @@ const makeConfig = ({ projectName, description, basePath, accessMode, apiBase, c
           eyebrow: 'GUIDE',
         },
       ],
+    },
+    maintenance: {
+      enabled: false,
+      watch: ['sources/**', 'src/**'],
+      docs: ['content/**/*.md', 'README.md'],
+      breakingChangesFile: 'content/maintenance/breaking-changes.md',
     },
     access: {
       mode: accessMode,
@@ -477,6 +485,15 @@ npm run validate
 npm run build
 npm run preview
 \`\`\`
+
+## Automatic documentation maintenance
+
+The generated \`.github/workflows/docsy-maintenance.yml\` workflow can propose
+documentation updates after source changes. Enable \`maintenance.enabled\` in YAML,
+add the \`OPENAI_API_KEY\` Actions secret, and allow Actions to create pull requests.
+Source comparisons, scoped documentation edits, validation, and a draft PR run in
+separate stages. Local inspection: \`npm run maintain -- plan --base HEAD~1\`.
+Local agent run: \`npm run maintain -- run --base HEAD~1\` (authenticated Codex CLI).
 
 The generated access mode is \`${accessMode}\`. In locked mode, put Docsy behind a trusted identity proxy that removes client-supplied identity headers before setting \`x-docsy-tiers\`.
 `;

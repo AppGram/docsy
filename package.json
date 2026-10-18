@@ -1,6 +1,6 @@
 {
   "name": "@appgram/docsy",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "private": false,
   "description": "Documentation built for humans and coding agents. Self-host Markdown, OpenAPI, and SDK docs with editable Astro source.",
   "license": "Elastic-2.0",
@@ -19,6 +19,7 @@
   },
   "files": [
     "LICENSE",
+    ".github/workflows/docsy-maintenance.yml",
     "content",
     "src",
     "public",
@@ -40,7 +41,10 @@
     "build": "node scripts/docsy.mjs build",
     "stage": "node scripts/stage-deployment.mjs",
     "preview": "node scripts/docsy.mjs preview",
-    "check": "node scripts/docsy.mjs validate"
+    "check": "node scripts/docsy.mjs validate",
+    "maintain": "node scripts/docsy.mjs maintain",
+    "test": "node --test tests/maintenance.test.mjs",
+    "test:maintenance:live": "node tests/maintenance.live.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^6.3.11",

@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "properties": {
+    "summary": { "type": "string" },
+    "breakingChanges": { "type": "array", "items": { "type": "string" } },
+    "staleExamples": { "type": "array", "items": { "type": "string" } },
+    "unresolved": { "type": "array", "items": { "type": "string" } }
+  },
+  "required": ["summary", "breakingChanges", "staleExamples", "unresolved"],
+  "additionalProperties": false
+}

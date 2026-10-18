@@ -37,6 +37,7 @@ Usage:
   docsy validate
   docsy build
   docsy preview
+  docsy maintain <plan|run|verify> --base <git-ref>
 
 Commands:
   create    Generate an editable Docsy project from the reference UI
@@ -44,10 +45,14 @@ Commands:
   validate  Validate YAML and type-check the generated site
   build     Validate, build, and stage production output
   preview   Serve the staged static build or locked Node build
+  maintain  Detect documentation impact, run the coding agent, and validate a draft PR
 `);
 };
 
-if (command === 'create') {
+if (command === 'maintain') {
+  const { main } = await import('./maintenance.mjs');
+  await main(args).catch((error) => { console.error(error.message); process.exitCode = 1; });
+} else if (command === 'create') {
   process.argv.splice(2, 1);
   await import('./create-docsy.mjs');
 } else if (command === 'dev') {

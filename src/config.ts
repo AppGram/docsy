@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { load } from 'js-yaml';
 import { z } from 'zod';
+import { maintenanceSchema } from '../scripts/maintenance/config.mjs';
 
 // Astro bundles server modules into dist during static generation, so module
 // URLs no longer point at the project. Builds and dev both run from this root.
@@ -182,6 +183,7 @@ const configSchema = z.object({
     articles: z.array(articleSchema).default([]),
   }).default({}),
   access: accessSchema,
+  maintenance: maintenanceSchema,
   navigation: z.array(z.object({
     title: z.string().min(1),
     items: z.array(navItemSchema),

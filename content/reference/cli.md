@@ -11,6 +11,8 @@ The generated `package.json` exposes these scripts:
 | `npm run build` | Validate, build, and stage production output |
 | `npm run preview` | Serve the staged static site or standalone locked server |
 | `npm run create -- <directory>` | Generate another editable Docsy project |
+| `npm run maintain -- plan --base <ref>` | Inspect source changes and likely documentation impact |
+| `npm run maintain -- run --base <ref>` | Run the agent and validate a local documentation update |
 
 Arguments after the command are passed through to Astro where applicable.
 
@@ -78,4 +80,21 @@ Every command reads `docsy.config.yaml` by default. Set `DOCSY_CONFIG` to select
 ```bash
 DOCSY_CONFIG=docsy.preview.yaml npm run build
 ```
+
+## Maintain documentation
+
+```bash
+docsy maintain plan --base HEAD~1
+docsy maintain run --base HEAD~1
+docsy maintain run --base HEAD~1 --pr --target-branch main
+docsy maintain verify --base HEAD~1 --patch .docsy/maintenance/proposed.patch
+```
+
+`plan` compares committed revisions and writes an impact report and agent prompt under `.docsy/maintenance/`. It never calls a model. Use `--head <ref>` to select the comparison head; it defaults to `HEAD`.
+
+`run` requires a clean checkout, enabled YAML maintenance settings, and an authenticated Codex CLI. It updates documentation and runs independent validation, leaving the diff for review. `--pr` additionally commits to a dedicated branch, pushes, and opens a draft with the GitHub CLI. The target defaults to the repository's default branch.
+
+`verify` applies an optional patch in a clean checkout, enforces editable Markdown and YAML boundaries, and validates the site. The GitHub workflow uses this command in a fresh job before PR publishing. Failed validation produces no validated patch.
+
+See **Documentation maintenance** for the YAML options, GitHub setup, and the distinction between structural API findings and agent review.
 

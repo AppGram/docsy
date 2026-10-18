@@ -50,6 +50,11 @@ content:
       title: Work with coding agents
       description: Read Markdown exports, guide your coding agent with project instructions, and validate documentation changes.
       eyebrow: WORKFLOW
+    - slug: tutorials/documentation-maintenance
+      source: content/tutorials/documentation-maintenance.md
+      title: Maintain documentation automatically
+      description: Turn API and code changes into validated draft PRs with updated articles, corrected examples, and migration notes.
+      eyebrow: WORKFLOW
     - slug: tutorials/yaml-configuration
       source: content/tutorials/yaml-configuration.md
       title: Configure Docsy with YAML
@@ -102,6 +107,11 @@ content:
       eyebrow: REFERENCE
 access:
   mode: open
+maintenance:
+  enabled: true
+  watch: [sources/**, src/**, scripts/**]
+  docs: [content/**/*.md, README.md]
+  breakingChangesFile: content/maintenance/breaking-changes.md
 navigation:
   - title: Introduction
     items:
@@ -111,6 +121,8 @@ navigation:
         href: /guides/getting-started
       - title: Coding agents
         href: /guides/tutorials/coding-agents
+      - title: Documentation maintenance
+        href: /guides/tutorials/documentation-maintenance
   - title: Content
     items:
       - title: YAML configuration
