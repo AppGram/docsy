@@ -1,0 +1,4 @@
+interface:
+  display_name: "Docsy by AppGram"
+  short_description: "Build and maintain Docsy documentation portals"
+  default_prompt: "Use $docsy to configure my documentation portal, add content and validate the production build."
