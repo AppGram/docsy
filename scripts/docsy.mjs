@@ -3,7 +3,7 @@
 import { existsSync, rmSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const projectRoot = process.cwd();
 const ownRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -49,6 +49,9 @@ Commands:
 `);
 };
 
+const loader = pathToFileURL(resolve(ownRoot, 'node_modules/tsx/dist/loader.mjs')).href;
+const validateContent = () => run(process.execPath, ['--import', loader, resolve(projectRoot, 'scripts/validate-content.ts')]);
+
 if (command === 'maintain') {
   const { main } = await import('./maintenance.mjs');
   await main(args).catch((error) => { console.error(error.message); process.exitCode = 1; });
@@ -58,13 +61,16 @@ if (command === 'maintain') {
 } else if (command === 'dev') {
   run(astroBinary(), ['dev', ...args]);
 } else if (command === 'validate' || command === 'check') {
+  validateContent();
   run(astroBinary(), ['check', ...args]);
 } else if (command === 'build') {
+  validateContent();
   for (const output of ['dist', 'release']) {
     rmSync(resolve(projectRoot, output), { recursive: true, force: true });
   }
   run(astroBinary(), ['check']);
   run(astroBinary(), ['build', ...args]);
+  run(process.execPath, ['--import', loader, resolve(projectRoot, 'scripts/check-output-links.ts')]);
   run(process.execPath, [resolve(projectRoot, 'scripts/stage-deployment.mjs')]);
 } else if (command === 'preview' || command === 'start') {
   run(process.execPath, [resolve(projectRoot, 'scripts/start.mjs'), ...args]);

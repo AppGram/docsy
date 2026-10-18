@@ -1,0 +1,38 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Overview from '../../../../components/docs/Overview.astro';
+import ArticlePage from '../../../../components/docs/ArticlePage.astro';
+import ArticleToc from '../../../../components/docs/ArticleToc.astro';
+import APIReferenceView from '../../../../components/docs/APIReferenceView.astro';
+import SDKReferenceView from '../../../../components/docs/SDKReferenceView.astro';
+import { allContexts, docsPath, docsyConfig, isDefaultContext, isServer } from '../../../../config';
+import { findArticle, getArticleSources, loadArticle } from '../../../../lib/article-loader';
+import { getSdkSources } from '../../../../lib/sdk-loaders';
+import { API_SECTIONS, filterEndpoints, loadSwagger } from '../../../../lib/swagger-loader';
+export const prerender = !isServer;
+export function getStaticPaths() {
+  return allContexts.filter((context) => !isDefaultContext(context)).flatMap((context) => [
+    undefined,
+    ...getArticleSources(context).map((article) => `guides/${article.slug}`),
+    ...API_SECTIONS.map((section) => `api/${section.section}`),
+    ...getSdkSources().map((sdk) => sdk.slug),
+  ].map((doc) => ({ params: { ...context, doc, version: context.version, locale: context.locale } })));
+}
+const context = allContexts.find((item) => item.version === Astro.params.version && item.locale === Astro.params.locale);
+if (!context) return new Response('Not found', { status: 404 });
+const path = `/${Astro.params.doc ?? ''}`;
+if (isDefaultContext(context)) return Astro.redirect(docsPath(path), 301);
+const source = path.startsWith('/guides/') ? findArticle(path.slice(8), context) : undefined;
+const article = source ? await loadArticle(source) : undefined;
+const section = path.startsWith('/api/') ? API_SECTIONS.find((item) => item.section === path.slice(5)) : undefined;
+const sdk = getSdkSources().find((item) => `/${item.slug}` === path);
+if (path !== '/' && !article && !section && !sdk) return new Response('Not found', { status: 404 });
+const spec = section ? await loadSwagger(context.version) : null;
+---
+{path === '/' && <DocsLayout context={context} title={docsyConfig.site.title} description={docsyConfig.site.description} eyebrow={docsyConfig.home.eyebrow}><Overview context={context} /></DocsLayout>}
+{article && <DocsLayout context={context} title={`${article.config.title} — ${docsyConfig.site.name}`} description={article.config.description} eyebrow={article.config.eyebrow} type="article" wide={article.headings.some((heading) => heading.depth === 2 || heading.depth === 3)}>
+  <ArticlePage article={article} context={context} />
+  {article.headings.some((heading) => heading.depth === 2 || heading.depth === 3) && <ArticleToc slot="toc" headings={article.headings} context={context} />}
+</DocsLayout>}
+{section && <APIReferenceView context={context} section={section} endpoints={filterEndpoints(spec, section)} apiVersion={spec?.info?.version} />}
+{sdk && <SDKReferenceView context={context} source={sdk} />}

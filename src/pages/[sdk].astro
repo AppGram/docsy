@@ -1,38 +1,10 @@
 ---
-import DocsLayout from '../layouts/DocsLayout.astro';
-import SDKPageBody from '../components/docs/SDKPageBody.astro';
-import SDKToc from '../components/docs/SDKToc.astro';
-import { assetPath, docsPath, docsyConfig, type SdkSourceConfig } from '../config';
-import { getSdkSources, loadSdk, type SDKDoc } from '../lib/sdk-loaders';
-
-export const prerender = docsyConfig.access.mode !== 'locked';
-
-export function getStaticPaths() {
-  return getSdkSources().map((source) => ({
-    params: { sdk: source.slug },
-    props: { source, doc: loadSdk(source) },
-  }));
-}
-
-const source = (Astro.props as { source?: SdkSourceConfig }).source
-  ?? getSdkSources().find((candidate) => candidate.slug === Astro.params.sdk);
+import SDKReferenceView from '../components/docs/SDKReferenceView.astro';
+import { docsPath, isServer } from '../config';
+import { getSdkSources } from '../lib/sdk-loaders';
+export const prerender = !isServer;
+export function getStaticPaths() { return getSdkSources().map((source) => ({ params: { sdk: source.slug } })); }
+const source = getSdkSources().find((item) => item.slug === Astro.params.sdk);
 if (!source) return Astro.redirect(docsPath(), 302);
-const doc = (Astro.props as { doc?: SDKDoc }).doc ?? loadSdk(source);
-const installLanguage = source.adapter === 'swift-symbols'
-  ? 'swift'
-  : source.adapter === 'typedoc' ? 'html' : 'bash';
 ---
-
-<DocsLayout
-  title={`${doc.name} — ${docsyConfig.site.name} Docs`}
-  description={doc.overview}
-  eyebrow={doc.name.toUpperCase()}
-  wide
->
-  <SDKPageBody
-    doc={doc}
-    icon={source.icon ? assetPath(source.icon) : undefined}
-    installLanguage={installLanguage}
-  />
-  <SDKToc slot="toc" doc={doc} />
-</DocsLayout>
+<SDKReferenceView source={source} />

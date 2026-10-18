@@ -1,19 +1,31 @@
 ---
 import type { ArticleDoc } from '../../lib/article-loader';
+import { articleUrl, getArticleSources } from '../../lib/article-loader';
+import { defaultContext, type DocsContext } from '../../config';
+import { message } from '../../lib/messages';
 
 interface Props {
   article: ArticleDoc;
+  context?: DocsContext;
 }
 
-const { article } = Astro.props;
+const { article, context = defaultContext } = Astro.props;
+const articles = getArticleSources(context);
+const index = articles.findIndex((item) => item.slug === article.config.slug);
+const previous = articles[index - 1]; const next = articles[index + 1];
 ---
 
 <article class="article-page">
-  <header class="article-header">
+  {(article.config.locale ?? defaultContext.locale) !== context.locale && <div class="docs-context-notice">{message(context, 'fallback')}</div>}
+  <header class="article-header" lang={article.config.locale ?? defaultContext.locale}>
     <h1>{article.config.title}</h1>
     {article.config.description && <p class="article-description">{article.config.description}</p>}
   </header>
-  <div class="article-body" set:html={article.html} />
+  <div class="article-body" lang={article.config.locale ?? defaultContext.locale} set:html={article.html} />
+  <nav class="article-reader-nav" aria-label="Article navigation">
+    {previous ? <a href={articleUrl(previous, context)}>← {message(context, 'previous')}: {previous.title}</a> : <span />}
+    {next && <a href={articleUrl(next, context)}>{message(context, 'next')}: {next.title} →</a>}
+  </nav>
 </article>
 
 <style>
@@ -83,7 +95,7 @@ const { article } = Astro.props;
     padding: 11px 12px;
     border-bottom: 1px solid var(--line);
     color: var(--muted);
-    text-align: left;
+    text-align: start;
     vertical-align: top;
   }
 

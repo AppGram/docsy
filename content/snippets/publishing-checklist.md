@@ -1,0 +1,3 @@
+- Validate the configured sources, internal links, and heading anchors.
+- Build the exact version and language combinations you intend to publish.
+- Review examples and permission rules before deploying.

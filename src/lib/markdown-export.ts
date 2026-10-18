@@ -1,8 +1,10 @@
 import type { SDKDoc, NormalizedItem, NormalizedCategory } from './sdk-loaders';
 import { getSdkSources, loadSdk } from './sdk-loaders';
-import { docsPath, docsyConfig, type ApiSectionConfig } from '../config';
+import { docsPath, docsyConfig, parseDocsPath, type ApiSectionConfig, type DocsContext } from '../config';
 import { loadSwagger, filterEndpoints, API_SECTIONS, type NormalizedEndpoint } from './swagger-loader';
-import { articleMarkdownExport, articleRoute, getArticleSources } from './article-loader';
+import { articleMarkdownExport, findArticle } from './article-loader';
+import { getDocsNav } from '../data/docs-nav';
+import { canReadUrl } from './agent-access';
 
 const codeFence = (lang: string, body: string) => `\`\`\`${lang}\n${body}\n\`\`\``;
 
@@ -82,7 +84,7 @@ const endpointToMarkdown = (e: NormalizedEndpoint): string => {
   out.push(`### ${e.summary || e.path}`);
   if (e.description) out.push(e.description);
   out.push(`**\`${e.method.toUpperCase()}\`** \`${e.path}\``);
-  if (e.needsAuth) out.push('_Requires_ `Authorization: Bearer <token>`');
+  if (e.needsAuth) out.push(`**Authentication:** ${e.authDescription}`);
   const table = (title: string, rows: { name: string; type: string; required?: boolean; description?: string }[]) => {
     if (!rows.length) return;
     out.push(`**${title}**`);
@@ -92,9 +94,10 @@ const endpointToMarkdown = (e: NormalizedEndpoint): string => {
       out.push(`| \`${p.name}\` | \`${p.type}\` | ${p.required ? '✓' : ''} | ${p.description ?? ''} |`);
     }
   };
-  table('Path parameters', e.pathParams.map((p) => ({ name: p.name, type: p.type || p.schema?.type || 'string', required: p.required, description: p.description })));
-  table('Query parameters', e.queryParams.map((p) => ({ name: p.name, type: p.type || p.schema?.type || 'string', required: p.required, description: p.description })));
-  table('Header parameters', e.headerParams.map((p) => ({ name: p.name, type: p.type || p.schema?.type || 'string', required: p.required, description: p.description })));
+  const type = (p: (typeof e.pathParams)[number]) => p.type || (Array.isArray(p.schema?.type) ? p.schema.type.join(' | ') : p.schema?.type) || 'string';
+  table('Path parameters', e.pathParams.map((p) => ({ name: p.name, type: type(p), required: p.required, description: p.description })));
+  table('Query parameters', e.queryParams.map((p) => ({ name: p.name, type: type(p), required: p.required, description: p.description })));
+  table('Header parameters', e.headerParams.map((p) => ({ name: p.name, type: type(p), required: p.required, description: p.description })));
   table('Body', e.bodyProperties);
   out.push('**Request**');
   out.push(codeFence('bash', e.curl));
@@ -105,8 +108,8 @@ const endpointToMarkdown = (e: NormalizedEndpoint): string => {
   return out.join('\n\n');
 };
 
-const apiSectionToMarkdown = async (section: ApiSectionConfig, sourceUrl: string): Promise<string> => {
-  const spec = await loadSwagger();
+const apiSectionToMarkdown = async (section: ApiSectionConfig, sourceUrl: string, context: DocsContext): Promise<string> => {
+  const spec = await loadSwagger(context.version);
   const endpoints = filterEndpoints(spec, section);
   const version = spec?.info?.version?.replace(/^v/i, '');
   const header = [
@@ -115,35 +118,33 @@ const apiSectionToMarkdown = async (section: ApiSectionConfig, sourceUrl: string
     `> Source: ${sourceUrl}  \n> Endpoints: ${endpoints.length}${version ? `  \n> API version: v${version}` : ''}`,
   ].join('\n\n');
   const guide = docsyConfig.ingestion.openapi.guide;
-  const guideNote = guide ? `\n\nSee [${guide.label}](${docsPath(guide.href)}) for the base setup.` : '';
+  const guideNote = guide ? `\n\nSee [${guide.label}](${docsPath(guide.href, context)}) for the base setup.` : '';
   const body = endpoints.map(endpointToMarkdown).join('\n\n---\n\n');
   return `${header}${guideNote}\n\n${body}\n`;
 };
 
-const STATIC_PAGES: Record<string, string> = {
-  '/': `# ${docsyConfig.site.name} Documentation\n\n${docsyConfig.site.description}\n\n## Sections\n\n${docsyConfig.navigation.flatMap((section) => section.items).map((item) => `- ${item.title} — [${docsPath(item.href)}](${docsPath(item.href)}?format=md)`).join('\n')}\n`,
-};
+export const generateMarkdown = async (path: string, origin: string, tiers: string[] = []): Promise<string | null> => {
+  const parsed = parseDocsPath(path);
+  if (!parsed) return null;
+  const { path: relative, context } = parsed;
+  const source = `${origin}${docsPath(relative, context)}`;
 
-export const generateMarkdown = async (path: string, origin: string): Promise<string | null> => {
-  const clean = path.replace(/\/+$/, '') || '/';
-  const base = docsPath();
-  const relative = base !== '/' && clean.startsWith(base)
-    ? clean.slice(base.length) || '/'
-    : clean;
-  const source = `${origin}${docsPath(relative)}`;
+  if (relative === '/') {
+    const home = { ...docsyConfig.home, ...docsyConfig.home.translations[context.locale] };
+    const prefix = `# ${home.title}\n\n${home.description}\n`;
+    return `${prefix}\n## Sections\n\n${getDocsNav(context).flatMap((group) => group.items).filter((item) => canReadUrl(item.href, tiers)).map((item) => `- [${item.title}](${item.href})`).join('\n')}\n`;
+  }
 
-  if (STATIC_PAGES[relative]) return STATIC_PAGES[relative];
-
-  const article = getArticleSources().find((candidate) => articleRoute(candidate) === relative);
+  const article = relative.startsWith('/guides/') ? findArticle(relative.slice(8), context) : undefined;
   if (article) return articleMarkdownExport(article);
 
   const sdkSource = getSdkSources().find((sdk) => `/${sdk.slug}` === relative);
-  if (sdkSource) return sdkToMarkdown(loadSdk(sdkSource), source);
+  if (sdkSource) return sdkToMarkdown(loadSdk({ ...sdkSource, source: sdkSource.versions[context.version] ?? sdkSource.source }), source);
 
   const apiMatch = relative.match(/^\/api\/([a-z-]+)$/);
   if (apiMatch) {
     const section = API_SECTIONS.find((s) => s.section === apiMatch[1]);
-    if (section) return apiSectionToMarkdown(section, source);
+    if (section) return apiSectionToMarkdown(section, source, context);
   }
 
   return null;

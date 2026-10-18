@@ -61,8 +61,8 @@ const readJson = <T,>(source: string): T | null => {
   try {
     const raw = readFileSync(resolveSource(source), 'utf-8');
     return JSON.parse(raw) as T;
-  } catch {
-    return null;
+  } catch (error) {
+    throw new Error(`Could not ingest SDK source ${source}: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
 
@@ -408,6 +408,9 @@ export const SDK_ADAPTERS: Record<SdkSourceConfig['adapter'], SdkAdapter> = {
 export const loadSdk = (config: SdkSourceConfig): SDKDoc => {
   const adapter = SDK_ADAPTERS[config.adapter];
   if (!adapter) throw new Error(`Unknown SDK ingestion adapter: ${config.adapter}`);
+  const data = readJson<any>(config.source);
+  const valid = config.adapter === 'dartdoc' ? Array.isArray(data) : config.adapter === 'typedoc' ? Array.isArray(data?.children) : Array.isArray(data?.modules);
+  if (!valid) throw new Error(`SDK source ${config.source} does not match the ${config.adapter} adapter shape.`);
   return adapter(config.source, {
     name: config.name,
     language: config.language,

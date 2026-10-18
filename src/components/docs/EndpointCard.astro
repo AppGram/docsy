@@ -1,16 +1,18 @@
 ---
 import CodeBlock from './CodeBlock.astro';
-import { docsyConfig } from '../../config';
+import { defaultContext, type DocsContext } from '../../config';
+import { message } from '../../lib/messages';
 import { API_BASE_URL, type NormalizedEndpoint, type SwaggerParam } from '../../lib/swagger-loader';
 
 interface Props {
   endpoint: NormalizedEndpoint;
+  context?: DocsContext;
 }
 
-const { endpoint } = Astro.props;
+const { endpoint, context = defaultContext } = Astro.props;
 const method = endpoint.method.toUpperCase();
 
-const paramType = (p: SwaggerParam) => p.type || p.schema?.type || 'string';
+const paramType = (p: SwaggerParam) => p.type || (Array.isArray(p.schema?.type) ? p.schema.type.join(' | ') : p.schema?.type) || 'string';
 
 const renderPath = (path: string) => {
   return path.split(/(\{[^}]+\})/g).filter(Boolean).map((seg) => {
@@ -102,16 +104,14 @@ const copyId = `ep-copy-${endpoint.id}`;
     <div class="ep-doc">
       {endpoint.needsAuth && (
         <section class="ep-section">
-          <h3>Authorizations</h3>
+          <h3>{message(context, 'authorization')}</h3>
           <div class="ep-params">
             <div class="ep-param">
               <div class="ep-param-head">
-                <code>Authorization</code>
-                <span class="ep-param-type">string</span>
-                <span class="ep-param-loc">header</span>
+                <code>{endpoint.authDescription}</code>
                 <span class="ep-param-req">required</span>
               </div>
-              <p>Bearer token for {docsyConfig.site.name}. Keep it in your server environment and never expose it in client code.</p>
+              <p>Use the authentication scheme defined by this API. Request examples show its credential location; replace placeholders with your own credentials.</p>
             </div>
           </div>
         </section>
@@ -119,7 +119,7 @@ const copyId = `ep-copy-${endpoint.id}`;
 
       {endpoint.pathParams.length > 0 && (
         <section class="ep-section">
-          <h3>Path parameters</h3>
+          <h3>{message(context, 'pathParameters')}</h3>
           <div class="ep-params">
             {endpoint.pathParams.map((p) => (
               <div class="ep-param">
@@ -138,7 +138,7 @@ const copyId = `ep-copy-${endpoint.id}`;
 
       {endpoint.queryParams.length > 0 && (
         <section class="ep-section">
-          <h3>Query parameters</h3>
+          <h3>{message(context, 'queryParameters')}</h3>
           <div class="ep-params">
             {endpoint.queryParams.map((p) => (
               <div class="ep-param">
@@ -157,7 +157,7 @@ const copyId = `ep-copy-${endpoint.id}`;
 
       {endpoint.headerParams.length > 0 && (
         <section class="ep-section">
-          <h3>Header parameters</h3>
+          <h3>{message(context, 'headerParameters')}</h3>
           <div class="ep-params">
             {endpoint.headerParams.map((p) => (
               <div class="ep-param">

@@ -13,7 +13,7 @@ const interpolateEnv = (value) => value.replace(/\$\{([A-Z0-9_]+)(?::-([^}]*))?\
 const raw = load(interpolateEnv(readFileSync(configPath, 'utf8'))) || {};
 const base = raw?.site?.basePath || '/';
 const site = raw?.site?.origin;
-const locked = raw?.access?.mode === 'locked';
+const locked = raw?.access?.mode === 'locked' || raw?.agent?.query === true;
 
 export default defineConfig({
   base,

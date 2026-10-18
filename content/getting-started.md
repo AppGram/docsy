@@ -64,7 +64,7 @@ npm run validate
 npm run build
 ```
 
-Open mode produces a static Astro build. Locked mode produces a standalone Node server so authorization can run for every request.
+Use Node 22.22 or newer. Open mode with `agent.query: false` produces a static Astro build. Locked mode or `agent.query: true` produces a standalone Node server so authorization or live queries can run for every request.
 
 ## Choose the next guide
 

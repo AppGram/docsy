@@ -1,0 +1,27 @@
+import type { APIRoute } from 'astro';
+import { allContexts, defaultContext, docsPath, docsyConfig } from '../../config';
+import { buildCorpus } from '../../lib/corpus';
+import { searchRecords } from '../../lib/search';
+import { canReadUrl, jsonResponse } from '../../lib/agent-access';
+export const prerender = !docsyConfig.agent.query && docsyConfig.access.mode !== 'locked';
+const windows = new Map<string, { time: number; count: number }>();
+export const GET: APIRoute = async (context) => {
+  if (!docsyConfig.agent.enabled) return jsonResponse({ error: 'agent_disabled' }, 404);
+  if (!docsyConfig.agent.query) return jsonResponse({ schemaVersion: 1, mode: 'static', queryAvailable: false, indexUrl: docsPath('/agent/index.json'), message: 'Static hosting cannot execute queries. Fetch the index or enable agent.query with the Node server.' });
+  const { url, locals } = context;
+  const query = url.searchParams.get('q')?.trim() ?? '';
+  const version = url.searchParams.get('version') ?? defaultContext.version;
+  const locale = url.searchParams.get('locale') ?? defaultContext.locale;
+  const type = url.searchParams.get('type') || undefined;
+  const limit = Number(url.searchParams.get('limit') ?? docsyConfig.agent.maxResults);
+  if (!query || query.length > docsyConfig.agent.maxQueryLength || !Number.isInteger(limit) || limit < 1 || limit > docsyConfig.agent.maxResults || !allContexts.some((c) => c.version === version && c.locale === locale) || (type && !['page', 'api', 'sdk'].includes(type))) return jsonResponse({ error: 'invalid_query', message: 'Supply q, a configured version/locale, a supported type, and a limit within agent.maxResults.' }, 400);
+  const now = Date.now();
+  if (windows.size > 5000) for (const [key, window] of windows) if (now - window.time > 60_000) windows.delete(key);
+  const address = context.clientAddress;
+  if (windows.size >= 5000 && !windows.has(address)) return jsonResponse({ error: 'server_busy' }, 429);
+  const window = windows.get(address);
+  if (window && now - window.time < 60_000 && window.count >= 60) return new Response(JSON.stringify({ error: 'rate_limited' }), { status: 429, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', 'Retry-After': '60' } });
+  windows.set(address, window && now - window.time < 60_000 ? { ...window, count: window.count + 1 } : { time: now, count: 1 });
+  const matches = searchRecords((await buildCorpus()).filter((entry) => canReadUrl(entry.url, locals.docsyAccess?.tiers ?? [])), query, { version, locale, type, limit });
+  return jsonResponse({ schemaVersion: 1, query, version, locale, count: matches.length, results: matches.map(({ body: _body, ...entry }) => ({ ...entry, url: new URL(entry.url, docsyConfig.site.origin).href, markdownUrl: new URL(entry.markdownUrl, docsyConfig.site.origin).href, jsonUrl: new URL(entry.jsonUrl, docsyConfig.site.origin).href })) });
+};

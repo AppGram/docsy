@@ -29,6 +29,17 @@ eyebrow:
   size: 14
 theme:
   mode: light
+search:
+  enabled: true
+  maxResults: 30
+agent:
+  enabled: true
+  query: false # Enable only when deploying the standalone Node server, not GitHub Pages.
+  maxResults: 10
+  maxQueryLength: 500
+validation:
+  links: true
+  api: true
 home:
   eyebrow: DOCSY DOCUMENTATION
   articleLayout: grid
@@ -43,6 +54,8 @@ home:
   sdkHeading: Documentation
   sdkDescription: Guides and reference for building documentation with your team and coding agents.
 content:
+  snippets:
+    publishing: content/snippets/publishing-checklist.md
   articles:
     - slug: getting-started
       source: content/getting-started.md
@@ -74,6 +87,26 @@ content:
       title: Ingest an OpenAPI document
       description: Turn a local or remote OpenAPI source into grouped, searchable API reference pages.
       eyebrow: TUTORIAL
+    - slug: tutorials/rich-articles
+      source: content/tutorials/rich-articles.md
+      title: Rich article components
+      description: Write callouts, steps, synchronized tabs, accordions, code groups, and reusable snippets in Markdown.
+      eyebrow: AUTHORING
+    - slug: tutorials/search-and-agents
+      source: content/tutorials/search-and-agents.md
+      title: Full-text search and agent JSON API
+      description: Search complete content and retrieve permission-aware JSON or Markdown for coding agents.
+      eyebrow: AGENTS
+    - slug: tutorials/versions-and-locales
+      source: content/tutorials/versions-and-locales.md
+      title: Versions and localization
+      description: Configure versioned articles, translated navigation, language fallbacks, and version-specific ingestion.
+      eyebrow: CONFIGURATION
+    - slug: tutorials/content-validation
+      source: content/tutorials/content-validation.md
+      title: Validate documentation content
+      description: Catch ingestion failures, invalid API examples, broken links, and invalid article components before publishing.
+      eyebrow: RELIABILITY
     - slug: ingestion/sdk-adapters
       source: content/ingestion/sdk-adapters.md
       title: Ingest SDK documentation
@@ -133,6 +166,14 @@ navigation:
         href: /guides/tutorials/yaml-configuration
       - title: Authored articles
         href: /guides/tutorials/authored-articles
+      - title: Rich article components
+        href: /guides/tutorials/rich-articles
+      - title: Versions and localization
+        href: /guides/tutorials/versions-and-locales
+      - title: Search and agent API
+        href: /guides/tutorials/search-and-agents
+      - title: Content validation
+        href: /guides/tutorials/content-validation
   - title: Ingestion
     items:
       - title: OpenAPI ingestion

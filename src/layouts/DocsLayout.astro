@@ -1,11 +1,17 @@
 ---
 import '../styles/docsy.css';
 import '../styles/docsy-dark.css';
-import { docsNav, isNavItemActive } from '../data/docs-nav';
+import '../styles/article-components.css';
+import { getDocsNav, isNavItemActive } from '../data/docs-nav';
+import ContextSwitcher from '../components/docs/ContextSwitcher.astro';
 import SEO from '../components/SEO.astro';
-import { assetPath, docsPath, docsyConfig } from '../config';
+import { assetPath, defaultContext, docsPath, docsyConfig, isDefaultContext, locales, parseDocsPath, type DocsContext } from '../config';
+import { findArticle } from '../lib/article-loader';
+import { documentKey, getDocuments } from '../lib/documents';
+import { message } from '../lib/messages';
 
 interface Props {
+  context?: DocsContext;
   title?: string;
   description?: string;
   eyebrow?: string;
@@ -22,6 +28,7 @@ interface Props {
 }
 
 const {
+  context = defaultContext,
   title = docsyConfig.site.title,
   description = docsyConfig.site.description,
   eyebrow,
@@ -36,6 +43,10 @@ const {
   noindex,
   structuredData,
 } = Astro.props;
+const docsNav = getDocsNav(context);
+const relativePath = parseDocsPath(Astro.url.pathname)?.path ?? '/';
+const exportKey = documentKey(docsPath(relativePath, context));
+const currentDocument = getDocuments().find((document) => document.path === docsPath(relativePath, context));
 
 const pathname = Astro.url.pathname.replace(/\/$/, '') || docsPath();
 const eyebrowIcon = docsyConfig.eyebrow.icon;
@@ -79,10 +90,19 @@ const themeStyle = [
 ---
 
 <!doctype html>
-<html lang={docsyConfig.site.language} data-theme={docsyConfig.theme.mode} style={themeStyle}>
+<html lang={context.locale} dir={locales.find((locale) => locale.code === context.locale)?.dir ?? 'ltr'} data-theme={docsyConfig.theme.mode} style={themeStyle}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {currentDocument && <link rel="alternate" type="text/markdown" href={docsPath(`/format-md/${exportKey}`)} />}
+    {currentDocument && docsyConfig.agent.enabled && <link rel="alternate" type="application/json" href={docsPath(`/agent/pages/${exportKey}.json`)} />}
+    {currentDocument && locales.filter((locale) => !relativePath.startsWith('/guides/') || findArticle(relativePath.slice(8), { ...context, locale: locale.code })).map((locale) => <link rel="alternate" hreflang={locale.code} href={new URL(docsPath(relativePath, { ...context, locale: locale.code }), docsyConfig.site.origin).href} />)}
+    <script>
+      import { initRichComponents } from '../lib/rich-components-client';
+      import { initSearch } from '../lib/search-client';
+      initRichComponents();
+      initSearch();
+    </script>
     <script is:inline>
       try {
         const savedTheme = localStorage.getItem('docsy-theme');
@@ -111,13 +131,17 @@ const themeStyle = [
     <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/highlight.min.js" is:inline></script>
   </head>
   <body
+    data-docs-version={context.version}
+    data-docs-locale={context.locale}
+    data-search-enabled={String(docsyConfig.search.enabled)}
+    data-search-limit={docsyConfig.search.maxResults}
     data-docs-base={docsPath()}
     data-search-index={docsPath('/search-index.json')}
     data-markdown-base={docsPath('/format-md')}
   >
     <header class="docs-topbar">
       <div class="docs-topbar-inner">
-        <a class="docs-brand" href={docsyConfig.site.homeUrl} aria-label={`${docsyConfig.site.name} home`}>
+        <a class="docs-brand" href={isDefaultContext(context) ? docsyConfig.site.homeUrl : docsPath('/', context)} aria-label={`${docsyConfig.site.name} home`}>
           <img class="docs-brand-logo" src={assetPath(docsyConfig.site.logo)} alt="" width="26" height="26" />
           {docsyConfig.site.logoDark && (
             <img class="docs-brand-logo docs-brand-logo-dark" src={assetPath(docsyConfig.site.logoDark)} alt="" width="26" height="26" />
@@ -129,13 +153,14 @@ const themeStyle = [
           type="button"
           class="docs-search-trigger"
           id="docs-search-trigger"
-          aria-label={docsyConfig.header.searchLabel}
+          hidden={!docsyConfig.search.enabled}
+          aria-label={message(context, 'searchLabel', docsyConfig.header.searchLabel)}
         >
           <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
             <circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.4" />
             <path d="M11 11l3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
           </svg>
-          <span>{docsyConfig.header.searchLabel}</span>
+          <span>{message(context, 'searchLabel', docsyConfig.header.searchLabel)}</span>
           <kbd>&#8984;K</kbd>
         </button>
 
@@ -156,10 +181,10 @@ const themeStyle = [
             </svg>
           </button>
 
-          <div class="docs-llm" id="docs-llm">
+          <div class="docs-llm" id="docs-llm" hidden={!currentDocument}>
             <button type="button" class="docs-llm-trigger" id="docs-llm-trigger" aria-haspopup="dialog" aria-expanded="false">
               <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M2 3.5A1.5 1.5 0 0 1 3.5 2h9A1.5 1.5 0 0 1 14 3.5V10a1.5 1.5 0 0 1-1.5 1.5H8l-3 2.5v-2.5H3.5A1.5 1.5 0 0 1 2 10z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" /></svg>
-              {docsyConfig.header.llmLabel}
+              {message(context, 'llmLabel', docsyConfig.header.llmLabel)}
             </button>
 
             <div class="docs-llm-panel" id="docs-llm-panel" role="dialog" aria-label="LLM-friendly documentation" hidden>
@@ -257,6 +282,7 @@ const themeStyle = [
       </aside>
 
       <main class="docs-content">
+        {currentDocument && <ContextSwitcher context={context} />}
         {eyebrow && (
           <p class="eyebrow docs-eyebrow">
             {eyebrowIcon === 'triangle' ? (
@@ -299,17 +325,17 @@ const themeStyle = [
           <input
             type="search"
             id="docs-search-field"
-            placeholder={docsyConfig.header.searchPlaceholder}
+            placeholder={message(context, 'searchPlaceholder', docsyConfig.header.searchPlaceholder)}
             autocomplete="off"
             spellcheck="false"
           />
           <kbd>ESC</kbd>
         </div>
-        <div class="docs-search-results" id="docs-search-results" data-empty-hint="Start typing to search."></div>
+        <div class="docs-search-results" id="docs-search-results" data-empty-hint={message(context, 'searchHint')} data-loading={message(context, 'searchLoading')} data-empty={message(context, 'searchEmpty')} data-page-label={message(context, 'page')}></div>
         <div class="docs-search-foot">
-          <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd> to navigate</span>
-          <span><kbd>&crarr;</kbd> to select</span>
-          <span><kbd>ESC</kbd> to close</span>
+          <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd> {message(context, 'searchNavigate')}</span>
+          <span><kbd>&crarr;</kbd> {message(context, 'searchSelect')}</span>
+          <span><kbd>ESC</kbd> {message(context, 'searchClose')}</span>
         </div>
       </div>
     </div>
@@ -478,147 +504,6 @@ const themeStyle = [
         });
       })();
 
-      // Search (cmd+K)
-      (function initDocsSearch() {
-        const modal = document.getElementById('docs-search-modal');
-        const scrim = document.getElementById('docs-search-scrim');
-        const field = document.getElementById('docs-search-field');
-        const results = document.getElementById('docs-search-results');
-        const trigger = document.getElementById('docs-search-trigger');
-        if (!modal || !scrim || !field || !results || !trigger) return;
-
-        let index = null;
-        let indexPromise = null;
-        let activeIndex = 0;
-
-        const loadIndex = () => {
-          if (index) return Promise.resolve(index);
-          if (indexPromise) return indexPromise;
-          indexPromise = fetch(document.body.dataset.searchIndex || '/search-index.json')
-            .then((r) => r.ok ? r.json() : null)
-            .then((data) => {
-              index = data?.entries || [];
-              return index;
-            })
-            .catch(() => (index = []));
-          return indexPromise;
-        };
-
-        const escapeHtml = (str) =>
-          String(str)
-            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-
-        const kindClass = (entry) => {
-          if (entry.type === 'api') return 'is-api';
-          if (entry.type === 'sdk') return 'is-sdk';
-          return 'is-page';
-        };
-
-        const render = (query) => {
-          if (!index) {
-            results.innerHTML = '<p class="docs-search-hint">Loading index…</p>';
-            return;
-          }
-          const q = query.trim().toLowerCase();
-          if (!q) {
-            results.innerHTML = `<p class="docs-search-hint">${results.dataset.emptyHint || 'Start typing to search.'}</p>`;
-            return;
-          }
-          const scored = [];
-          for (const entry of index) {
-            const title = entry.title.toLowerCase();
-            const group = entry.group.toLowerCase();
-            const path = entry.path ? entry.path.toLowerCase() : '';
-            const summary = entry.summary ? entry.summary.toLowerCase() : '';
-            let score = 0;
-            if (title === q) score += 100;
-            else if (title.startsWith(q)) score += 60;
-            else if (title.includes(q)) score += 30;
-            if (path.includes(q)) score += 25;
-            if (group.includes(q)) score += 10;
-            if (summary.includes(q)) score += 5;
-            if (score > 0) scored.push({ entry, score });
-          }
-          scored.sort((a, b) => b.score - a.score);
-          const hits = scored.slice(0, 30);
-          activeIndex = 0;
-          if (hits.length === 0) {
-            results.innerHTML = `<p class="docs-search-hint">No results for &ldquo;${escapeHtml(query)}&rdquo;</p>`;
-            return;
-          }
-          results.innerHTML = hits.map(({ entry }, i) => {
-            const badge = entry.type === 'api'
-              ? `<span class="docs-search-method is-${(entry.method || 'get').toLowerCase()}">${escapeHtml(entry.method || '')}</span>`
-              : `<span class="docs-search-badge ${kindClass(entry)}">${entry.type === 'sdk' ? escapeHtml(entry.kind || 'sdk') : 'Page'}</span>`;
-            const subtitle = entry.type === 'api'
-              ? `<span class="docs-search-sub"><span class="docs-search-path">${escapeHtml(entry.path || '')}</span> · ${escapeHtml(entry.group)}</span>`
-              : `<span class="docs-search-sub">${escapeHtml(entry.group)}</span>`;
-            return `
-              <a class="docs-search-hit ${i === 0 ? 'is-active' : ''}" href="${escapeHtml(entry.url)}" data-idx="${i}">
-                <div class="docs-search-hit-main">
-                  ${badge}
-                  <span class="docs-search-hit-title">${escapeHtml(entry.title)}</span>
-                </div>
-                ${subtitle}
-              </a>`;
-          }).join('');
-        };
-
-        const setActive = (i) => {
-          const hits = results.querySelectorAll('.docs-search-hit');
-          if (!hits.length) return;
-          activeIndex = (i + hits.length) % hits.length;
-          hits.forEach((el, idx) => el.classList.toggle('is-active', idx === activeIndex));
-          const active = hits[activeIndex];
-          active?.scrollIntoView({ block: 'nearest' });
-        };
-
-        const open = async () => {
-          modal.hidden = false;
-          document.body.style.overflow = 'hidden';
-          field.value = '';
-          await loadIndex();
-          render('');
-          requestAnimationFrame(() => field.focus());
-        };
-
-        const close = () => {
-          modal.hidden = true;
-          document.body.style.overflow = '';
-        };
-
-        trigger.addEventListener('click', open);
-        scrim.addEventListener('click', close);
-
-        document.addEventListener('keydown', (e) => {
-          const isMod = e.metaKey || e.ctrlKey;
-          if (isMod && e.key.toLowerCase() === 'k') {
-            e.preventDefault();
-            modal.hidden ? open() : close();
-            return;
-          }
-          if (modal.hidden) return;
-          if (e.key === 'Escape') { e.preventDefault(); close(); }
-          if (e.key === 'ArrowDown') { e.preventDefault(); setActive(activeIndex + 1); }
-          if (e.key === 'ArrowUp') { e.preventDefault(); setActive(activeIndex - 1); }
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            const hits = results.querySelectorAll('.docs-search-hit');
-            const active = hits[activeIndex];
-            if (active) window.location.href = active.getAttribute('href');
-          }
-        });
-
-        field.addEventListener('input', (e) => render(e.target.value));
-
-        results.addEventListener('mousemove', (e) => {
-          const hit = e.target.closest('.docs-search-hit');
-          if (!hit) return;
-          const idx = Number(hit.dataset.idx);
-          if (!Number.isNaN(idx)) setActive(idx);
-        });
-      })();
     </script>
 
     <style is:global>
@@ -1052,7 +937,7 @@ const themeStyle = [
       }
 
       .docs-sidebar-link.is-sub {
-        padding-left: 12px;
+        padding-inline-start: 12px;
         font-size: 13px;
       }
 
@@ -1065,9 +950,10 @@ const themeStyle = [
       }
 
       .docs-sidebar-sub {
-        margin: 4px 0 4px 22px !important;
-        padding-left: 10px !important;
-        border-left: 1px solid #ebebf1;
+        margin: 4px 0 !important;
+        margin-inline-start: 22px !important;
+        padding-inline-start: 10px !important;
+        border-inline-start: 1px solid var(--line);
       }
 
       /*
@@ -1370,14 +1256,16 @@ const themeStyle = [
       }
 
       .docs-search-sub {
-        display: block;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
         margin-left: 42px;
         margin-top: 2px;
         color: var(--muted);
         font-size: 12px;
         overflow: hidden;
         text-overflow: ellipsis;
-        white-space: nowrap;
+        white-space: normal;
       }
 
       .docs-search-path {

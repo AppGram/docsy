@@ -21,6 +21,7 @@ COPY --from=build /app/dist ./dist
 COPY --from=build /app/release ./release
 COPY --from=build /app/public ./public
 COPY --from=build /app/sources ./sources
+COPY --from=build /app/content ./content
 COPY --from=build /app/scripts/start.mjs ./scripts/start.mjs
 
 EXPOSE 8080

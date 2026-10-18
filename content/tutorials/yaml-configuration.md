@@ -26,6 +26,11 @@ npm run validate
 | `theme` | Light or dark mode, colors, and system font stacks |
 | `home` | Landing-page copy, actions, optional image, and `articleLayout` (`grid` or `list`) |
 | `content.articles` | Authored Markdown pages rendered under `/guides/` |
+| `content.components` / `content.snippets` | Enabled rich components and named reusable Markdown |
+| `versions` / `localization` | Documentation contexts, locale routing, fallbacks, and UI messages |
+| `search` | Full-text reader search and result limits |
+| `agent` | JSON/Markdown discovery and an optional runtime query API |
+| `validation` | API-contract/example checks and internal links/anchors |
 | `navigation` | Sidebar groups and links |
 | `ingestion` | OpenAPI and SDK metadata sources |
 | `access` | Open or locked mode, tiers, providers, and ordered rules |

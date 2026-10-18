@@ -1,4 +1,4 @@
-import { docsPath, docsyConfig } from '../config';
+import { docsPath, docsyConfig, parseDocsPath } from '../config';
 
 export type AccessIdentity = {
   authenticated: boolean;
@@ -43,8 +43,10 @@ const compiledRules = docsyConfig.access.rules.map((rule) => ({
   matcher: globToRegExp(rule.pattern),
 }));
 
-export const accessRuleForPath = (path: string): AccessRule | undefined =>
-  compiledRules.find(({ matcher }) => matcher.test(path))?.rule;
+export const accessRuleForPath = (path: string): AccessRule | undefined => {
+  const canonical = parseDocsPath(docsPath(path))?.path ?? path;
+  return compiledRules.find(({ matcher }) => matcher.test(path) || matcher.test(canonical))?.rule;
+};
 
 export const relativeDocsPath = (pathname: string): string | null => {
   const base = docsPath();
@@ -56,7 +58,11 @@ export const relativeDocsPath = (pathname: string): string | null => {
 
 export const accessPathForRequest = (relativePath: string): string => {
   const markdownMatch = relativePath.match(/^\/format-md\/(.+)$/);
-  return markdownMatch ? `/${markdownMatch[1]}` : relativePath;
+  const jsonMatch = relativePath.match(/^\/agent\/pages\/(.+)\.json$/);
+  const target = markdownMatch?.[1] ?? jsonMatch?.[1];
+  if (!target) return relativePath;
+  if (target === 'index') return '/';
+  return /^versions\/[^/]+\/[^/]+\/index$/.test(target) ? `/${target.slice(0, -6)}` : `/${target}`;
 };
 
 export const canAccessPath = (path: string, tiers: string[]): boolean => {

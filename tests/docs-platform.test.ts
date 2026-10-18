@@ -1,0 +1,142 @@
+import test, { afterEach } from 'node:test';
+import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
+import { mkdtempSync, mkdirSync, writeFileSync, symlinkSync, rmSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+import { tmpdir } from 'node:os';
+import { dump } from 'js-yaml';
+import { createMarkdownProcessor } from '@astrojs/markdown-remark';
+import { readOpenApi } from '../src/lib/openapi';
+import { filterEndpoints } from '../src/lib/swagger-loader';
+import { loadSdk } from '../src/lib/sdk-loaders';
+import { richPlugins, plainMarkdown } from '../src/lib/rich-markdown';
+import { htmlSections, extractHtml } from '../src/lib/html-content';
+import { searchRecords, type SearchRecord } from '../src/lib/search';
+
+const repo = process.cwd();
+const temporary: string[] = [];
+const temp = () => { const dir = mkdtempSync(join(tmpdir(), 'docsy-platform-')); temporary.push(dir); return dir; };
+afterEach(() => { for (const dir of temporary.splice(0)) rmSync(dir, { recursive: true, force: true }); });
+const write = (root: string, file: string, value: string) => { const path = join(root, file); mkdirSync(resolve(path, '..'), { recursive: true }); writeFileSync(path, value); return path; };
+const spec = (): any => ({ openapi: '3.1.0', info: { title: 'Widgets', version: '1.0' }, paths: { '/widgets': { get: { responses: { 200: { description: 'OK' } } } } } });
+const section = { section: 'widgets', title: 'Widgets', description: '', tags: [], paths: ['/widgets'] };
+const fixture = (patch: any = {}) => {
+  const root = temp();
+  write(root, 'content/guide.md', '# Body\n\nA rare platypus lives inside the paragraph.\n\n## Details\n\nHandle retries carefully.\n');
+  const config: any = { site: { name: 'Test', title: 'Docs', description: 'Test docs', origin: 'https://docs.example.test', basePath: '/docs', logo: 'assets/logo.svg' }, home: { title: 'Docs', description: 'Test docs', primaryAction: { label: 'Start', href: '/guides/guide' } }, content: { articles: [{ slug: 'guide', title: 'Guide', source: 'content/guide.md' }] }, navigation: [], ingestion: { openapi: { enabled: false, source: 'unused.yaml', apiBaseUrl: 'https://api.example.test' } }, ...patch };
+  write(root, 'docsy.config.yaml', dump(config));
+  return { root, config };
+};
+const run = (root: string, code: string) => execFileSync(process.execPath, ['--import', resolve(repo, 'node_modules/tsx/dist/loader.mjs'), '--input-type=module', '-e', code], { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, DOCSY_CONFIG: 'docsy.config.yaml' } }).trim();
+const moduleUrl = (path: string) => JSON.stringify(new URL(`../${path}`, import.meta.url).href);
+const record = (overrides: Partial<SearchRecord> = {}): SearchRecord => ({ id: 'one', type: 'page', title: 'Guide', url: '/docs/guides/guide', group: 'Guides', body: 'A platypus lives here.', version: 'current', locale: 'en', markdownUrl: '/docs/format-md/guides/guide', jsonUrl: '/docs/agent/pages/guides/guide.json', ...overrides });
+
+test('full-text search finds body-only terms, normalizes accents, and requires all query terms', () => {
+  assert.equal(searchRecords([record()], 'platypus')[0].id, 'one');
+  assert.equal(searchRecords([record({ body: 'Pravila za plaćanje' })], 'placanje').length, 1);
+  assert.equal(searchRecords([record()], 'platypus zebra').length, 0);
+  assert.equal(searchRecords([record()], '!!!').length, 0);
+  assert.equal(searchRecords([record({ body: 'Content is nested.' })], 'ten nested').length, 0);
+  assert.equal(searchRecords([record({ body: 'No more than ten nested includes.' })], 'ten nested').length, 1);
+});
+test('search prioritizes exact titles, filters version/locale/type, and bounds output', () => {
+  const records = [record(), record({ id: 'two', title: 'Platypus', type: 'api' }), record({ id: 'three', locale: 'fr' }), record({ id: 'four', version: 'v1' })];
+  assert.equal(searchRecords(records, 'platypus')[0].id, 'two');
+  assert.deepEqual(searchRecords(records, 'platypus', { locale: 'en', version: 'current', type: 'api' }).map((hit) => hit.id), ['two']);
+  assert.equal(searchRecords(records, 'platypus', { limit: 1 }).length, 1);
+});
+test('HTML extraction searches code and component bodies, not executable script/style text', () => {
+  const html = '<p>Intro</p><h2 id="retries">Retries</h2><aside><p>Retry carefully.</p></aside><pre><code>retry(3)</code></pre><script>secret()</script>';
+  const sections = htmlSections(html);
+  assert.equal(sections[1].id, 'retries'); assert.match(sections[1].text, /retry\(3\)/);
+  assert.ok(!extractHtml(html).text.includes('secret'));
+});
+test('rich Markdown renders callouts, tabs, steps, accordions and code groups without dropping content', async () => {
+  const markdown = ':::note[Important]\nKeep credentials safe.\n:::\n\n:::steps\n1. Install\n2. Build\n:::\n\n::::tabs{sync="runtime"}\n:::tab[Node]\nUse Node.\n:::\n:::tab[Python]\nUse Python.\n:::\n::::\n\n:::accordion[More]\nDetails.\n:::\n\n:::code-group\n```js\nhello()\n```\n```python\nhello()\n```\n:::';
+  const processor = await createMarkdownProcessor({ syntaxHighlight: false, remarkPlugins: richPlugins as any });
+  const rendered = await processor.render(markdown);
+  for (const className of ['docsy-callout', 'docsy-tabs', 'docsy-steps', 'docsy-accordion']) assert.ok(rendered.code.includes(className));
+  assert.match(rendered.code, /<summary[^>]*>More/); assert.ok(rendered.code.includes('data-sync="runtime"'));
+  const exported = plainMarkdown(markdown); assert.ok(!exported.includes(':::')); assert.match(exported, /Use Python/);
+});
+test('unknown components and orphan tabs fail validation instead of silently degrading', async () => {
+  const log = test.mock.method(console, 'error', () => {});
+  const processor = await createMarkdownProcessor({ syntaxHighlight: false, remarkPlugins: richPlugins as any });
+  try {
+    await assert.rejects(processor.render(':::unknown\nText\n:::'), /Unknown article component/);
+    await assert.rejects(processor.render(':::tab[Orphan]\nText\n:::'), /nested inside tabs/);
+    await assert.rejects(processor.render(':::steps\nNot a list\n:::'), /ordered list/);
+  } finally { log.mock.restore(); }
+});
+test('registered snippets expand recursively, ignore fenced examples, and reject cycles', () => {
+  const { root } = fixture({ content: { articles: [], snippets: { shared: 'content/shared.md', escaped: 'content/escaped.md' } } });
+  write(root, 'content/shared.md', 'Shared instructions.');
+  const code = `import {expandSnippets} from ${moduleUrl('src/lib/rich-markdown.ts')}; console.log(JSON.stringify([expandSnippets('::include{src="shared"}'),expandSnippets('\x60\x60\x60md\\n::include{src="shared"}\\n\x60\x60\x60')]));`;
+  const output = JSON.parse(run(root, code)); assert.equal(output[0], 'Shared instructions.'); assert.ok(output[1].includes('::include'));
+  write(root, 'content/shared.md', '::include{src="shared"}');
+  assert.throws(() => run(root, `import {expandSnippets} from ${moduleUrl('src/lib/rich-markdown.ts')}; expandSnippets('::include{src="shared"}');`), /Circular\/deep snippet/);
+  symlinkSync(write(temp(), 'outside.md', 'Outside project.'), join(root, 'content/escaped.md'));
+  assert.throws(() => run(root, `import {expandSnippets} from ${moduleUrl('src/lib/rich-markdown.ts')}; expandSnippets('::include{src="escaped"}');`), /stay inside the project/);
+});
+test('OpenAPI loader validates structural errors, missing files and unresolved references', async () => {
+  const root = temp(); const source = write(root, 'api.yaml', dump(spec()));
+  assert.equal((await readOpenApi(source)).info.title, 'Widgets');
+  await assert.rejects(readOpenApi(join(root, 'missing.yaml')), /Could not ingest/);
+  write(root, 'invalid.yaml', 'hello: world'); await assert.rejects(readOpenApi(join(root, 'invalid.yaml')), /Could not ingest/);
+  const broken = spec(); broken.paths['/widgets'].get.responses[200].content = { 'application/json': { schema: { $ref: '#/components/schemas/Missing' } } };
+  write(root, 'broken.yaml', dump(broken)); await assert.rejects(readOpenApi(join(root, 'broken.yaml')), /no-unresolved-refs/);
+});
+test('OpenAPI validates examples against schemas and resolves external model/parameter references', async () => {
+  const root = temp(); const api = spec();
+  api.paths['/widgets'].parameters = [{ $ref: './parameters.yaml#/Tenant' }];
+  api.paths['/widgets'].get.responses[200].content = { 'application/json': { schema: { type: 'object', required: ['id'], properties: { id: { type: 'integer' } } }, example: { id: 'wrong' } } };
+  write(root, 'parameters.yaml', 'Tenant:\n  name: tenant\n  in: query\n  required: true\n  schema:\n    type: string\n');
+  const path = write(root, 'api.yaml', dump(api)); await assert.rejects(readOpenApi(path), /no-invalid-media-type-examples/);
+  api.paths['/widgets'].get.responses[200].content['application/json'].example.id = 1;
+  write(root, 'api.yaml', dump(api));
+  const loaded = await readOpenApi(path); assert.equal(loaded.paths['/widgets'].parameters[0].name, 'tenant');
+});
+test('API examples use API-key/Basic auth and inherited required query/header parameters', () => {
+  const api = spec(); api.components = { securitySchemes: { key: { type: 'apiKey', in: 'header', name: 'X-API-Key' } } }; api.security = [{ key: [] }];
+  api.paths['/widgets'].parameters = [{ name: 'tenant', in: 'query', required: true, schema: { type: 'string' } }, { name: 'X-Trace', in: 'header', required: true }];
+  let endpoint = filterEndpoints(api, section)[0];
+  assert.match(endpoint.curl, /X-API-Key: <api-key>/); assert.match(endpoint.curl, /tenant=<tenant>/); assert.match(endpoint.curl, /X-Trace: <X-Trace>/); assert.ok(!endpoint.curl.includes('Bearer'));
+  api.components.securitySchemes.key = { type: 'http', scheme: 'basic' }; endpoint = filterEndpoints(api, section)[0]; assert.match(endpoint.curl, /--user/);
+  api.security = [{ key: [] }, {}]; assert.equal(filterEndpoints(api, section)[0].needsAuth, false);
+});
+test('explicit JSON media examples and scalar/empty request bodies are preserved', () => {
+  const api = spec();
+  api.paths['/widgets'].post = { requestBody: { content: { 'application/json': { schema: { type: 'boolean' }, example: false } } }, responses: { 200: { description: 'OK', content: { 'application/json': { schema: { type: 'object' }, example: { accepted: true } } } } } };
+  const endpoint = filterEndpoints(api, section).find((entry) => entry.method === 'post')!;
+  assert.match(endpoint.curl, /--data 'false'/); assert.match(endpoint.responseExample!, /"accepted": true/);
+  api.paths['/widgets'].post.requestBody.content['application/json'].example = {};
+  assert.match(filterEndpoints(api, section).find((entry) => entry.method === 'post')!.curl, /--data '\{\}'/);
+});
+test('SDK source errors and incorrect adapter shapes fail loudly', () => {
+  const root = temp(); const source = write(root, 'sdk.json', '{}');
+  const config: any = { source, adapter: 'typedoc-lite', id: 'test', slug: 'sdk', name: 'SDK', language: 'typescript', install: '', overview: '', versions: {} };
+  assert.throws(() => loadSdk(config), /does not match/);
+  config.source = join(root, 'missing.json'); assert.throws(() => loadSdk(config), /Could not ingest SDK/);
+});
+test('version/locale selection preserves shared pages, overrides and fallback rules', () => {
+  const content = { articles: [{ slug: 'guide', source: 'content/guide.md', title: 'Shared' }, { slug: 'guide', version: 'v1', source: 'content/guide.md', title: 'Old version' }, { slug: 'guide', locale: 'fr', source: 'content/guide.md', title: 'Français' }] };
+  const { root } = fixture({ content, versions: { default: 'current', items: [{ id: 'current', label: 'Current' }, { id: 'v1', label: 'V1' }] }, localization: { defaultLocale: 'en', locales: [{ code: 'en', label: 'English' }, { code: 'fr', label: 'Français' }] } });
+  const code = `import {getArticleSources} from ${moduleUrl('src/lib/article-loader.ts')}; import {docsPath,parseDocsPath} from ${moduleUrl('src/config.ts')}; console.log(JSON.stringify([getArticleSources({version:'v1',locale:'en'})[0].title,getArticleSources({version:'current',locale:'fr'})[0].title,docsPath('/guides/guide',{version:'v1',locale:'fr'}),parseDocsPath('/docs/versions/v1/fr/guides/guide')]));`;
+  const result = JSON.parse(run(root, code)); assert.equal(result[0], 'Old version'); assert.equal(result[1], 'Français'); assert.equal(result[2], '/docs/versions/v1/fr/guides/guide'); assert.equal(result[3].context.locale, 'fr');
+});
+test('disabled locale fallback omits missing pages and duplicate variants are rejected', () => {
+  const { root, config } = fixture({ localization: { defaultLocale: 'en', fallback: false, locales: [{ code: 'en', label: 'English' }, { code: 'fr', label: 'Français' }] } });
+  assert.equal(run(root, `import {getArticleSources} from ${moduleUrl('src/lib/article-loader.ts')}; console.log(getArticleSources({version:'current',locale:'fr'}).length);`), '0');
+  config.content.articles.push(config.content.articles[0]); write(root, 'docsy.config.yaml', dump(config));
+  assert.throws(() => run(root, `await import(${moduleUrl('src/config.ts')});`), /Duplicate article/);
+});
+test('JSON query and corpus are permission-filtered, bounded and version aware', () => {
+  const { root } = fixture({ agent: { query: true }, access: { mode: 'locked', tiers: { pro: { label: 'Pro' } }, rules: [{ pattern: '/guides/guide', tiers: ['pro'] }] } });
+  const code = `import {GET} from ${moduleUrl('src/pages/agent/query.json.ts')}; const call=async(q,tiers=[])=>{const r=await GET({url:new URL('http://localhost/docs/agent/query.json?'+q),locals:{docsyAccess:{authenticated:!!tiers.length,tiers}},clientAddress:'127.0.0.1'});return {status:r.status,body:await r.json()}}; console.log(JSON.stringify([await call('q=platypus'),await call('q=platypus',['pro']),await call('q=platypus&limit=500'),await call('q=platypus&locale=zz')]));`;
+  const result = JSON.parse(run(root, code)); assert.equal(result[0].body.count, 0); assert.equal(result[1].body.count, 1); assert.ok(result[1].body.results[0].jsonUrl.endsWith('.json')); assert.ok(!('body' in result[1].body.results[0])); assert.equal(result[2].status, 400); assert.equal(result[3].status, 400);
+});
+test('static agent manifest explicitly reports unavailable runtime queries', () => {
+  const { root } = fixture();
+  const result = JSON.parse(run(root, `import {GET} from ${moduleUrl('src/pages/agent/query.json.ts')}; console.log(JSON.stringify(await (await GET({})).json()));`));
+  assert.equal(result.mode, 'static'); assert.equal(result.queryAvailable, false); assert.equal(result.indexUrl, '/docs/agent/index.json');
+});

@@ -18,6 +18,7 @@ type NavItemInput = {
   title: string;
   href: string;
   icon?: string;
+  titles?: Record<string, string>;
   items?: NavItemInput[];
 };
 
@@ -25,6 +26,7 @@ const navItemSchema: z.ZodType<NavItemInput> = z.lazy(() => z.object({
   title: z.string().min(1),
   href: z.string().min(1),
   icon: z.string().optional(),
+  titles: z.record(z.string()).optional(),
   items: z.array(navItemSchema).optional(),
 }));
 
@@ -38,6 +40,7 @@ const sdkSchema = z.object({
   install: z.string(),
   overview: z.string(),
   icon: z.string().optional(),
+  versions: z.record(z.string()).default({}),
 });
 
 const apiSectionSchema = z.object({
@@ -54,6 +57,8 @@ const articleSchema = z.object({
   title: z.string().min(1),
   description: z.string().default(''),
   eyebrow: z.string().default('GUIDE'),
+  version: z.string().optional(),
+  locale: z.string().optional(),
 });
 
 const accessProviderSchema = z.discriminatedUnion('type', [
@@ -177,6 +182,10 @@ const configSchema = z.object({
   home: z.object({
     eyebrow: z.string().default('DOCUMENTATION'),
     articleLayout: z.enum(['grid', 'list']).default('grid'),
+    translations: z.record(z.object({
+      title: z.string().optional(), description: z.string().optional(), eyebrow: z.string().optional(),
+      primaryActionLabel: z.string().optional(), secondaryActionLabel: z.string().optional(),
+    })).default({}),
     title: z.string().min(1),
     description: z.string().min(1),
     primaryAction: actionSchema,
@@ -192,11 +201,46 @@ const configSchema = z.object({
   }),
   content: z.object({
     articles: z.array(articleSchema).default([]),
+    snippets: z.record(z.string().regex(/\.(?:md|markdown|mdown)$/i)).default({}),
+    components: z.array(z.enum(['note', 'tip', 'warning', 'danger', 'steps', 'tabs', 'accordion', 'code-group', 'include'])).default(['note', 'tip', 'warning', 'danger', 'steps', 'tabs', 'accordion', 'code-group', 'include']),
+  }).default({}),
+  versions: z.object({
+    default: z.string().default('current'),
+    items: z.array(z.object({
+      id: z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/),
+      label: z.string().min(1),
+      status: z.enum(['current', 'beta', 'deprecated']).default('current'),
+    })).min(1).default([{ id: 'current', label: 'Current' }]),
+  }).default({}),
+  localization: z.object({
+    defaultLocale: z.string(),
+    fallback: z.boolean().default(true),
+    locales: z.array(z.object({
+      code: z.string().regex(/^[a-z]{2,3}(?:-[a-zA-Z0-9]+)*$/),
+      label: z.string().min(1),
+      dir: z.enum(['ltr', 'rtl']).default('ltr'),
+    })).min(1),
+    messages: z.record(z.record(z.string())).default({}),
+  }).optional(),
+  search: z.object({
+    enabled: z.boolean().default(true),
+    maxResults: z.number().int().min(1).max(50).default(30),
+  }).default({}),
+  agent: z.object({
+    enabled: z.boolean().default(true),
+    query: z.boolean().default(false),
+    maxResults: z.number().int().min(1).max(50).default(10),
+    maxQueryLength: z.number().int().min(16).max(2000).default(500),
+  }).default({}),
+  validation: z.object({
+    links: z.boolean().default(true),
+    api: z.boolean().default(true),
   }).default({}),
   access: accessSchema,
   maintenance: maintenanceSchema,
   navigation: z.array(z.object({
     title: z.string().min(1),
+    titles: z.record(z.string()).optional(),
     items: z.array(navItemSchema),
   })),
   ingestion: z.object({
@@ -207,20 +251,38 @@ const configSchema = z.object({
       apiBaseUrl: z.string().url(),
       guide: actionSchema.optional(),
       sections: z.array(apiSectionSchema).default([]),
+      versions: z.record(z.string()).default({}),
     }),
   }),
 }).superRefine((config, context) => {
   const articleSlugs = new Set<string>();
   config.content.articles.forEach((article, articleIndex) => {
-    if (articleSlugs.has(article.slug)) {
+    const key = `${article.version ?? '*'}:${article.locale ?? config.localization?.defaultLocale ?? config.site.language}:${article.slug}`;
+    if (articleSlugs.has(key)) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['content', 'articles', articleIndex, 'slug'],
-        message: `Duplicate article slug "${article.slug}"`,
+        message: `Duplicate article slug/version/locale "${key}"`,
       });
     }
-    articleSlugs.add(article.slug);
+    articleSlugs.add(key);
+    if (article.version && !config.versions.items.some((v) => v.id === article.version)) context.addIssue({ code: 'custom', path: ['content', 'articles', articleIndex, 'version'], message: 'Unknown documentation version' });
+    if (article.locale && !(config.localization?.locales.some((l) => l.code === article.locale) ?? article.locale === config.site.language)) context.addIssue({ code: 'custom', path: ['content', 'articles', articleIndex, 'locale'], message: 'Unknown documentation locale' });
   });
+
+  const unique = (values: string[], path: string[]) => {
+    if (new Set(values).size !== values.length) context.addIssue({ code: 'custom', path, message: 'Identifiers must be unique' });
+  };
+  unique(config.versions.items.map((v) => v.id), ['versions', 'items']);
+  if (!config.versions.items.some((v) => v.id === config.versions.default)) context.addIssue({ code: 'custom', path: ['versions', 'default'], message: 'Default version must exist in versions.items' });
+  if (config.localization) {
+    unique(config.localization.locales.map((l) => l.code), ['localization', 'locales']);
+    if (!config.localization.locales.some((l) => l.code === config.localization!.defaultLocale)) context.addIssue({ code: 'custom', path: ['localization', 'defaultLocale'], message: 'Default locale must exist in localization.locales' });
+  }
+  if (config.agent.query && !config.agent.enabled) context.addIssue({ code: 'custom', path: ['agent', 'query'], message: 'Enable agent.enabled before enabling runtime queries' });
+  for (const [name, overrides] of [['openapi', config.ingestion.openapi.versions], ...config.ingestion.sdks.map((sdk) => [sdk.id, sdk.versions] as const)] as const) {
+    for (const version of Object.keys(overrides)) if (!config.versions.items.some((item) => item.id === version)) context.addIssue({ code: 'custom', path: ['ingestion', name, 'versions', version], message: 'Unknown documentation version' });
+  }
 
   const knownTiers = new Set(Object.keys(config.access.tiers));
   config.access.rules.forEach((rule, ruleIndex) => {
@@ -255,6 +317,13 @@ export type DocsyConfig = z.infer<typeof configSchema>;
 export type SdkSourceConfig = DocsyConfig['ingestion']['sdks'][number];
 export type ApiSectionConfig = DocsyConfig['ingestion']['openapi']['sections'][number];
 export type ArticleConfig = DocsyConfig['content']['articles'][number];
+export type DocsContext = { version: string; locale: string };
+export const locales = docsyConfig.localization?.locales ?? [{ code: docsyConfig.site.language, label: docsyConfig.site.language, dir: 'ltr' as const }];
+export const defaultContext: DocsContext = { version: docsyConfig.versions.default, locale: docsyConfig.localization?.defaultLocale ?? docsyConfig.site.language };
+export const allContexts: DocsContext[] = docsyConfig.versions.items.flatMap((version) => locales.map((locale) => ({ version: version.id, locale: locale.code })));
+export const isDefaultContext = (context: DocsContext) => context.version === defaultContext.version && context.locale === defaultContext.locale;
+export const contextPrefix = (context: DocsContext) => isDefaultContext(context) ? '' : `/versions/${context.version}/${context.locale}`;
+export const isServer = docsyConfig.access.mode === 'locked' || docsyConfig.agent.query;
 
 export const DOCSY_ROOT = projectRoot;
 
@@ -262,10 +331,20 @@ const base = docsyConfig.site.basePath === '/'
   ? ''
   : `/${docsyConfig.site.basePath.replace(/^\/+|\/+$/g, '')}`;
 
-export const docsPath = (path = ''): string => {
+export const docsPath = (path = '', context?: DocsContext): string => {
   if (/^(?:https?:)?\/\//.test(path) || path.startsWith('mailto:') || path.startsWith('#')) return path;
   const clean = path.replace(/^\/+/, '');
-  return `${base}/${clean}`.replace(/\/$/, '') || '/';
+  return `${base}${context ? contextPrefix(context) : ''}/${clean}`.replace(/\/$/, '') || '/';
+};
+
+export const parseDocsPath = (pathname: string): { path: string; context: DocsContext } | null => {
+  const clean = pathname.replace(/\/+$/, '') || '/';
+  if (base && clean !== base && !clean.startsWith(`${base}/`)) return null;
+  const relative = (base ? clean.slice(base.length) : clean) || '/';
+  const match = relative.match(/^\/versions\/([^/]+)\/([^/]+)(\/.*)?$/);
+  if (!match) return { path: relative, context: defaultContext };
+  const context = allContexts.find((c) => c.version === match[1] && c.locale === match[2]);
+  return context ? { context, path: match[3] || '/' } : null;
 };
 
 export const assetPath = (path: string): string => {

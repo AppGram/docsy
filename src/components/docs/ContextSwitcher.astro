@@ -1,0 +1,30 @@
+---
+import { defaultContext, docsPath, docsyConfig, locales, parseDocsPath, type DocsContext } from '../../config';
+import { findArticle } from '../../lib/article-loader';
+import { message } from '../../lib/messages';
+interface Props { context?: DocsContext }
+const { context = defaultContext } = Astro.props;
+const path = parseDocsPath(Astro.url.pathname)?.path ?? '/';
+const target = (next: DocsContext) => docsPath(path.startsWith('/guides/') && !findArticle(path.slice(8), next) ? '/' : path, next);
+const version = docsyConfig.versions.items.find((item) => item.id === context.version)!;
+---
+{(docsyConfig.versions.items.length > 1 || locales.length > 1) && (
+  <div class="docs-context-bar">
+    {docsyConfig.versions.items.length > 1 && <label>{message(context, 'version')}
+      <select data-docsy-context-switch aria-label={message(context, 'version')}>
+        {docsyConfig.versions.items.map((item) => <option value={target({ ...context, version: item.id })} selected={item.id === context.version}>{item.label}</option>)}
+      </select>
+    </label>}
+    {locales.length > 1 && <label>{message(context, 'language')}
+      <select data-docsy-context-switch aria-label={message(context, 'language')}>
+        {locales.map((item) => <option value={target({ ...context, locale: item.code })} selected={item.code === context.locale}>{item.label}</option>)}
+      </select>
+    </label>}
+  </div>
+)}
+{version.status !== 'current' && <div class="docs-context-notice">{message(context, version.status)}</div>}
+<script>
+  document.querySelectorAll<HTMLSelectElement>('[data-docsy-context-switch]').forEach((select) => {
+    select.addEventListener('change', () => { window.location.assign(select.value); });
+  });
+</script>

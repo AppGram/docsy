@@ -16,7 +16,7 @@ Docsy turns Markdown, OpenAPI, and SDK metadata into a self-hosted documentation
 
 Product copy, navigation, visual tokens, ingestion, and access rules live in `docsy.config.yaml`. The generated Astro components and CSS stay in your repository, alongside `AGENTS.md` and `DOCSY_BRIEF.md` to guide your coding agent.
 
-Docsy can ship as a fully static site or as a server-rendered Node application with permission-gated documentation tiers.
+Docsy can ship as a fully static site or as a server-rendered Node application with permission-gated documentation tiers and an optional agent query API. Node 22.22 or newer is required to build and run this release.
 
 > This project is independent of the Hugo theme with a similar name.
 
@@ -42,6 +42,24 @@ Run npm run validate and npm run build, then summarize the diff.
 Use `/format-md/...` exports when an agent needs to fetch documentation over HTTP. The Markdown menu exposes the current page's export; `?format=md` opens its Markdown view in the browser. Your chosen coding agent works with the repository, and you review and publish its changes through your normal Git workflow.
 
 See [Work with coding agents](content/tutorials/coding-agents.md) for both reading and authoring workflows.
+
+Agents can also discover `/llms.txt`, download the full-text corpus at `/agent/index.json`, or read a page as JSON at `/agent/pages/guides/getting-started.json`. Prefix these paths with your configured `site.basePath`. JSON documents include Markdown and citation URLs.
+
+For live retrieval, enable the Node-only endpoint:
+
+```yaml
+agent:
+  enabled: true
+  query: true
+  maxResults: 10
+  maxQueryLength: 500
+```
+
+```bash
+curl 'https://docs.example.com/docs/agent/query.json?q=authentication&version=current&locale=en&limit=5'
+```
+
+This returns ranked source excerpts and JSON/Markdown links, not a generated answer. It requires no AI provider key. Static deployments retain JSON/Markdown exports but cannot execute query parameters; keep `agent.query: false` for GitHub Pages. In locked mode, every retrieval surface follows the existing page permissions. [Search and agent API guide](content/tutorials/search-and-agents.md).
 
 ## Preview
 
@@ -74,6 +92,11 @@ Both are the same generated OpenAPI page. Switching `theme.mode` and the YAML co
 - SDK adapters for TypeDoc, TypeDoc-lite, Swift symbol JSON, and Dartdoc.
 - Generated API pages, navigation, search data, curl examples, response examples, and Markdown exports.
 - First-class authored Markdown articles for guides, tutorials, concepts, and migration notes.
+- Theme-aware callouts, numbered steps, synchronized tabs, code groups, accordions, and reusable Markdown snippets.
+- Full-text section search across article bodies, examples, API parameters, and SDK symbols.
+- YAML-configured versions, locale routing, translated navigation, RTL, and explicit language fallbacks.
+- Static JSON/Markdown discovery plus an optional permission-aware JSON query endpoint for coding agents.
+- Strict source ingestion, OpenAPI reference/example validation, and internal/built-site link and anchor checks.
 - One YAML file for branding, content, navigation, routes, ingestion, theme tokens, and access rules.
 - A persisted light/dark theme toggle with independently configurable palettes.
 - Open mode for static hosting and lock mode for server-side permission checks.
@@ -119,6 +142,10 @@ The repository is its own Docsy documentation portal. Every article is readable 
 | [Maintain documentation automatically](content/tutorials/documentation-maintenance.md) | Detect affected docs, correct stale examples, explain breaking changes, and open validated draft PRs |
 | [Configure Docsy with YAML](content/tutorials/yaml-configuration.md) | The configuration lifecycle, top-level sections, paths, and environment values |
 | [Write authored documentation](content/tutorials/authored-articles.md) | Markdown articles, YAML registration, navigation, search, exports, and permissions |
+| [Rich article components](content/tutorials/rich-articles.md) | Callouts, steps, tabs, code groups, accordions, and reusable snippets |
+| [Full-text search and agent JSON API](content/tutorials/search-and-agents.md) | Static retrieval exports, the optional Node query endpoint, and permission filtering |
+| [Versions and localization](content/tutorials/versions-and-locales.md) | Stable context URLs, translated UI/navigation, fallbacks, and versioned ingestion |
+| [Content validation](content/tutorials/content-validation.md) | Source failures, API linting, schema examples, links, anchors, and component checks |
 | [Ingest an OpenAPI document](content/tutorials/openapi-ingestion.md) | Local and remote sources, section matching, and navigation |
 | [Ingest SDK documentation](content/ingestion/sdk-adapters.md) | TypeDoc, compact TypeDoc, Swift symbol, and Dart adapters |
 | [Customize the default UI](content/customization/default-ui.md) | YAML brand tokens and the source-owned Astro interface |
@@ -130,7 +157,7 @@ The repository is its own Docsy documentation portal. Every article is readable 
 
 ## Quick start
 
-Run Docsy's own documentation portal:
+Use Node 22.22 or newer. Run Docsy's own documentation portal:
 
 ```bash
 git clone https://github.com/AppGram/docsy.git docsy
@@ -444,7 +471,7 @@ docker compose up --build
 
 Open [http://localhost:8080/docs/](http://localhost:8080/docs/).
 
-The container detects the build type automatically. Open mode serves staged static files; locked mode starts the Astro Node server.
+The container detects the build type automatically. Open mode with `agent.query: false` serves staged static files; locked mode or `agent.query: true` starts the Astro Node server. The runtime image includes authored content and snippets as well as ingestion sources.
 
 ### Static host
 
@@ -482,7 +509,7 @@ Put the process behind the trusted authentication proxy described above. Rebuild
 | Command | Purpose |
 | --- | --- |
 | `npm run dev` | Start Astro development mode |
-| `npm run validate` | Validate YAML and type-check Astro |
+| `npm run validate` | Validate YAML, sources, API examples, components, links, anchors, and Astro types |
 | `npm run build` | Validate, build, and stage production output |
 | `npm run preview` | Serve the staged static build or locked Node build |
 | `npm run create -- <dir>` | Generate a new editable project |

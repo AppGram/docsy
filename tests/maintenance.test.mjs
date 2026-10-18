@@ -346,6 +346,6 @@ test('generated projects include the maintenance workflow, command, and opt-in Y
   assert.equal(load(read(target, 'docsy.config.yaml')).maintenance.enabled, false);
   assert.equal(load(read(target, 'docsy.config.yaml')).home.articleLayout, 'grid');
   assert.ok(existsSync(join(target, 'src/components/docs/ArticleCard.astro')));
-  assert.ok(read(target, 'src/pages/index.astro').includes('layout={docsyConfig.home.articleLayout}'));
+  assert.ok(read(target, 'src/components/docs/Overview.astro').includes('layout={home.articleLayout}'));
   assert.ok(read(target, '.gitignore').includes('.docsy/maintenance/'));
 });

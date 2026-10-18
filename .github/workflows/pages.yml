@@ -34,7 +34,9 @@ jobs:
         uses: actions/configure-pages@v6
 
       - name: Build
-        run: npm run build
+        run: |
+          node --import tsx --input-type=module -e "import {isServer} from './src/config.ts'; if (isServer) throw new Error('GitHub Pages requires access.mode=open and agent.query=false. Use Node/Docker for runtime features.');"
+          npm run build
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5

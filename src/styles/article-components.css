@@ -1,0 +1,79 @@
+.article-body .docsy-callout {
+  margin: 24px 0;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-inline-start: 3px solid var(--violet);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--paper) 97%, var(--ink));
+}
+.article-body .docsy-component-title {
+  margin: 0 0 8px;
+  color: var(--ink);
+  font-weight: 600;
+}
+.article-body .docsy-callout > :last-child,
+.article-body .docsy-accordion > :last-child { margin-bottom: 0; }
+.article-body .docsy-accordion {
+  margin: 20px 0;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.article-body .docsy-accordion > summary { cursor: pointer; margin: 0; }
+.article-body .docsy-accordion[open] > summary { margin-bottom: 14px; }
+.article-body .docsy-steps > ol {
+  counter-reset: docsy-step;
+  list-style: none;
+  padding-inline-start: 0;
+  margin: 24px 0;
+}
+.article-body .docsy-steps > ol > li {
+  position: relative;
+  padding: 0 0 24px 46px;
+  border-inline-start: 1px solid var(--line);
+  margin-inline-start: 15px;
+}
+html[dir="rtl"] .article-body .docsy-steps > ol > li { padding: 0 46px 24px 0; }
+.article-body .docsy-steps > ol > li:last-child { border-color: transparent; padding-bottom: 0; }
+.article-body .docsy-steps > ol > li::before {
+  counter-increment: docsy-step;
+  content: counter(docsy-step);
+  position: absolute;
+  inset-inline-start: -16px;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 13px;
+}
+.article-body .docsy-tabs { margin: 24px 0; min-width: 0; }
+.docsy-tab-list { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 18px; }
+.docsy-tab-list button {
+  appearance: none;
+  padding: 10px 14px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.docsy-tab-list button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--violet); }
+.docsy-tab-list button:focus-visible { outline: 2px solid var(--violet); outline-offset: -3px; }
+.docsy-tabs[data-enhanced] > .docsy-tab > .docsy-component-title { display: none; }
+.docsy-tab[hidden] { display: none; }
+.docsy-tab > :first-child { margin-top: 0; }
+.docsy-tab > :last-child { margin-bottom: 0; }
+.docs-context-bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 22px; }
+.docs-context-bar label { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; }
+.docs-context-bar select { max-width: 180px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); padding: 6px 10px; font: inherit; }
+.docs-context-notice { padding: 12px 16px; border: 1px solid var(--line); border-radius: 8px; color: var(--muted); margin-bottom: 24px; font-size: 13px; }
+.article-reader-nav { display: flex; justify-content: space-between; gap: 20px; margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); }
+.article-reader-nav a { max-width: 48%; }
+.article-body pre, .cb pre { direction: ltr; text-align: left; }

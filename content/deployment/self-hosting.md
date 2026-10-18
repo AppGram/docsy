@@ -1,4 +1,4 @@
-Docsy supports two deployment shapes. Choose open mode for public static documentation and locked mode when authorization must run for every request.
+Docsy supports two deployment shapes. Use Node 22.22 or newer. Choose open mode with `agent.query: false` for public static documentation. Locked mode or `agent.query: true` uses the standalone Node server.
 
 ## Deploy an open static build
 
@@ -11,6 +11,8 @@ site:
 
 access:
   mode: open
+agent:
+  query: false
 ```
 
 Build the project:
@@ -26,7 +28,7 @@ Upload `dist/` when the hosting platform already mounts the project at the confi
 
 ## Run locked mode
 
-Locked mode needs the standalone Node server:
+Locked mode needs the standalone Node server. Public sites can also use this runtime by setting `agent.query: true` to enable live JSON retrieval:
 
 ```yaml
 access:

@@ -1,0 +1,46 @@
+---
+import type { MarkdownHeading } from '@astrojs/markdown-remark';
+import { defaultContext, type DocsContext } from '../../config';
+import { message } from '../../lib/messages';
+interface Props { headings: MarkdownHeading[]; context?: DocsContext }
+const { headings, context = defaultContext } = Astro.props;
+---
+<nav class="article-toc" aria-label={message(context, 'onThisPage')}>
+  <p>{message(context, 'onThisPage')}</p>
+  <ul>{headings.filter((heading) => heading.depth === 2 || heading.depth === 3).map((heading) => <li class:list={[heading.depth === 3 && 'is-nested']}><a href={`#${heading.slug}`}>{heading.text}</a></li>)}</ul>
+</nav>
+<style>
+  .article-toc > p {
+    margin: 0 0 12px;
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 650;
+  }
+
+  .article-toc ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .article-toc li {
+    margin: 0;
+  }
+
+  .article-toc li.is-nested {
+    padding-inline-start: 12px;
+  }
+
+  .article-toc a {
+    display: block;
+    padding: 5px 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.35;
+    text-decoration: none;
+  }
+
+  .article-toc a:hover {
+    color: var(--ink);
+  }
+</style>

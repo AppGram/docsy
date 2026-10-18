@@ -46,6 +46,8 @@ docsy validate
 
 Validation expands environment placeholders, parses `docsy.config.yaml`, checks it against the configuration schema, and runs Astro's type and template checks. Invalid configuration reports the exact YAML path.
 
+It also renders articles/components, expands snippets, checks API contracts and examples, loads SDK inputs, and verifies internal routes and heading anchors for each version/locale context. Production builds additionally check links in the generated static HTML. Validation does not execute examples against live services.
+
 `docsy check` is an alias for the same operation.
 
 ## Build production output
@@ -56,8 +58,8 @@ docsy build
 
 The build clears previous `dist/` and `release/` output, validates the project, runs the Astro build, and stages a production release.
 
-- Open mode creates a static `dist/` build and a mount-aware `release/` directory.
-- Locked mode creates a standalone Node server in `dist/`; static staging is skipped.
+- Open mode with `agent.query: false` creates a static `dist/` build and a mount-aware `release/` directory.
+- Locked mode or `agent.query: true` creates a standalone Node server in `dist/`; static staging is skipped.
 
 ## Run production output
 

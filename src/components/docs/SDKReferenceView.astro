@@ -1,0 +1,15 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import SDKPageBody from './SDKPageBody.astro';
+import SDKToc from './SDKToc.astro';
+import { assetPath, defaultContext, docsyConfig, type DocsContext, type SdkSourceConfig } from '../../config';
+import { loadSdk } from '../../lib/sdk-loaders';
+interface Props { source: SdkSourceConfig; context?: DocsContext }
+const { source, context = defaultContext } = Astro.props;
+const doc = loadSdk({ ...source, source: source.versions[context.version] ?? source.source });
+const installLanguage = source.adapter === 'swift-symbols' ? 'swift' : source.adapter === 'typedoc' ? 'html' : 'bash';
+---
+<DocsLayout context={context} title={`${doc.name} — ${docsyConfig.site.name} Docs`} description={doc.overview} eyebrow={doc.name.toUpperCase()} wide>
+  <SDKPageBody doc={doc} icon={source.icon ? assetPath(source.icon) : undefined} installLanguage={installLanguage} />
+  <SDKToc slot="toc" doc={doc} />
+</DocsLayout>

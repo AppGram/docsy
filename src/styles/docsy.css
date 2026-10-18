@@ -105,3 +105,6 @@ a.button {
   -webkit-mask: var(--eyebrow-icon) center / contain no-repeat;
   mask: var(--eyebrow-icon) center / contain no-repeat;
 }
+
+.docs-search-trigger[hidden] { display: none !important; }
+.docs-llm[hidden] { display: none !important; }

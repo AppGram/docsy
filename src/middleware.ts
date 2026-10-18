@@ -1,16 +1,26 @@
 import { defineMiddleware } from 'astro:middleware';
-import { docsPath, docsyConfig } from './config';
+import { docsPath, docsyConfig, isServer } from './config';
 import {
   accessPathForRequest,
   evaluateAccess,
   relativeDocsPath,
   resolveAccessIdentity,
 } from './lib/access';
+import { getDocuments } from './lib/documents';
+import { generateMarkdown } from './lib/markdown-export';
 
 const isPublicAsset = (path: string) =>
   path.startsWith('/_astro/')
   || path.startsWith('/assets/')
   || /\.(?:css|js|mjs|map|svg|png|jpe?g|gif|webp|avif|ico|woff2?|ttf)$/i.test(path);
+
+const varyAccept = (response: Response): Response => {
+  const headers = new Headers(response.headers);
+  const vary = new Set((headers.get('Vary') ?? '').split(',').map((value) => value.trim()).filter(Boolean));
+  vary.add('Accept');
+  headers.set('Vary', [...vary].join(', '));
+  return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+};
 
 const privateResponse = (response: Response): Response => {
   const headers = new Headers(response.headers);
@@ -24,24 +34,38 @@ const privateResponse = (response: Response): Response => {
 };
 
 export const onRequest = defineMiddleware(async (context, next) => {
-  if (docsyConfig.access.mode === 'open') return next();
-
+  if (!isServer || context.isPrerendered) return next();
   const relativePath = relativeDocsPath(context.url.pathname);
   if (relativePath === null || isPublicAsset(relativePath) || relativePath === '/locked') return next();
 
   const accessPath = accessPathForRequest(relativePath);
-  const identity = await resolveAccessIdentity(context.request, accessPath);
+  const identity = docsyConfig.access.mode === 'locked' ? await resolveAccessIdentity(context.request, accessPath) : { authenticated: false, tiers: [] };
   context.locals.docsyAccess = identity;
 
   // Search is filtered per identity in its endpoint rather than being locked
   // as a whole, so public results keep working for every visitor.
-  if (relativePath === '/search-index.json') return privateResponse(await next());
+  const aggregate = ['/search-index.json', '/agent/index.json', '/agent/query.json', '/llms.txt', '/llms-full.txt'].includes(relativePath);
+  if (aggregate) {
+    if (docsyConfig.access.mode === 'locked' && relativePath !== '/search-index.json' && !evaluateAccess(relativePath, identity).allowed) return privateResponse(new Response(JSON.stringify({ error: 'not_found' }), { status: 404, headers: { 'Content-Type': 'application/json' } }));
+    return docsyConfig.access.mode === 'locked' ? privateResponse(await next()) : next();
+  }
 
   const decision = evaluateAccess(accessPath, identity);
-  if (decision.allowed) return privateResponse(await next());
+  if (docsyConfig.access.mode === 'open' || decision.allowed) {
+    const document = getDocuments().find((doc) => doc.path === context.url.pathname.replace(/\/+$/, '') || doc.path === context.url.pathname);
+    if (document && context.request.headers.get('accept')?.includes('text/markdown')) {
+      const markdown = await generateMarkdown(document.path, docsyConfig.site.origin, identity.tiers);
+      const response = new Response(markdown, { headers: { 'Content-Type': 'text/markdown; charset=utf-8', Vary: 'Accept' } });
+      return docsyConfig.access.mode === 'locked' ? privateResponse(response) : response;
+    }
+    const response = await next();
+    const negotiated = document ? varyAccept(response) : response;
+    return docsyConfig.access.mode === 'locked' ? privateResponse(negotiated) : negotiated;
+  }
 
   const status = identity.authenticated ? 403 : 401;
-  if (relativePath.startsWith('/format-md/')) {
+  if (relativePath.startsWith('/agent/')) return new Response(JSON.stringify({ error: 'not_found' }), { status: 404, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'private, no-store' } });
+  if (relativePath.startsWith('/format-md/') || context.request.headers.get('accept')?.includes('text/markdown')) {
     return new Response(
       `# Documentation locked\n\nThis page requires one of: ${decision.requiredTiers.join(', ')}.\n`,
       {
