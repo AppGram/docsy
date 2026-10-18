@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.9.4" xml:lang="en-US">
+  <compound refid="classGreeter" kind="class"><name>Greeter</name>
+    <member refid="classGreeter_1a56433b6bd2cf81e17797bc05ca67467c" kind="variable"><name>prefix</name></member>
+    <member refid="classGreeter_1a42642403c86e0747f5a9fe21e94d4a6c" kind="function"><name>greet</name></member>
+    <member refid="classGreeter_1aa521e505305f8efb7f066c2a0aaae388" kind="function"><name>greetMany</name></member>
+    <member refid="classGreeter_1a1f8a1ae327555c36c92c4da690e1458e" kind="function"><name>greetChecked</name></member>
+  </compound>
+  <compound refid="greeter_8hpp" kind="file"><name>greeter.hpp</name>
+  </compound>
+  <compound refid="dir_d9a82e85323e315eec76e49f3a103646" kind="dir"><name>tests/generators/input/cpp</name>
+  </compound>
+  <compound refid="dir_4736c8b5caf274455b5c461d9161d049" kind="dir"><name>tests/generators</name>
+  </compound>
+  <compound refid="dir_018e7f3dcbbdbb7de59599670b59440a" kind="dir"><name>tests/generators/input</name>
+  </compound>
+  <compound refid="dir_59425e443f801f1f2fd8bbe4959a3ccf" kind="dir"><name>tests</name>
+  </compound>
+</doxygenindex>

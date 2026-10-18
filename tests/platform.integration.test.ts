@@ -30,7 +30,7 @@ function site() {
       { slug: 'private', title: 'Restricted guide', source: 'content/private.md' },
     ] },
     navigation: [{ title: 'Guides', items: [{ title: 'Guide', titles: { fr: 'Guide français' }, href: '/guides/guide' }, { title: 'Restricted guide', href: '/guides/private' }, { title: 'API', href: '/api/widgets' }, { title: 'SDK', href: '/widget-sdk' }] }],
-    ingestion: { openapi: { source: 'sources/api.yaml', apiBaseUrl: 'https://api.example.test', versions: { v1: 'sources/v1.yaml' }, sections: [{ section: 'widgets', title: 'Widgets', description: 'Widgets API', paths: ['/widgets'] }] }, sdks: [{ id: 'widget', slug: 'widget-sdk', adapter: 'typedoc-lite', source: 'sources/sdk.json', versions: { v1: 'sources/sdk-v1.json' }, name: 'Widget SDK', language: 'typescript', install: 'npm install widget', overview: 'Widget API client' }] },
+    ingestion: { openapi: { source: 'sources/api.yaml', apiBaseUrl: 'https://api.example.test', versions: { v1: 'sources/v1.yaml' }, sections: [{ section: 'widgets', title: 'Widgets', description: 'Widgets API', paths: ['/widgets'] }] }, sdks: [{ id: 'widget', slug: 'widget-sdk', adapter: 'typedoc-lite', source: 'sources/sdk.json', versions: { v1: 'sources/sdk-v1.json' }, name: 'Widget SDK', language: 'typescript', install: 'npm install widget', overview: 'Widget API client', quickstart: { code: 'client.get("quickstartneedle");', language: 'typescript' } }] },
     access: { mode: 'open', tiers: { pro: { label: 'Pro' } }, rules: [{ pattern: '/guides/private', tiers: ['pro'] }] },
     agent: { enabled: true, query: false },
   };
@@ -72,6 +72,8 @@ test('generated template builds static variants/exports and Node APIs without pe
     assert.match(read(root, 'release/docs/versions/current/ar/guides/guide/index.html'), /dir="rtl"/);
     assert.match(read(root, 'release/docs/guides/guide/index.html'), /docsy-tabs/);
     assert.match(read(root, 'release/docs/versions/v1/en/widget-sdk/index.html'), /Legacy SDK client/);
+    assert.match(read(root, 'release/docs/widget-sdk/index.html'), /quickstartneedle/);
+    assert.match(read(root, 'release/docs/format-md/widget-sdk'), /## Quickstart/);
     assert.match(read(root, 'release/docs/versions/v1/en/api/widgets/index.html'), /v1/);
     const index = JSON.parse(read(root, 'release/docs/search-index.json'));
     assert.ok(index.entries.some((entry: any) => entry.body.includes('platypusword')));

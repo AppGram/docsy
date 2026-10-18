@@ -1,5 +1,16 @@
 Docsy can publish multiple documentation versions and languages from one repository. The default version/language retains existing URLs; non-default combinations use `/versions/{version}/{locale}` after `site.basePath`.
 
+## Try it in this portal
+
+Use the **Version** and **Language** selectors above the article. This portal has **Current** and **Preview (demo)** versions, with **English**, **Français**, and **Español** locales.
+
+- Switch to Français or Español to see the translated overview, navigation, getting-started guide, rich-components guide, and this tutorial.
+- Open **Get started** and switch to Preview (demo) to see a different article body in either language. Preview is demonstration content, not a released Docsy version.
+- Open **YAML configuration** in French or Spanish to test the English fallback notice. Other untranslated guides are deliberately left in English.
+- Search for **testing workspace** in Preview / English, **espace de test** in Preview / Français, or **espacio de pruebas** in Preview / Español. Results and exports follow the selected context.
+
+These examples are configured only in Docsy’s own portal. Generated projects still start with one version and their default language.
+
 ## Configure versions and languages
 
 ```yaml

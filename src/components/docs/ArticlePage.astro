@@ -22,7 +22,7 @@ const previous = articles[index - 1]; const next = articles[index + 1];
     {article.config.description && <p class="article-description">{article.config.description}</p>}
   </header>
   <div class="article-body" lang={article.config.locale ?? defaultContext.locale} set:html={article.html} />
-  <nav class="article-reader-nav" aria-label="Article navigation">
+  <nav class="article-reader-nav" aria-label={message(context, 'articleNavigation')}>
     {previous ? <a href={articleUrl(previous, context)}>← {message(context, 'previous')}: {previous.title}</a> : <span />}
     {next && <a href={articleUrl(next, context)}>{message(context, 'next')}: {next.title} →</a>}
   </nav>
@@ -63,7 +63,7 @@ const previous = articles[index - 1]; const next = articles[index + 1];
     margin: 0;
   }
 
-  .article-body :global(pre) {
+  .article-body :global(pre:not(.cb-pre)) {
     max-width: 100%;
     margin: 22px 0 28px;
     overflow: auto;
@@ -72,7 +72,7 @@ const previous = articles[index - 1]; const next = articles[index + 1];
     background: var(--panel);
   }
 
-  .article-body :global(pre code) {
+  .article-body :global(pre:not(.cb-pre) code) {
     display: block;
     min-width: max-content;
     padding: 20px 22px;

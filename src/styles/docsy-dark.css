@@ -170,3 +170,19 @@ html[data-theme="dark"] .docs-content p code {
   background: color-mix(in srgb, var(--paper) 92%, var(--ink)) !important;
   border: 1px solid var(--line) !important;
 }
+
+html[data-theme="dark"] .sdk-item-kind,
+html[data-theme="dark"] .sdk-detail-name,
+html[data-theme="dark"] .sdk-detail-params li code,
+html[data-theme="dark"] .sdk-detail-type.is-return,
+html[data-theme="dark"] .sdk-detail-tag.is-async,
+html[data-theme="dark"] .sdk-detail-tag.is-static {
+  color: var(--ink) !important;
+}
+
+html[data-theme="dark"] .sdk-item-kind,
+html[data-theme="dark"] .sdk-detail-tag.is-async,
+html[data-theme="dark"] .sdk-detail-tag.is-static,
+html[data-theme="dark"] .sdk-values code {
+  background: color-mix(in srgb, var(--paper) 92%, var(--ink)) !important;
+}

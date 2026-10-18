@@ -4,6 +4,8 @@ import { assetPath, defaultContext, docsPath, docsyConfig, type DocsContext } fr
 import { message } from '../../lib/messages';
 import { API_SECTIONS, filterEndpoints, loadSwagger } from '../../lib/swagger-loader';
 import { findArticle, getArticleSources } from '../../lib/article-loader';
+import { getSdkSources, loadSdk } from '../../lib/sdk-loaders';
+import SDKLogo from './SDKLogo.astro';
 
 interface Props { context?: DocsContext }
 const { context = defaultContext } = Astro.props;
@@ -15,6 +17,7 @@ const apiSections = API_SECTIONS.map((section) => ({
   href: docsPath(`/api/${section.section}`, context),
 }));
 const articles = getArticleSources(context);
+const sdks = getSdkSources().map((source) => ({ source, doc: loadSdk({ ...source, source: source.versions[context.version] ?? source.source }) }));
 const available = (href: string) => !href.startsWith('/guides/') || Boolean(findArticle(href.slice(8), context));
 ---
 
@@ -42,10 +45,26 @@ const available = (href: string) => !href.startsWith('/guides/') || Boolean(find
     )}
   </div>
 
+  {sdks.length > 0 && <>
+    <h2 id="sdk-reference">{message(context, 'sdkHeading', home.sdkHeading)}</h2>
+    <p class="docs-section-description">{message(context, 'sdkDescription', home.sdkDescription)}</p>
+    <div class="docs-sdk-grid">
+      {sdks.map(({ source, doc }) => <a class="docs-sdk-card" href={docsPath(`/${source.slug}`, context)}>
+        <div class="docs-sdk-head">
+          <span class="docs-sdk-mark" aria-hidden="true">{source.icon ? <SDKLogo icon={assetPath(source.icon)} iconDark={source.iconDark ? assetPath(source.iconDark) : undefined} lazy /> : <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m8 6-6 6 6 6m8-12 6 6-6 6M14 3l-4 18" /></svg>}</span>
+          <span class="docs-sdk-arrow" aria-hidden="true">→</span>
+        </div>
+        <h3>{source.name}</h3>
+        <p>{source.overview}</p>
+        <div class="docs-sdk-meta">{doc.itemCount} {message(context, 'symbols', 'symbols')} · {source.adapter}</div>
+      </a>)}
+    </div>
+  </>}
+
   {articles.length > 0 && (
     <>
       <h2>{message(context, 'guides')}</h2>
-      <p class="docs-section-description">Authored Markdown registered under <code>content.articles</code> in <code>docsy.config.yaml</code>.</p>
+      <p class="docs-section-description">{message(context, 'articlesDescription')}</p>
       <div class:list={['docs-article-grid', { 'is-list': home.articleLayout === 'list' }]}>
         {articles.map((article) => (
           <ArticleCard article={article} layout={home.articleLayout} context={context} />

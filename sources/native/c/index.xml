@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.9.4" xml:lang="en-US">
+  <compound refid="structGreetingOptions" kind="struct"><name>GreetingOptions</name>
+    <member refid="structGreetingOptions_1a8eb131d0d3f4f6ab547fadf4f97510c6" kind="variable"><name>prefix</name></member>
+    <member refid="structGreetingOptions_1a7ab0200f0bae1ad9c8aa877270dfb560" kind="variable"><name>limit</name></member>
+  </compound>
+  <compound refid="greeter_8h" kind="file"><name>greeter.h</name>
+    <member refid="greeter_8h_1ac115185d9ed11e355765e4b0f445c062" kind="enum"><name>Mood</name></member>
+    <member refid="greeter_8h_1ac115185d9ed11e355765e4b0f445c062a9ef919d689041f694e2f9b448684cb64" kind="enumvalue"><name>Friendly</name></member>
+    <member refid="greeter_8h_1ac115185d9ed11e355765e4b0f445c062a8ac97b7ce79fa4c379fe16d2b45158bc" kind="enumvalue"><name>Formal</name></member>
+    <member refid="greeter_8h_1a8e8a368d7046f781661640488a133c4a" kind="function"><name>greet</name></member>
+    <member refid="greeter_8h_1ab9c6725be26980eda3eef1804c835262" kind="function"><name>greet_many</name></member>
+  </compound>
+  <compound refid="dir_70c18ff164f34fb4c03a5558287dc2ec" kind="dir"><name>tests/generators/input/c</name>
+  </compound>
+  <compound refid="dir_4736c8b5caf274455b5c461d9161d049" kind="dir"><name>tests/generators</name>
+  </compound>
+  <compound refid="dir_018e7f3dcbbdbb7de59599670b59440a" kind="dir"><name>tests/generators/input</name>
+  </compound>
+  <compound refid="dir_59425e443f801f1f2fd8bbe4959a3ccf" kind="dir"><name>tests</name>
+  </compound>
+</doxygenindex>

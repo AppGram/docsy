@@ -1,0 +1,55 @@
+---
+import CodeBlock from './CodeBlock.astro';
+import type { RequestExample } from '../../lib/request-examples';
+interface Props { id: string; title: string; examples: RequestExample[] }
+const { id, title, examples } = Astro.props;
+---
+<div class="request-examples" data-request-examples>
+  {examples.length > 1 && <label class="request-language">
+    <span>Request example</span>
+    <span class="request-language-control">
+      <select aria-label={`Request language for ${title}`} data-request-language>
+        {examples.map((example, index) => <option value={String(index)} data-language={example.language}>{example.label}</option>)}
+      </select>
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m4 6 4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+    </span>
+  </label>}
+  {examples.map((example, index) => <div id={`request-${id}-${index}`} data-request-panel data-language={example.language} hidden={index !== 0}>
+    <CodeBlock language={example.language} title={title} code={example.code} />
+  </div>)}
+</div>
+<script>
+  const groups = [...document.querySelectorAll<HTMLElement>('[data-request-examples]')];
+  const choose = (group: HTMLElement, language?: string) => {
+    const select = group.querySelector<HTMLSelectElement>('[data-request-language]');
+    if (!select) return;
+    if (language) {
+      const match = [...select.options].find((option) => option.dataset.language === language);
+      if (match) select.value = match.value;
+    }
+    const panels = [...group.querySelectorAll<HTMLElement>('[data-request-panel]')];
+    panels.forEach((panel, index) => { panel.hidden = index !== Number(select.value); });
+  };
+  let saved: string | undefined;
+  const key = `docsy-request-language:${document.body.dataset.docsBase || '/'}`;
+  try { saved = localStorage.getItem(key) || undefined; } catch {}
+  for (const group of groups) {
+    choose(group, saved);
+    group.querySelector<HTMLSelectElement>('[data-request-language]')?.addEventListener('change', (event) => {
+      const select = event.target as HTMLSelectElement;
+      const language = select.selectedOptions[0].dataset.language;
+      choose(group);
+      for (const other of groups) if (other !== group) choose(other, language);
+      try { localStorage.setItem(key, language || ''); } catch {}
+    });
+  }
+</script>
+<style is:global>
+  .request-examples { min-width: 0; max-width: 100%; }
+  .request-language { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 12px; margin: 0 0 10px; }
+  .request-language-control { position: relative; max-width: 70%; min-width: 0; color: var(--ink); }
+  .request-language-control svg { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+  .request-language select { appearance: none; width: 100%; max-width: 100%; min-width: 0; padding: 8px 36px 8px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); font: inherit; color-scheme: light dark; }
+  .request-language select:focus-visible { outline: 2px solid var(--violet); outline-offset: 2px; }
+  .request-examples [hidden] { display: none !important; }
+</style>

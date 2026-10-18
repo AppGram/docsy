@@ -12,6 +12,8 @@ const itemToMarkdown = (item: NormalizedItem): string => {
   const out: string[] = [];
   out.push(`### \`${item.name}\`  <sub>${item.kind}</sub>`);
   if (item.summary) out.push(item.summary);
+  if (item.remarks) out.push(`**Remarks** — ${item.remarks}`);
+  if (item.throws?.length) out.push(`**Errors**\n\n${item.throws.map((error) => `- \`${error.type}\`${error.description ? ` — ${error.description}` : ''}`).join('\n')}`);
   if (item.deprecated) {
     const note = typeof item.deprecated === 'string' ? `: ${item.deprecated}` : '';
     out.push(`> **Deprecated**${note}`);
@@ -51,12 +53,13 @@ const itemToMarkdown = (item: NormalizedItem): string => {
       }
     }
   }
+  if (item.relationships?.length) out.push(`**Related types** — ${item.relationships.map((relation) => `\`${relation.name}\``).join(', ')}`);
   if (item.declaration) {
     out.push(codeFence(item.language, item.declaration));
   }
   if (item.example) {
     out.push('**Example**');
-    out.push(codeFence(item.language, item.example));
+    out.push(codeFence(item.exampleLanguage || item.language, item.example));
   }
   return out.join('\n\n');
 };
@@ -71,8 +74,8 @@ const sdkToMarkdown = (doc: SDKDoc, sourceUrl: string): string => {
     `# ${doc.name}`,
     doc.overview,
     `> Source: ${sourceUrl}  \n> Language: ${doc.language}  \n> Symbols: ${doc.itemCount} across ${doc.categories.length} categories`,
-    '## Install',
-    codeFence('bash', doc.install),
+    ...(doc.install ? ['## Install', codeFence(doc.installLanguage ?? 'bash', doc.install)] : []),
+    ...(doc.quickstart ? ['## Quickstart', codeFence(doc.quickstart.language, doc.quickstart.code)] : []),
     '## Categories',
     doc.categories.map((c) => `- [${c.title}](#${c.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}) — ${c.items.length} items`).join('\n'),
   ].join('\n\n');
@@ -100,7 +103,10 @@ const endpointToMarkdown = (e: NormalizedEndpoint): string => {
   table('Header parameters', e.headerParams.map((p) => ({ name: p.name, type: type(p), required: p.required, description: p.description })));
   table('Body', e.bodyProperties);
   out.push('**Request**');
-  out.push(codeFence('bash', e.curl));
+  for (const example of e.requestExamples) {
+    out.push(`**${example.label}**`);
+    out.push(codeFence(example.language, example.code));
+  }
   if (e.responseExample) {
     out.push(`**Response** — \`${e.successCode ?? '200'}\``);
     out.push(codeFence('json', e.responseExample));

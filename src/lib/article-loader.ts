@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { createMarkdownProcessor, type MarkdownHeading } from '@astrojs/markdown-remark';
 import { defaultContext, docsPath, docsyConfig, resolveSource, type ArticleConfig, type DocsContext } from '../config';
 import { expandSnippets, plainMarkdown, richPlugins } from './rich-markdown';
+import { highlightArticles } from './code-renderer';
 
 export type ArticleDoc = {
   config: ArticleConfig;
@@ -10,7 +11,7 @@ export type ArticleDoc = {
   headings: MarkdownHeading[];
 };
 
-const processor = createMarkdownProcessor({ syntaxHighlight: false, remarkPlugins: richPlugins as any });
+const processor = createMarkdownProcessor({ syntaxHighlight: false, remarkPlugins: richPlugins as any, rehypePlugins: [highlightArticles] });
 
 export const getArticleSources = (context: DocsContext = defaultContext): ArticleConfig[] => {
   const slugs = [...new Set(docsyConfig.content.articles.map((article) => article.slug))];

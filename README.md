@@ -89,11 +89,15 @@ Both are the same generated OpenAPI page. Switching `theme.mode` and the YAML co
 - An editable Astro project with `AGENTS.md` and `DOCSY_BRIEF.md` for coding agents.
 - A YAML-configured maintenance workflow that turns source changes into validated draft documentation PRs.
 - OpenAPI 3 and Swagger 2 ingestion from local JSON/YAML or an HTTPS URL.
-- SDK adapters for TypeDoc, TypeDoc-lite, Swift symbol JSON, and Dartdoc.
+- Native SDK documentation imports for 20 source languages across 16 generator formats, plus compact metadata and AppGram/docc2json compatibility.
+- Real generator-produced fixtures, source code, generator versions, reproduction commands, and SHA-256 provenance checks—not hand-authored JSON presented as native coverage. [Coverage and limitations](content/ingestion/sdk-samples.md).
+- Rich native samples with multiple usage examples per language, batch APIs, properties, enum values, optional parameters, remarks, deprecations, and error contracts where supplied by the generator. Every reference reports its actual imported content; all 20 language logos are local SVGs configurable through YAML, including dark variants.
+- YAML-selected OpenAPI request examples in 24 language/client targets, synchronized language selection, and custom `x-codeSamples` overrides.
 - Generated API pages, navigation, search data, curl examples, response examples, and Markdown exports.
 - First-class authored Markdown articles for guides, tutorials, concepts, and migration notes.
 - Theme-aware callouts, numbered steps, synchronized tabs, code groups, accordions, and reusable Markdown snippets.
 - Full-text section search across article bodies, examples, API parameters, and SDK symbols.
+- Local, build-time syntax highlighting across articles, SDK declarations/examples, and API requests/responses, with language-logo badges and YAML-selectable light/dark palettes. No highlighter CDN or browser runtime is needed.
 - YAML-configured versions, locale routing, translated navigation, RTL, and explicit language fallbacks.
 - Static JSON/Markdown discovery plus an optional permission-aware JSON query endpoint for coding agents.
 - Strict source ingestion, OpenAPI reference/example validation, and internal/built-site link and anchor checks.
@@ -147,7 +151,7 @@ The repository is its own Docsy documentation portal. Every article is readable 
 | [Versions and localization](content/tutorials/versions-and-locales.md) | Stable context URLs, translated UI/navigation, fallbacks, and versioned ingestion |
 | [Content validation](content/tutorials/content-validation.md) | Source failures, API linting, schema examples, links, anchors, and component checks |
 | [Ingest an OpenAPI document](content/tutorials/openapi-ingestion.md) | Local and remote sources, section matching, and navigation |
-| [Ingest SDK documentation](content/ingestion/sdk-adapters.md) | TypeDoc, compact TypeDoc, Swift symbol, and Dart adapters |
+| [Ingest SDK documentation](content/ingestion/sdk-adapters.md) | Native artifact formats, 20-language coverage, portable metadata, and bounded private ingestion |
 | [Customize the default UI](content/customization/default-ui.md) | YAML brand tokens and the source-owned Astro interface |
 | [Protect documentation by tier](content/tutorials/lock-mode.md) | Ordered access rules, trusted headers, webhooks, and locked deployment |
 | [Deploy to GitHub Pages](content/deployment/github-pages.md) | Static Pages configuration and the included Actions workflow |
@@ -168,7 +172,7 @@ npm run dev
 
 Open [http://localhost:4321/docsy/](http://localhost:4321/docsy/).
 
-The portal uses the default light interface and renders every registered Markdown article. OpenAPI ingestion is disabled for the portal itself; the committed Nager.Date snapshot remains available as a deterministic example source.
+The portal uses the default light interface and renders every registered Markdown article. Its [Posts request sample](https://appgram.github.io/docsy/api/posts/) and [Comments query sample](https://appgram.github.io/docsy/api/comments/) are generated from the committed `sources/samples/jsonplaceholder.openapi.yaml` teaching subset. Copy GET, POST, PUT, PATCH, and DELETE curl examples against JSONPlaceholder; writes are simulated and not persisted. The Nager.Date snapshot remains available as an alternative source. [How the OpenAPI sample is configured](content/tutorials/openapi-ingestion.md).
 
 ## Generate a project
 
@@ -345,10 +349,14 @@ Every adapter normalizes its input into the same internal `SDKDoc` model. Render
 
 | Adapter | Input shape | Typical source |
 | --- | --- | --- |
-| `typedoc-lite` | `modules[0].types` plus `navigation.categories` | React or React Native metadata |
-| `swift-symbols` | Types, protocols, enums, and navigation categories | Swift symbol or docc2json output |
-| `dartdoc` | Flat Dartdoc symbol array | Flutter package documentation |
-| `typedoc` | TypeDoc project with top-level `children` | Browser or Node SDKs |
+| `typedoc-lite` | `modules[0].types` plus `navigation.categories` | Language-neutral compact metadata, including React/React Native |
+| `swift-symbols` | Types, protocols, enums, and navigation categories | [AppGram/docc2json](https://github.com/AppGram/docc2json) output from DocC archives |
+| `typedoc`, `jsdoc` | TypeDoc JSON / JSDoc doclets | TypeScript, JavaScript |
+| `sphinx`, `javadoc`, `dokka`, `scaladoc` | Native JSON-builder / HTML artifacts | Python, Java, Kotlin, Scala 2 |
+| `docfx` | ManagedReference YAML from compiler assemblies + XML | C#, F#, Visual Basic |
+| `doxygen` | Native XML directory | C, C++, Objective-C |
+| `godoc`, `rustdoc`, `docc` | `go doc -all` text / stable rustdoc HTML / DocC render JSON | Go, Rust, Swift |
+| `dartdoc`, `phpdoc`, `yard`, `exdoc`, `ldoc` | Native HTML or XML artifacts | Dart, PHP, Ruby, Elixir, Lua |
 
 ```yaml
 ingestion:
@@ -365,6 +373,24 @@ ingestion:
 ```
 
 Source paths are resolved from the project root.
+
+The portal uses original output generated from `tests/generators/input/`, with versions, commands, source hashes, and output hashes in `sources/native/provenance.json`. `npm test` verifies all 20 fixtures. Regenerate with `npm run fixtures:image` followed by `npm run fixtures:generate`; generators are not required to consume committed output. Native inputs remain outside `public/`, bounded by YAML file/byte limits; scripts, pickle/Marshal data, XML entities, and symlinks are not executed or followed. F# DocFX output may provide C# declarations, which are labeled C#. HTML selectors target the recorded generator versions. [Exact coverage and reproduction](content/ingestion/sdk-samples.md).
+
+### Multilingual OpenAPI requests
+
+```yaml
+ingestion:
+  openapi:
+    enabled: true
+    source: sources/openapi.yaml
+    apiBaseUrl: https://api.example.com
+    examples:
+      languages: [curl, javascript, typescript, python, go, java, kotlin, csharp, rust, swift, dart]
+      defaults: required
+      customSamples: true
+```
+
+The native select remembers the reader's choice across endpoint cards and pages. Auth headers, path/query values, and JSON request bodies come from the same normalized request. `x-codeSamples` can replace generated examples for a selected language with actual SDK calls. All configured samples also reach Markdown and agent exports. [Options and supported request targets](content/tutorials/openapi-ingestion.md).
 
 ## Permission-gated lock mode
 
@@ -570,4 +596,4 @@ Docsy is **source-available**, not OSI-approved open-source software. It is lice
 - Remove or hide the `LICENSE` terms or copyright notices from the Docsy software or copies you redistribute.
 - Circumvent license-key functionality or protected features if Docsy adds them.
 
-ELv2 does not require a visible "Powered by Docsy" or "Built by AppGram" notice on your published documentation. It does require the legal notices to remain with the software. ELv2 also does not require you to publish private modifications or prohibit commercial activity generally: consulting, integration, and using Docsy for a commercial product's own documentation remain allowed. The restriction is providing Docsy itself as a hosted or managed service. The [license text](LICENSE) controls if this summary and ELv2 differ.
+ELv2 does not require a visible "Powered by Docsy" or "Docsy provided by AppGram" notice on your published documentation. It does require the legal notices to remain with the software. ELv2 also does not require you to publish private modifications or prohibit commercial activity generally: consulting, integration, and using Docsy for a commercial product's own documentation remain allowed. The restriction is providing Docsy itself as a hosted or managed service. The [license text](LICENSE) controls if this summary and ELv2 differ.

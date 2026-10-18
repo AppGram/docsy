@@ -1,0 +1,2143 @@
+{
+	"schemaVersion": "2.0",
+	"id": 0,
+	"name": "@appgram/docsy",
+	"variant": "project",
+	"kind": 1,
+	"flags": {},
+	"children": [
+		{
+			"id": 18,
+			"name": "Mood",
+			"variant": "declaration",
+			"kind": 8,
+			"flags": {},
+			"comment": {
+				"summary": [
+					{
+						"kind": "text",
+						"text": "Supported greeting moods."
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 20,
+					"name": "Formal",
+					"variant": "declaration",
+					"kind": 16,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "typescript.ts",
+							"line": 38,
+							"character": 42
+						}
+					],
+					"type": {
+						"type": "literal",
+						"value": "formal"
+					}
+				},
+				{
+					"id": 19,
+					"name": "Friendly",
+					"variant": "declaration",
+					"kind": 16,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "typescript.ts",
+							"line": 38,
+							"character": 19
+						}
+					],
+					"type": {
+						"type": "literal",
+						"value": "friendly"
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Enumeration Members",
+					"children": [
+						20,
+						19
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "typescript.ts",
+					"line": 38,
+					"character": 12
+				}
+			]
+		},
+		{
+			"id": 1,
+			"name": "Greeter",
+			"variant": "declaration",
+			"kind": 128,
+			"flags": {},
+			"comment": {
+				"summary": [
+					{
+						"kind": "text",
+						"text": "Build personalized greetings without network access."
+					}
+				],
+				"blockTags": [
+					{
+						"tag": "@remarks",
+						"content": [
+							{
+								"kind": "text",
+								"text": "Create one greeter per locale. Prefix changes apply to future greetings."
+							}
+						]
+					},
+					{
+						"tag": "@example",
+						"content": [
+							{
+								"kind": "code",
+								"text": "```ts\nconst greeter = new Greeter();\ngreeter.prefix = 'Welcome';\nconsole.log(greeter.greet('Docsy'));\n```"
+							}
+						]
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 2,
+					"name": "constructor",
+					"variant": "declaration",
+					"kind": 512,
+					"flags": {},
+					"signatures": [
+						{
+							"id": 3,
+							"name": "Greeter",
+							"variant": "signature",
+							"kind": 16384,
+							"flags": {},
+							"type": {
+								"type": "reference",
+								"target": 1,
+								"name": "Greeter",
+								"package": "@appgram/docsy"
+							}
+						}
+					]
+				},
+				{
+					"id": 4,
+					"name": "prefix",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Greeting prefix."
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "typescript.ts",
+							"line": 10,
+							"character": 2
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					},
+					"defaultValue": "'Hello'"
+				},
+				{
+					"id": 5,
+					"name": "greet",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "typescript.ts",
+							"line": 17,
+							"character": 2
+						}
+					],
+					"signatures": [
+						{
+							"id": 6,
+							"name": "greet",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Greet a reader."
+									}
+								],
+								"blockTags": [
+									{
+										"tag": "@returns",
+										"content": [
+											{
+												"kind": "text",
+												"text": "A friendly greeting."
+											}
+										]
+									},
+									{
+										"tag": "@example",
+										"content": [
+											{
+												"kind": "code",
+												"text": "```ts\nnew Greeter().greet('Docsy');\n```"
+											}
+										]
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "typescript.ts",
+									"line": 17,
+									"character": 2
+								}
+							],
+							"parameters": [
+								{
+									"id": 7,
+									"name": "name",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"comment": {
+										"summary": [
+											{
+												"kind": "text",
+												"text": "Reader name."
+											}
+										]
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						}
+					]
+				},
+				{
+					"id": 12,
+					"name": "greetChecked",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "typescript.ts",
+							"line": 31,
+							"character": 2
+						}
+					],
+					"signatures": [
+						{
+							"id": 13,
+							"name": "greetChecked",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Validate a name before greeting it."
+									}
+								],
+								"blockTags": [
+									{
+										"tag": "@throws",
+										"content": [
+											{
+												"kind": "text",
+												"text": "Error when the name is empty."
+											}
+										]
+									},
+									{
+										"tag": "@example",
+										"content": [
+											{
+												"kind": "code",
+												"text": "```ts\nnew Greeter().greetChecked('Ada');\n```"
+											}
+										]
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "typescript.ts",
+									"line": 31,
+									"character": 2
+								}
+							],
+							"parameters": [
+								{
+									"id": 14,
+									"name": "name",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						}
+					]
+				},
+				{
+					"id": 8,
+					"name": "greetMany",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "typescript.ts",
+							"line": 25,
+							"character": 2
+						}
+					],
+					"signatures": [
+						{
+							"id": 9,
+							"name": "greetMany",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Greet several readers while preserving input order."
+									}
+								],
+								"blockTags": [
+									{
+										"tag": "@returns",
+										"content": [
+											{
+												"kind": "text",
+												"text": "Joined greetings."
+											}
+										]
+									},
+									{
+										"tag": "@example",
+										"content": [
+											{
+												"kind": "code",
+												"text": "```ts\nnew Greeter().greetMany(['Ada', 'Linus'], ' / ');\n```"
+											}
+										]
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "typescript.ts",
+									"line": 25,
+									"character": 2
+								}
+							],
+							"parameters": [
+								{
+									"id": 10,
+									"name": "names",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"comment": {
+										"summary": [
+											{
+												"kind": "text",
+												"text": "Reader names."
+											}
+										]
+									},
+									"type": {
+										"type": "array",
+										"elementType": {
+											"type": "intrinsic",
+											"name": "string"
+										}
+									}
+								},
+								{
+									"id": 11,
+									"name": "separator",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"comment": {
+										"summary": [
+											{
+												"kind": "text",
+												"text": "Separator between greetings."
+											}
+										]
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									},
+									"defaultValue": "'\\n'"
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						}
+					]
+				},
+				{
+					"id": 15,
+					"name": "hello",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "typescript.ts",
+							"line": 35,
+							"character": 2
+						}
+					],
+					"signatures": [
+						{
+							"id": 16,
+							"name": "hello",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Use greet instead."
+									}
+								],
+								"blockTags": [
+									{
+										"tag": "@deprecated",
+										"content": [
+											{
+												"kind": "text",
+												"text": "Use greet(name) for consistent formatting."
+											}
+										]
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "typescript.ts",
+									"line": 35,
+									"character": 2
+								}
+							],
+							"parameters": [
+								{
+									"id": 17,
+									"name": "name",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Constructors",
+					"children": [
+						2
+					]
+				},
+				{
+					"title": "Properties",
+					"children": [
+						4
+					]
+				},
+				{
+					"title": "Methods",
+					"children": [
+						5,
+						12,
+						8,
+						15
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "typescript.ts",
+					"line": 8,
+					"character": 13
+				}
+			]
+		},
+		{
+			"id": 21,
+			"name": "GreetingOptions",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"comment": {
+				"summary": [
+					{
+						"kind": "text",
+						"text": "Options accepted by greeting integrations."
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 22,
+					"name": "mood",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Desired greeting tone."
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "typescript.ts",
+							"line": 42,
+							"character": 2
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": 18,
+						"name": "Mood",
+						"package": "@appgram/docsy"
+					}
+				},
+				{
+					"id": 23,
+					"name": "prefix",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Optional salutation override."
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "typescript.ts",
+							"line": 44,
+							"character": 2
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
+						22,
+						23
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "typescript.ts",
+					"line": 40,
+					"character": 17
+				}
+			]
+		}
+	],
+	"groups": [
+		{
+			"title": "Enumerations",
+			"children": [
+				18
+			]
+		},
+		{
+			"title": "Classes",
+			"children": [
+				1
+			]
+		},
+		{
+			"title": "Interfaces",
+			"children": [
+				21
+			]
+		}
+	],
+	"packageName": "@appgram/docsy",
+	"readme": [
+		{
+			"kind": "text",
+			"text": "<p align=\"center\">\n  <picture>\n    <source media=\"(prefers-color-scheme: dark)\" srcset=\""
+		},
+		{
+			"kind": "relative-link",
+			"text": "docs/assets/docsy-logo-dark.png",
+			"target": 2
+		},
+		{
+			"kind": "text",
+			"text": "\" />\n    <source media=\"(prefers-color-scheme: light)\" srcset=\""
+		},
+		{
+			"kind": "relative-link",
+			"text": "docs/assets/docsy-logo.png",
+			"target": 3
+		},
+		{
+			"kind": "text",
+			"text": "\" />\n    <img src=\""
+		},
+		{
+			"kind": "relative-link",
+			"text": "docs/assets/docsy-logo.png",
+			"target": 3
+		},
+		{
+			"kind": "text",
+			"text": "\" alt=\"Docsy logo\" width=\"200\" />\n  </picture>\n</p>\n\n<h1 align=\"center\">Docsy</h1>\n\n<p align=\"center\"><strong>Documentation built for humans and coding agents.</strong></p>\n\n<p align=\"center\"><a href=\"https://appgram.github.io/docsy/\">Documentation</a> · <a href=\"https://github.com/AppGram/docsy/issues\">Issues</a></p>\n\nDocsy turns Markdown, OpenAPI, and SDK metadata into a self-hosted documentation portal. Readers get searchable guides and reference pages in a polished interface. Coding agents get Markdown exports to read, structured configuration to edit, and a local validation and build workflow to check their changes.\n\nProduct copy, navigation, visual tokens, ingestion, and access rules live in "
+		},
+		{
+			"kind": "code",
+			"text": "`docsy.config.yaml`"
+		},
+		{
+			"kind": "text",
+			"text": ". The generated Astro components and CSS stay in your repository, alongside "
+		},
+		{
+			"kind": "code",
+			"text": "`AGENTS.md`"
+		},
+		{
+			"kind": "text",
+			"text": " and "
+		},
+		{
+			"kind": "code",
+			"text": "`DOCSY_BRIEF.md`"
+		},
+		{
+			"kind": "text",
+			"text": " to guide your coding agent.\n\nDocsy can ship as a fully static site or as a server-rendered Node application with permission-gated documentation tiers and an optional agent query API. Node 22.22 or newer is required to build and run this release.\n\n> This project is independent of the Hugo theme with a similar name.\n\n## For humans and coding agents\n\nFor readers, Docsy brings authored guides, API endpoints, and SDK reference together with navigation, search, code examples, and light/dark themes.\n\nFor coding agents, the same documentation is available as Markdown. An agent working in the generated repository can update articles, configure ingestion and branding in YAML, or edit the Astro interface. The CLI includes project instructions and a customization brief, and "
+		},
+		{
+			"kind": "code",
+			"text": "`npm run validate`"
+		},
+		{
+			"kind": "text",
+			"text": " plus "
+		},
+		{
+			"kind": "code",
+			"text": "`npm run build`"
+		},
+		{
+			"kind": "text",
+			"text": " check the result before review.\n\nDocsy also includes a maintenance loop: a committed API or code change triggers an impact report, agent updates to articles and examples, independent validation, and a draft pull request with migration notes and unresolved questions.\n\nGive your coding agent a concrete task:\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```text\nRead AGENTS.md, DOCSY_BRIEF.md, and docsy.config.yaml.\nUse sources/openapi.json to write a first-request guide in content/.\nRegister it in YAML and add it to the sidebar.\nUse the API source for endpoint names, parameters, and examples.\nPreserve the existing UI and access rules.\nRun npm run validate and npm run build, then summarize the diff.\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\nUse "
+		},
+		{
+			"kind": "code",
+			"text": "`/format-md/...`"
+		},
+		{
+			"kind": "text",
+			"text": " exports when an agent needs to fetch documentation over HTTP. The Markdown menu exposes the current page's export; "
+		},
+		{
+			"kind": "code",
+			"text": "`?format=md`"
+		},
+		{
+			"kind": "text",
+			"text": " opens its Markdown view in the browser. Your chosen coding agent works with the repository, and you review and publish its changes through your normal Git workflow.\n\nSee [Work with coding agents]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "content/tutorials/coding-agents.md",
+			"target": 4
+		},
+		{
+			"kind": "text",
+			"text": ") for both reading and authoring workflows.\n\nAgents can also discover "
+		},
+		{
+			"kind": "code",
+			"text": "`/llms.txt`"
+		},
+		{
+			"kind": "text",
+			"text": ", download the full-text corpus at "
+		},
+		{
+			"kind": "code",
+			"text": "`/agent/index.json`"
+		},
+		{
+			"kind": "text",
+			"text": ", or read a page as JSON at "
+		},
+		{
+			"kind": "code",
+			"text": "`/agent/pages/guides/getting-started.json`"
+		},
+		{
+			"kind": "text",
+			"text": ". Prefix these paths with your configured "
+		},
+		{
+			"kind": "code",
+			"text": "`site.basePath`"
+		},
+		{
+			"kind": "text",
+			"text": ". JSON documents include Markdown and citation URLs.\n\nFor live retrieval, enable the Node-only endpoint:\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```yaml\nagent:\n  enabled: true\n  query: true\n  maxResults: 10\n  maxQueryLength: 500\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```bash\ncurl 'https://docs.example.com/docs/agent/query.json?q=authentication&version=current&locale=en&limit=5'\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\nThis returns ranked source excerpts and JSON/Markdown links, not a generated answer. It requires no AI provider key. Static deployments retain JSON/Markdown exports but cannot execute query parameters; keep "
+		},
+		{
+			"kind": "code",
+			"text": "`agent.query: false`"
+		},
+		{
+			"kind": "text",
+			"text": " for GitHub Pages. In locked mode, every retrieval surface follows the existing page permissions. [Search and agent API guide]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "content/tutorials/search-and-agents.md",
+			"target": 5
+		},
+		{
+			"kind": "text",
+			"text": ").\n\n## Preview\n\nThese screenshots show the default interface configured for the public Nager.Date OpenAPI—not AppGram product documentation.\n\n### Light and dark\n\n<table>\n  <tr>\n    <th width=\"50%\">Light</th>\n    <th width=\"50%\">Dark</th>\n  </tr>\n  <tr>\n    <td><img src=\""
+		},
+		{
+			"kind": "relative-link",
+			"text": "docs/assets/docsy-light.png",
+			"target": 6
+		},
+		{
+			"kind": "text",
+			"text": "\" alt=\"Docsy OpenAPI reference using the light theme\" /></td>\n    <td><img src=\""
+		},
+		{
+			"kind": "relative-link",
+			"text": "docs/assets/docsy-dark.png",
+			"target": 7
+		},
+		{
+			"kind": "text",
+			"text": "\" alt=\"Docsy OpenAPI reference using the dark theme\" /></td>\n  </tr>\n</table>\n\nBoth are the same generated OpenAPI page. Switching "
+		},
+		{
+			"kind": "code",
+			"text": "`theme.mode`"
+		},
+		{
+			"kind": "text",
+			"text": " and the YAML color tokens changes the presentation without replacing the interface.\n\n### Permission gate\n\n![A Docsy API page protected by a configured documentation tier]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "docs/assets/docsy-lock-mode.png",
+			"target": 8
+		},
+		{
+			"kind": "text",
+			"text": ")\n\n## What Docsy gives you\n\n- An editable Astro project with "
+		},
+		{
+			"kind": "code",
+			"text": "`AGENTS.md`"
+		},
+		{
+			"kind": "text",
+			"text": " and "
+		},
+		{
+			"kind": "code",
+			"text": "`DOCSY_BRIEF.md`"
+		},
+		{
+			"kind": "text",
+			"text": " for coding agents.\n- A YAML-configured maintenance workflow that turns source changes into validated draft documentation PRs.\n- OpenAPI 3 and Swagger 2 ingestion from local JSON/YAML or an HTTPS URL.\n- Native SDK documentation imports for 20 source languages across 16 generator formats, plus compact metadata and AppGram/docc2json compatibility.\n- Real generator-produced fixtures, source code, generator versions, reproduction commands, and SHA-256 provenance checks—not hand-authored JSON presented as native coverage. [Coverage and limitations]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "content/ingestion/sdk-samples.md",
+			"target": 9
+		},
+		{
+			"kind": "text",
+			"text": ").\n- YAML-selected OpenAPI request examples in 24 language/client targets, synchronized language selection, and custom "
+		},
+		{
+			"kind": "code",
+			"text": "`x-codeSamples`"
+		},
+		{
+			"kind": "text",
+			"text": " overrides.\n- Generated API pages, navigation, search data, curl examples, response examples, and Markdown exports.\n- First-class authored Markdown articles for guides, tutorials, concepts, and migration notes.\n- Theme-aware callouts, numbered steps, synchronized tabs, code groups, accordions, and reusable Markdown snippets.\n- Full-text section search across article bodies, examples, API parameters, and SDK symbols.\n- YAML-configured versions, locale routing, translated navigation, RTL, and explicit language fallbacks.\n- Static JSON/Markdown discovery plus an optional permission-aware JSON query endpoint for coding agents.\n- Strict source ingestion, OpenAPI reference/example validation, and internal/built-site link and anchor checks.\n- One YAML file for branding, content, navigation, routes, ingestion, theme tokens, and access rules.\n- A persisted light/dark theme toggle with independently configurable palettes.\n- Open mode for static hosting and lock mode for server-side permission checks.\n- Header-based identity for trusted auth proxies or webhook authorization for an existing application.\n- Docker and Docker Compose files for a short self-hosting path.\n- System font stacks by default: no hosted font service and no generated typographic tracking.\n\n## The mental model\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```text\nMarkdown / OpenAPI / SDK metadata\n        │\n        ▼\n content loaders/adapters ──► normalized docs model\n        │\n        ▼\n docsy.config.yaml ───► routes, navigation, theme, access rules\n        │\n        ▼\n editable Astro source\n        │\n        ├── open mode   ──► static files in release/\n        └── locked mode ──► Node server with request-time authorization\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\nThe important boundary is simple:\n\n- YAML owns durable configuration and content wiring.\n- Astro and CSS own the interface.\n- The article loader and ingestion adapters own source-format differences.\n- Lock mode owns request-time authorization, not user authentication itself.\n\nDocsy never requires a hosted control plane. A generated project builds and runs from its own repository.\n\n## Documentation\n\nThe repository is its own Docsy documentation portal. Every article is readable on GitHub and rendered at [appgram.github.io/docsy](https://appgram.github.io/docsy/) through "
+		},
+		{
+			"kind": "code",
+			"text": "`content.articles`"
+		},
+		{
+			"kind": "text",
+			"text": ":\n\n| Article | What it explains |\n| --- | --- |\n| [Get started with Docsy]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "content/getting-started.md",
+			"target": 10
+		},
+		{
+			"kind": "text",
+			"text": ") | Run the portal, generate a project, and understand the ownership boundary |\n| [Work with coding agents]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "content/tutorials/coding-agents.md",
+			"target": 4
+		},
+		{
+			"kind": "text",
+			"text": ") | Read Markdown exports, give an agent a project brief, and validate documentation changes |\n| [Maintain documentation automatically]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "content/tutorials/documentation-maintenance.md",
+			"target": 11
+		},
+		{
+			"kind": "text",
+			"text": ") | Detect affected docs, correct stale examples, explain breaking changes, and open validated draft PRs |\n| [Configure Docsy with YAML]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "content/tutorials/yaml-configuration.md",
+			"target": 12
+		},
+		{
+			"kind": "text",
+			"text": ") | The configuration lifecycle, top-level sections, paths, and environment values |\n| [Write authored documentation]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "content/tutorials/authored-articles.md",
+			"target": 13
+		},
+		{
+			"kind": "text",
+			"text": ") | Markdown articles, YAML registration, navigation, search, exports, and permissions |\n| [Rich article components]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "content/tutorials/rich-articles.md",
+			"target": 14
+		},
+		{
+			"kind": "text",
+			"text": ") | Callouts, steps, tabs, code groups, accordions, and reusable snippets |\n| [Full-text search and agent JSON API]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "content/tutorials/search-and-agents.md",
+			"target": 5
+		},
+		{
+			"kind": "text",
+			"text": ") | Static retrieval exports, the optional Node query endpoint, and permission filtering |\n| [Versions and localization]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "content/tutorials/versions-and-locales.md",
+			"target": 15
+		},
+		{
+			"kind": "text",
+			"text": ") | Stable context URLs, translated UI/navigation, fallbacks, and versioned ingestion |\n| [Content validation]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "content/tutorials/content-validation.md",
+			"target": 16
+		},
+		{
+			"kind": "text",
+			"text": ") | Source failures, API linting, schema examples, links, anchors, and component checks |\n| [Ingest an OpenAPI document]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "content/tutorials/openapi-ingestion.md",
+			"target": 17
+		},
+		{
+			"kind": "text",
+			"text": ") | Local and remote sources, section matching, and navigation |\n| [Ingest SDK documentation]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "content/ingestion/sdk-adapters.md",
+			"target": 18
+		},
+		{
+			"kind": "text",
+			"text": ") | Native artifact formats, 20-language coverage, portable metadata, and bounded private ingestion |\n| [Customize the default UI]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "content/customization/default-ui.md",
+			"target": 19
+		},
+		{
+			"kind": "text",
+			"text": ") | YAML brand tokens and the source-owned Astro interface |\n| [Protect documentation by tier]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "content/tutorials/lock-mode.md",
+			"target": 20
+		},
+		{
+			"kind": "text",
+			"text": ") | Ordered access rules, trusted headers, webhooks, and locked deployment |\n| [Deploy to GitHub Pages]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "content/deployment/github-pages.md",
+			"target": 21
+		},
+		{
+			"kind": "text",
+			"text": ") | Static Pages configuration and the included Actions workflow |\n| [Self-host Docsy]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "content/deployment/self-hosting.md",
+			"target": 22
+		},
+		{
+			"kind": "text",
+			"text": ") | Static, Node, and Docker deployment shapes |\n| [Understand the Docsy license]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "content/reference/license.md",
+			"target": 23
+		},
+		{
+			"kind": "text",
+			"text": ") | What ELv2 permits, what it prohibits, and how it applies to generated sites |\n| [CLI reference]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "content/reference/cli.md",
+			"target": 24
+		},
+		{
+			"kind": "text",
+			"text": ") | Project generation, validation, building, and production startup |\n\n## Quick start\n\nUse Node 22.22 or newer. Run Docsy's own documentation portal:\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```bash\ngit clone https://github.com/AppGram/docsy.git docsy\ncd docsy\nnpm ci\nnpm run dev\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\nOpen [http://localhost:4321/docsy/](http://localhost:4321/docsy/).\n\nThe portal uses the default light interface and renders every registered Markdown article. Its [Posts request sample](https://appgram.github.io/docsy/api/posts/) and [Comments query sample](https://appgram.github.io/docsy/api/comments/) are generated from the committed "
+		},
+		{
+			"kind": "code",
+			"text": "`sources/samples/jsonplaceholder.openapi.yaml`"
+		},
+		{
+			"kind": "text",
+			"text": " teaching subset. Copy GET, POST, PUT, PATCH, and DELETE curl examples against JSONPlaceholder; writes are simulated and not persisted. The Nager.Date snapshot remains available as an alternative source. [How the OpenAPI sample is configured]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "content/tutorials/openapi-ingestion.md",
+			"target": 17
+		},
+		{
+			"kind": "text",
+			"text": ").\n\n## Generate a project\n\nFrom a clone of this repository:\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```bash\nnpm run create -- ../holiday-docs \\\n  --yes \\\n  --name \"Holiday API\" \\\n  --openapi ./sources/openapi.json \\\n  --api-base https://date.nager.at \\\n  --base /docs\n\ncd ../holiday-docs\nnpm run dev\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\nUse an OpenAPI URL instead of a local file when desired:\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```bash\nnpm run create -- ../my-docs \\\n  --yes \\\n  --name \"Acme API\" \\\n  --openapi https://api.example.com/openapi.json \\\n  --api-base https://api.example.com \\\n  --base /docs \\\n  --locked\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\nWithout "
+		},
+		{
+			"kind": "code",
+			"text": "`--yes`"
+		},
+		{
+			"kind": "text",
+			"text": ", the CLI asks for the project directory, OpenAPI source, product name, mount path, and access mode. It then:\n\n1. Parses the OpenAPI document.\n2. Groups operations into sections using tags and path segments.\n3. Copies the editable Astro interface.\n4. Writes a validated "
+		},
+		{
+			"kind": "code",
+			"text": "`docsy.config.yaml`"
+		},
+		{
+			"kind": "text",
+			"text": ".\n5. Copies local ingestion sources into "
+		},
+		{
+			"kind": "code",
+			"text": "`sources/`"
+		},
+		{
+			"kind": "text",
+			"text": ".\n6. Adds "
+		},
+		{
+			"kind": "code",
+			"text": "`AGENTS.md`"
+		},
+		{
+			"kind": "text",
+			"text": " and "
+		},
+		{
+			"kind": "code",
+			"text": "`DOCSY_BRIEF.md`"
+		},
+		{
+			"kind": "text",
+			"text": " for safe AI-assisted customization.\n7. Installs dependencies unless "
+		},
+		{
+			"kind": "code",
+			"text": "`--no-install`"
+		},
+		{
+			"kind": "text",
+			"text": " is supplied.\n\nRun "
+		},
+		{
+			"kind": "code",
+			"text": "`node scripts/create-docsy.mjs --help`"
+		},
+		{
+			"kind": "text",
+			"text": " for every option.\n\n## Close the documentation maintenance loop\n\nGenerated projects include a GitHub workflow and a local maintenance command. Enable the workflow through YAML:\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```yaml\nmaintenance:\n  enabled: true\n  watch: [sources/**, src/**]\n  docs: [content/**/*.md, README.md]\n  breakingChangesFile: content/maintenance/breaking-changes.md\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\nAdd the "
+		},
+		{
+			"kind": "code",
+			"text": "`OPENAI_API_KEY`"
+		},
+		{
+			"kind": "text",
+			"text": " Actions secret and allow GitHub Actions to create pull requests. On a default-branch source change, the workflow compares revisions, finds likely affected docs and stale examples, and runs Codex to prepare updates. A fresh job checks the allowed diff and runs validation and the production build. A final job opens a draft PR on a dedicated branch. Empty updates produce no PR; a failed check stops publication.\n\nInspect or run it locally:\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```bash\nnpm run maintain -- plan --base HEAD~1\nnpm run maintain -- run --base HEAD~1\n# With authenticated gh, also create and push a draft PR:\nnpm run maintain -- run --base HEAD~1 --pr\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\nThe planner compares local OpenAPI and Swagger contracts, flags likely breaking changes, and maps changed paths and symbols to Markdown articles. The agent uses the source diff to update guides and explain migrations. Use committed snapshots to track remote ingestion changes; the workflow reacts to Git changes rather than polling upstream URLs. [Setup, scope, and review details]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "content/tutorials/documentation-maintenance.md",
+			"target": 11
+		},
+		{
+			"kind": "text",
+			"text": ").\n\n## Configure it with YAML\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "`docsy.config.yaml`"
+		},
+		{
+			"kind": "text",
+			"text": " is the source of truth for the generated site:\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```yaml\nsite:\n  name: Acme API\n  title: Acme API Documentation\n  origin: ${DOCSY_ORIGIN:-http://localhost:4321}\n  basePath: /docs\n  logo: assets/docsy-mark.svg\n\ntheme:\n  mode: dark\n  colors:\n    ink: \"#f5f5f5\"\n    muted: \"#a3a3a3\"\n    line: \"#262626\"\n    paper: \"#000000\"\n    accent: \"#ffffff\"\n  fonts:\n    display: '\"Aptos Display\", \"SF Pro Display\", \"Helvetica Neue\", sans-serif'\n    body: '\"Aptos\", \"SF Pro Text\", \"Helvetica Neue\", sans-serif'\n    mono: 'ui-monospace, \"SF Mono\", Menlo, monospace'\n\ncontent:\n  articles:\n    - slug: getting-started\n      source: content/getting-started.md\n      title: Getting started\n      description: Make your first authenticated request.\n      eyebrow: GUIDE\n\nnavigation:\n  - title: API Reference\n    items:\n      - title: Users\n        href: /api/users\n\ningestion:\n  sdks: []\n  openapi:\n    enabled: true\n    source: sources/openapi.yaml\n    apiBaseUrl: https://api.example.com\n    sections:\n      - section: users\n        title: Users\n        description: Create and manage users.\n        tags: [users]\n        paths: [/users]\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "`${ENV_NAME}`"
+		},
+		{
+			"kind": "text",
+			"text": " and "
+		},
+		{
+			"kind": "code",
+			"text": "`${ENV_NAME:-fallback}`"
+		},
+		{
+			"kind": "text",
+			"text": " placeholders are expanded before validation. Set "
+		},
+		{
+			"kind": "code",
+			"text": "`DOCSY_CONFIG`"
+		},
+		{
+			"kind": "text",
+			"text": " to use a different YAML file without changing source.\n\nConfiguration errors fail with their exact YAML path. Run this before committing:\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```bash\nnpm run validate\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\n## Authored Markdown articles\n\nDocsy can render documentation you write directly; OpenAPI and SDK ingestion are optional companions, not the only content model.\n\nCreate a Markdown file outside "
+		},
+		{
+			"kind": "code",
+			"text": "`public/`"
+		},
+		{
+			"kind": "text",
+			"text": ":\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```text\ncontent/guides/authentication.md\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\nRegister it in YAML:\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```yaml\ncontent:\n  articles:\n    - slug: authentication\n      source: content/guides/authentication.md\n      title: Authentication\n      description: Create a token and authenticate API requests.\n      eyebrow: GUIDE\n\nnavigation:\n  - title: Guides\n    items:\n      - title: Authentication\n        href: /guides/authentication\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\nDocsy serves it at "
+		},
+		{
+			"kind": "code",
+			"text": "`/guides/authentication`"
+		},
+		{
+			"kind": "text",
+			"text": " underneath "
+		},
+		{
+			"kind": "code",
+			"text": "`site.basePath`"
+		},
+		{
+			"kind": "text",
+			"text": ". Nested slugs such as "
+		},
+		{
+			"kind": "code",
+			"text": "`platform/security/authentication`"
+		},
+		{
+			"kind": "text",
+			"text": " create nested guide URLs. Level-two and level-three headings populate the page rail.\n\nAuthored articles automatically participate in navigation, search, Markdown export, and lock-mode permission rules. Keep protected Markdown outside "
+		},
+		{
+			"kind": "code",
+			"text": "`public/`"
+		},
+		{
+			"kind": "text",
+			"text": ", because files under "
+		},
+		{
+			"kind": "code",
+			"text": "`public/`"
+		},
+		{
+			"kind": "text",
+			"text": " are served as unprotected static assets.\n\n## OpenAPI ingestion\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "`ingestion.openapi.source`"
+		},
+		{
+			"kind": "text",
+			"text": " accepts:\n\n- A project-relative "
+		},
+		{
+			"kind": "code",
+			"text": "`.json`"
+		},
+		{
+			"kind": "text",
+			"text": ", "
+		},
+		{
+			"kind": "code",
+			"text": "`.yaml`"
+		},
+		{
+			"kind": "text",
+			"text": ", or "
+		},
+		{
+			"kind": "code",
+			"text": "`.yml`"
+		},
+		{
+			"kind": "text",
+			"text": " file.\n- An "
+		},
+		{
+			"kind": "code",
+			"text": "`http://`"
+		},
+		{
+			"kind": "text",
+			"text": " or "
+		},
+		{
+			"kind": "code",
+			"text": "`https://`"
+		},
+		{
+			"kind": "text",
+			"text": " URL fetched during the build.\n\nThe adapter handles Swagger 2 and OpenAPI 3 parameters, request bodies, response content, component schemas, examples, and security declarations. Each configured section matches operations by tag substring, path substring, or both.\n\nFor deterministic, private, or air-gapped builds, commit a spec snapshot under "
+		},
+		{
+			"kind": "code",
+			"text": "`sources/`"
+		},
+		{
+			"kind": "text",
+			"text": ". Do not place a protected specification under "
+		},
+		{
+			"kind": "code",
+			"text": "`public/`"
+		},
+		{
+			"kind": "text",
+			"text": "; files there bypass lock-mode middleware.\n\n## SDK ingestion adapters\n\nEvery adapter normalizes its input into the same internal "
+		},
+		{
+			"kind": "code",
+			"text": "`SDKDoc`"
+		},
+		{
+			"kind": "text",
+			"text": " model. Rendering, search, and Markdown export therefore do not need to know which documentation generator produced the source.\n\n| Adapter | Input shape | Typical source |\n| --- | --- | --- |\n| "
+		},
+		{
+			"kind": "code",
+			"text": "`typedoc-lite`"
+		},
+		{
+			"kind": "text",
+			"text": " | "
+		},
+		{
+			"kind": "code",
+			"text": "`modules[0].types`"
+		},
+		{
+			"kind": "text",
+			"text": " plus "
+		},
+		{
+			"kind": "code",
+			"text": "`navigation.categories`"
+		},
+		{
+			"kind": "text",
+			"text": " | Language-neutral compact metadata, including React/React Native |\n| "
+		},
+		{
+			"kind": "code",
+			"text": "`swift-symbols`"
+		},
+		{
+			"kind": "text",
+			"text": " | Types, protocols, enums, and navigation categories | [AppGram/docc2json](https://github.com/AppGram/docc2json) output from DocC archives |\n| "
+		},
+		{
+			"kind": "code",
+			"text": "`typedoc`"
+		},
+		{
+			"kind": "text",
+			"text": ", "
+		},
+		{
+			"kind": "code",
+			"text": "`jsdoc`"
+		},
+		{
+			"kind": "text",
+			"text": " | TypeDoc JSON / JSDoc doclets | TypeScript, JavaScript |\n| "
+		},
+		{
+			"kind": "code",
+			"text": "`sphinx`"
+		},
+		{
+			"kind": "text",
+			"text": ", "
+		},
+		{
+			"kind": "code",
+			"text": "`javadoc`"
+		},
+		{
+			"kind": "text",
+			"text": ", "
+		},
+		{
+			"kind": "code",
+			"text": "`dokka`"
+		},
+		{
+			"kind": "text",
+			"text": ", "
+		},
+		{
+			"kind": "code",
+			"text": "`scaladoc`"
+		},
+		{
+			"kind": "text",
+			"text": " | Native JSON-builder / HTML artifacts | Python, Java, Kotlin, Scala 2 |\n| "
+		},
+		{
+			"kind": "code",
+			"text": "`docfx`"
+		},
+		{
+			"kind": "text",
+			"text": " | ManagedReference YAML from compiler assemblies + XML | C#, F#, Visual Basic |\n| "
+		},
+		{
+			"kind": "code",
+			"text": "`doxygen`"
+		},
+		{
+			"kind": "text",
+			"text": " | Native XML directory | C, C++, Objective-C |\n| "
+		},
+		{
+			"kind": "code",
+			"text": "`godoc`"
+		},
+		{
+			"kind": "text",
+			"text": ", "
+		},
+		{
+			"kind": "code",
+			"text": "`rustdoc`"
+		},
+		{
+			"kind": "text",
+			"text": ", "
+		},
+		{
+			"kind": "code",
+			"text": "`docc`"
+		},
+		{
+			"kind": "text",
+			"text": " | "
+		},
+		{
+			"kind": "code",
+			"text": "`go doc -all`"
+		},
+		{
+			"kind": "text",
+			"text": " text / stable rustdoc HTML / DocC render JSON | Go, Rust, Swift |\n| "
+		},
+		{
+			"kind": "code",
+			"text": "`dartdoc`"
+		},
+		{
+			"kind": "text",
+			"text": ", "
+		},
+		{
+			"kind": "code",
+			"text": "`phpdoc`"
+		},
+		{
+			"kind": "text",
+			"text": ", "
+		},
+		{
+			"kind": "code",
+			"text": "`yard`"
+		},
+		{
+			"kind": "text",
+			"text": ", "
+		},
+		{
+			"kind": "code",
+			"text": "`exdoc`"
+		},
+		{
+			"kind": "text",
+			"text": ", "
+		},
+		{
+			"kind": "code",
+			"text": "`ldoc`"
+		},
+		{
+			"kind": "text",
+			"text": " | Native HTML or XML artifacts | Dart, PHP, Ruby, Elixir, Lua |\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```yaml\ningestion:\n  sdks:\n    - id: javascript\n      slug: javascript-sdk\n      adapter: typedoc\n      source: sources/javascript/docs.json\n      name: JavaScript SDK\n      language: typescript\n      install: npm install @acme/sdk\n      overview: Typed client for the Acme API.\n      icon: assets/sdks/javascript.svg\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\nSource paths are resolved from the project root.\n\nThe portal uses original output generated from "
+		},
+		{
+			"kind": "code",
+			"text": "`tests/generators/input/`"
+		},
+		{
+			"kind": "text",
+			"text": ", with versions, commands, source hashes, and output hashes in "
+		},
+		{
+			"kind": "code",
+			"text": "`sources/native/provenance.json`"
+		},
+		{
+			"kind": "text",
+			"text": ". "
+		},
+		{
+			"kind": "code",
+			"text": "`npm test`"
+		},
+		{
+			"kind": "text",
+			"text": " verifies all 20 fixtures. Regenerate with "
+		},
+		{
+			"kind": "code",
+			"text": "`npm run fixtures:image`"
+		},
+		{
+			"kind": "text",
+			"text": " followed by "
+		},
+		{
+			"kind": "code",
+			"text": "`npm run fixtures:generate`"
+		},
+		{
+			"kind": "text",
+			"text": "; generators are not required to consume committed output. Native inputs remain outside "
+		},
+		{
+			"kind": "code",
+			"text": "`public/`"
+		},
+		{
+			"kind": "text",
+			"text": ", bounded by YAML file/byte limits; scripts, pickle/Marshal data, XML entities, and symlinks are not executed or followed. F# DocFX output may provide C# declarations, which are labeled C#. HTML selectors target the recorded generator versions. [Exact coverage and reproduction]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "content/ingestion/sdk-samples.md",
+			"target": 9
+		},
+		{
+			"kind": "text",
+			"text": ").\n\n### Multilingual OpenAPI requests\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```yaml\ningestion:\n  openapi:\n    enabled: true\n    source: sources/openapi.yaml\n    apiBaseUrl: https://api.example.com\n    examples:\n      languages: [curl, javascript, typescript, python, go, java, kotlin, csharp, rust, swift, dart]\n      defaults: required\n      customSamples: true\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\nThe native select remembers the reader's choice across endpoint cards and pages. Auth headers, path/query values, and JSON request bodies come from the same normalized request. "
+		},
+		{
+			"kind": "code",
+			"text": "`x-codeSamples`"
+		},
+		{
+			"kind": "text",
+			"text": " can replace generated examples for a selected language with actual SDK calls. All configured samples also reach Markdown and agent exports. [Options and supported request targets]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "content/tutorials/openapi-ingestion.md",
+			"target": 17
+		},
+		{
+			"kind": "text",
+			"text": ").\n\n## Permission-gated lock mode\n\nOpen mode is the static default:\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```yaml\naccess:\n  mode: open\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\nLocked mode switches the Astro build to Node SSR and evaluates ordered access rules on every protected request:\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```yaml\naccess:\n  mode: locked\n  provider:\n    type: header\n    tierHeader: x-docsy-tiers\n    userHeader: x-docsy-user\n  tiers:\n    developer:\n      label: Developer\n    enterprise:\n      label: Enterprise\n      description: Restricted platform operations.\n  rules:\n    - pattern: /api/license-keys\n      tiers: [enterprise]\n    - pattern: /api/**\n      tiers: [developer, enterprise]\n  gate:\n    title: This API reference is locked.\n    description: Sign in with an account that can access this reference.\n    loginUrl: https://app.example.com/login\n    loginLabel: Sign in to continue\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\nRules are evaluated from top to bottom. "
+		},
+		{
+			"kind": "code",
+			"text": "`*`"
+		},
+		{
+			"kind": "text",
+			"text": " matches one path segment; "
+		},
+		{
+			"kind": "code",
+			"text": "`**`"
+		},
+		{
+			"kind": "text",
+			"text": " matches any number of segments. The same rules protect rendered pages and Markdown exports, and search results are filtered to the visitor's tiers.\n\n### Trusted-header provider\n\nUse this behind Cloudflare Access, oauth2-proxy, an ingress gateway, or your own authentication proxy. The proxy must:\n\n1. Remove client-supplied copies of the identity headers.\n2. Authenticate the visitor.\n3. Set the trusted tier and optional user headers.\n4. Prevent visitors from reaching Docsy around the proxy.\n\nTier values may be comma- or space-separated.\n\n### Webhook provider\n\nIf authorization belongs in your application:\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```yaml\naccess:\n  mode: locked\n  provider:\n    type: webhook\n    endpoint: https://app.example.com/internal/docsy/authorize\n    method: POST\n    forwardHeaders: [cookie, authorization]\n    pathHeader: x-docsy-path\n    timeoutMs: 3000\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\nThe endpoint returns:\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```json\n{\n  \"authenticated\": true,\n  \"subject\": \"user_123\",\n  \"tiers\": [\"developer\"]\n}\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\nTimeouts, errors, and non-2xx responses fail closed.\n\n## Customize the interface\n\nStart with YAML for branding and stable tokens. Edit source when the request is truly about layout or behavior:\n\n| Concern | File |\n| --- | --- |\n| Product, routes, colors, fonts, access | "
+		},
+		{
+			"kind": "code",
+			"text": "`docsy.config.yaml`"
+		},
+		{
+			"kind": "text",
+			"text": " |\n| Shell, header, search, mobile navigation | "
+		},
+		{
+			"kind": "code",
+			"text": "`src/layouts/DocsLayout.astro`"
+		},
+		{
+			"kind": "text",
+			"text": " |\n| API and SDK presentation | "
+		},
+		{
+			"kind": "code",
+			"text": "`src/components/docs/`"
+		},
+		{
+			"kind": "text",
+			"text": " |\n| Base design primitives | "
+		},
+		{
+			"kind": "code",
+			"text": "`src/styles/docsy.css`"
+		},
+		{
+			"kind": "text",
+			"text": " |\n| YAML validation and path helpers | "
+		},
+		{
+			"kind": "code",
+			"text": "`src/config.ts`"
+		},
+		{
+			"kind": "text",
+			"text": " |\n| OpenAPI normalization | "
+		},
+		{
+			"kind": "code",
+			"text": "`src/lib/swagger-loader.ts`"
+		},
+		{
+			"kind": "text",
+			"text": " |\n| SDK normalization | "
+		},
+		{
+			"kind": "code",
+			"text": "`src/lib/sdk-loaders.ts`"
+		},
+		{
+			"kind": "text",
+			"text": " |\n\nGenerated projects include a customization brief for coding agents. Its rule is deliberate: preserve the working reference interface by default, use YAML for configuration, and touch Astro/CSS only for an explicitly requested UI change.\n\n## Self-hosting\n\n### Docker Compose\n\nThis is the shortest path for both access modes:\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```bash\ndocker compose up --build\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\nOpen [http://localhost:8080/docs/](http://localhost:8080/docs/).\n\nThe container detects the build type automatically. Open mode with "
+		},
+		{
+			"kind": "code",
+			"text": "`agent.query: false`"
+		},
+		{
+			"kind": "text",
+			"text": " serves staged static files; locked mode or "
+		},
+		{
+			"kind": "code",
+			"text": "`agent.query: true`"
+		},
+		{
+			"kind": "text",
+			"text": " starts the Astro Node server. The runtime image includes authored content and snippets as well as ingestion sources.\n\n### Static host\n\nFor "
+		},
+		{
+			"kind": "code",
+			"text": "`access.mode: open`"
+		},
+		{
+			"kind": "text",
+			"text": ":\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```bash\nnpm ci\nnpm run build\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\nPublish "
+		},
+		{
+			"kind": "code",
+			"text": "`release/`"
+		},
+		{
+			"kind": "text",
+			"text": " as the web root. The configured "
+		},
+		{
+			"kind": "code",
+			"text": "`site.basePath`"
+		},
+		{
+			"kind": "text",
+			"text": " is already staged underneath it, and "
+		},
+		{
+			"kind": "code",
+			"text": "`release/index.html`"
+		},
+		{
+			"kind": "text",
+			"text": " redirects to that mount path.\n\nAny conventional static server, object storage website, or CDN can host this output.\n\n### GitHub Pages\n\nThe repository includes "
+		},
+		{
+			"kind": "code",
+			"text": "`.github/workflows/pages.yml`"
+		},
+		{
+			"kind": "text",
+			"text": ". It validates and builds the open-mode portal, uploads "
+		},
+		{
+			"kind": "code",
+			"text": "`dist/`"
+		},
+		{
+			"kind": "text",
+			"text": ", and deploys it through the "
+		},
+		{
+			"kind": "code",
+			"text": "`github-pages`"
+		},
+		{
+			"kind": "text",
+			"text": " environment whenever "
+		},
+		{
+			"kind": "code",
+			"text": "`main`"
+		},
+		{
+			"kind": "text",
+			"text": " changes.\n\nFor a repository site, set "
+		},
+		{
+			"kind": "code",
+			"text": "`site.origin`"
+		},
+		{
+			"kind": "text",
+			"text": " to the GitHub Pages host and "
+		},
+		{
+			"kind": "code",
+			"text": "`site.basePath`"
+		},
+		{
+			"kind": "text",
+			"text": " to the repository name. The Docsy portal uses "
+		},
+		{
+			"kind": "code",
+			"text": "`https://appgram.github.io`"
+		},
+		{
+			"kind": "text",
+			"text": " and "
+		},
+		{
+			"kind": "code",
+			"text": "`/docsy`"
+		},
+		{
+			"kind": "text",
+			"text": ".\n\n### Node server\n\nFor "
+		},
+		{
+			"kind": "code",
+			"text": "`access.mode: locked`"
+		},
+		{
+			"kind": "text",
+			"text": ":\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```bash\nnpm ci\nnpm run build\nHOST=0.0.0.0 PORT=8080 npm run preview\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\nPut the process behind the trusted authentication proxy described above. Rebuild after changing "
+		},
+		{
+			"kind": "code",
+			"text": "`access.mode`"
+		},
+		{
+			"kind": "text",
+			"text": ", "
+		},
+		{
+			"kind": "code",
+			"text": "`site.basePath`"
+		},
+		{
+			"kind": "text",
+			"text": ", or ingestion configuration.\n\n## Commands\n\n| Command | Purpose |\n| --- | --- |\n| "
+		},
+		{
+			"kind": "code",
+			"text": "`npm run dev`"
+		},
+		{
+			"kind": "text",
+			"text": " | Start Astro development mode |\n| "
+		},
+		{
+			"kind": "code",
+			"text": "`npm run validate`"
+		},
+		{
+			"kind": "text",
+			"text": " | Validate YAML, sources, API examples, components, links, anchors, and Astro types |\n| "
+		},
+		{
+			"kind": "code",
+			"text": "`npm run build`"
+		},
+		{
+			"kind": "text",
+			"text": " | Validate, build, and stage production output |\n| "
+		},
+		{
+			"kind": "code",
+			"text": "`npm run preview`"
+		},
+		{
+			"kind": "text",
+			"text": " | Serve the staged static build or locked Node build |\n| "
+		},
+		{
+			"kind": "code",
+			"text": "`npm run create -- <dir>`"
+		},
+		{
+			"kind": "text",
+			"text": " | Generate a new editable project |\n| "
+		},
+		{
+			"kind": "code",
+			"text": "`npm run maintain -- plan --base <ref>`"
+		},
+		{
+			"kind": "text",
+			"text": " | Inspect source changes and documentation impact |\n| "
+		},
+		{
+			"kind": "code",
+			"text": "`npm run maintain -- run --base <ref>`"
+		},
+		{
+			"kind": "text",
+			"text": " | Update docs with the agent and validate the result |\n| "
+		},
+		{
+			"kind": "code",
+			"text": "`npm test`"
+		},
+		{
+			"kind": "text",
+			"text": " | Run maintenance workflow regression tests |\n\n## Project structure\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```text\n.\n├── docsy.config.yaml       # Product, theme, ingestion, navigation, access\n├── content/                # Authored Markdown articles\n├── sources/                # Private build-time OpenAPI and SDK inputs\n├── public/                 # Public assets only\n├── src/\n│   ├── components/docs/    # API and SDK UI\n│   ├── layouts/            # Documentation shell\n│   ├── lib/                # Ingestion, access, Markdown export\n│   ├── pages/              # Generated routes\n│   └── styles/             # Source-owned styling\n├── scripts/                # CLI, build staging, runtime launcher\n├── Dockerfile\n└── compose.yaml\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\n## Contributing\n\nIssues and pull requests are welcome. Before submitting a change:\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```bash\nnpm ci\nnpm run validate\nnpm run build\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\nPlease preserve the configuration/source boundary, keep permission checks server-side, and avoid external font services or typographic tracking.\n\nContributions are distributed under ELv2. By submitting a pull request, you confirm that you have the right to contribute the code under those terms. See [CONTRIBUTING.md]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "CONTRIBUTING.md",
+			"target": 25
+		},
+		{
+			"kind": "text",
+			"text": ") for the complete project contribution guidance.\n\n## License\n\nDocsy is **source-available**, not OSI-approved open-source software. It is licensed under the [Elastic License 2.0]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "LICENSE",
+			"target": 26
+		},
+		{
+			"kind": "text",
+			"text": ") © AppGram.\n\n### You may\n\n- Self-host Docsy for your own public, private, personal, or commercial documentation.\n- Configure and modify the YAML, Markdown, Astro components, styles, adapters, and runtime.\n- Replace or remove visible Docsy and AppGram branding from your documentation pages, including the default footer and logo.\n- Copy, redistribute, and publish modified versions when you include ELv2 and clearly state that you changed the software.\n- Hire a consultant to configure or deploy Docsy for you.\n- Keep your Markdown, OpenAPI files, SDK metadata, branding, and other documentation content under terms of your choosing.\n\n### You may not\n\n- Offer Docsy to third parties as a hosted or managed documentation service that exposes a substantial set of Docsy's features.\n- Rebrand Docsy as your own competing SaaS documentation builder and charge customers to access it.\n- Remove or hide the "
+		},
+		{
+			"kind": "code",
+			"text": "`LICENSE`"
+		},
+		{
+			"kind": "text",
+			"text": " terms or copyright notices from the Docsy software or copies you redistribute.\n- Circumvent license-key functionality or protected features if Docsy adds them.\n\nELv2 does not require a visible \"Powered by Docsy\" or \"Docsy provided by AppGram\" notice on your published documentation. It does require the legal notices to remain with the software. ELv2 also does not require you to publish private modifications or prohibit commercial activity generally: consulting, integration, and using Docsy for a commercial product's own documentation remain allowed. The restriction is providing Docsy itself as a hosted or managed service. The [license text]("
+		},
+		{
+			"kind": "relative-link",
+			"text": "LICENSE",
+			"target": 26
+		},
+		{
+			"kind": "text",
+			"text": ") controls if this summary and ELv2 differ."
+		}
+	],
+	"symbolIdMap": {
+		"0": {
+			"packageName": "@appgram/docsy",
+			"packagePath": "tests/generators/input/typescript.ts",
+			"qualifiedName": ""
+		},
+		"1": {
+			"packageName": "@appgram/docsy",
+			"packagePath": "tests/generators/input/typescript.ts",
+			"qualifiedName": "Greeter"
+		},
+		"4": {
+			"packageName": "@appgram/docsy",
+			"packagePath": "tests/generators/input/typescript.ts",
+			"qualifiedName": "Greeter.prefix"
+		},
+		"5": {
+			"packageName": "@appgram/docsy",
+			"packagePath": "tests/generators/input/typescript.ts",
+			"qualifiedName": "Greeter.greet"
+		},
+		"6": {
+			"packageName": "@appgram/docsy",
+			"packagePath": "tests/generators/input/typescript.ts",
+			"qualifiedName": "Greeter.greet"
+		},
+		"7": {
+			"packageName": "@appgram/docsy",
+			"packagePath": "tests/generators/input/typescript.ts",
+			"qualifiedName": "name"
+		},
+		"8": {
+			"packageName": "@appgram/docsy",
+			"packagePath": "tests/generators/input/typescript.ts",
+			"qualifiedName": "Greeter.greetMany"
+		},
+		"9": {
+			"packageName": "@appgram/docsy",
+			"packagePath": "tests/generators/input/typescript.ts",
+			"qualifiedName": "Greeter.greetMany"
+		},
+		"10": {
+			"packageName": "@appgram/docsy",
+			"packagePath": "tests/generators/input/typescript.ts",
+			"qualifiedName": "names"
+		},
+		"11": {
+			"packageName": "@appgram/docsy",
+			"packagePath": "tests/generators/input/typescript.ts",
+			"qualifiedName": "separator"
+		},
+		"12": {
+			"packageName": "@appgram/docsy",
+			"packagePath": "tests/generators/input/typescript.ts",
+			"qualifiedName": "Greeter.greetChecked"
+		},
+		"13": {
+			"packageName": "@appgram/docsy",
+			"packagePath": "tests/generators/input/typescript.ts",
+			"qualifiedName": "Greeter.greetChecked"
+		},
+		"14": {
+			"packageName": "@appgram/docsy",
+			"packagePath": "tests/generators/input/typescript.ts",
+			"qualifiedName": "name"
+		},
+		"15": {
+			"packageName": "@appgram/docsy",
+			"packagePath": "tests/generators/input/typescript.ts",
+			"qualifiedName": "Greeter.hello"
+		},
+		"16": {
+			"packageName": "@appgram/docsy",
+			"packagePath": "tests/generators/input/typescript.ts",
+			"qualifiedName": "Greeter.hello"
+		},
+		"17": {
+			"packageName": "@appgram/docsy",
+			"packagePath": "tests/generators/input/typescript.ts",
+			"qualifiedName": "name"
+		},
+		"18": {
+			"packageName": "@appgram/docsy",
+			"packagePath": "tests/generators/input/typescript.ts",
+			"qualifiedName": "Mood"
+		},
+		"19": {
+			"packageName": "@appgram/docsy",
+			"packagePath": "tests/generators/input/typescript.ts",
+			"qualifiedName": "Mood.Friendly"
+		},
+		"20": {
+			"packageName": "@appgram/docsy",
+			"packagePath": "tests/generators/input/typescript.ts",
+			"qualifiedName": "Mood.Formal"
+		},
+		"21": {
+			"packageName": "@appgram/docsy",
+			"packagePath": "tests/generators/input/typescript.ts",
+			"qualifiedName": "GreetingOptions"
+		},
+		"22": {
+			"packageName": "@appgram/docsy",
+			"packagePath": "tests/generators/input/typescript.ts",
+			"qualifiedName": "GreetingOptions.mood"
+		},
+		"23": {
+			"packageName": "@appgram/docsy",
+			"packagePath": "tests/generators/input/typescript.ts",
+			"qualifiedName": "GreetingOptions.prefix"
+		}
+	},
+	"files": {
+		"entries": {
+			"1": "tests/generators/input/typescript.ts",
+			"2": "docs/assets/docsy-logo-dark.png",
+			"3": "docs/assets/docsy-logo.png",
+			"4": "content/tutorials/coding-agents.md",
+			"5": "content/tutorials/search-and-agents.md",
+			"6": "docs/assets/docsy-light.png",
+			"7": "docs/assets/docsy-dark.png",
+			"8": "docs/assets/docsy-lock-mode.png",
+			"9": "content/ingestion/sdk-samples.md",
+			"10": "content/getting-started.md",
+			"11": "content/tutorials/documentation-maintenance.md",
+			"12": "content/tutorials/yaml-configuration.md",
+			"13": "content/tutorials/authored-articles.md",
+			"14": "content/tutorials/rich-articles.md",
+			"15": "content/tutorials/versions-and-locales.md",
+			"16": "content/tutorials/content-validation.md",
+			"17": "content/tutorials/openapi-ingestion.md",
+			"18": "content/ingestion/sdk-adapters.md",
+			"19": "content/customization/default-ui.md",
+			"20": "content/tutorials/lock-mode.md",
+			"21": "content/deployment/github-pages.md",
+			"22": "content/deployment/self-hosting.md",
+			"23": "content/reference/license.md",
+			"24": "content/reference/cli.md",
+			"25": "CONTRIBUTING.md",
+			"26": "LICENSE",
+			"27": "README.md",
+			"28": ""
+		},
+		"reflections": {
+			"1": 0,
+			"27": 0,
+			"28": 0
+		}
+	}
+}

@@ -1,0 +1,64 @@
+{
+  "id": 0,
+  "name": "AtlasSDK",
+  "kind": 1,
+  "variant": "project",
+  "children": [
+    {
+      "id": 1,
+      "name": "AtlasClient",
+      "kind": 128,
+      "variant": "declaration",
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "An asynchronous client for the fictional Atlas document API."
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "name": "Document",
+      "kind": 256,
+      "variant": "declaration",
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "A document with an identifier, title, and publication state."
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "name": "createClient",
+      "kind": 64,
+      "variant": "declaration",
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Construct an AtlasClient using explicit client options."
+          }
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "name": "DocumentState",
+      "kind": 8,
+      "variant": "declaration",
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "The draft, published, or archived state of a document."
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,324 @@
+[
+    {
+        "comment": "/** Build personalized greetings without network access.\n * @example\n * const greeter = new Greeter();\n * console.log(greeter.greet('Docsy'));\n */",
+        "meta": {
+            "range": [
+                147,
+                1333
+            ],
+            "filename": "javascript.js",
+            "lineno": 6,
+            "columnno": 0,
+            "path": "/private/tmp/appgram-dot-sy.qdzFLN/tests/generators/input",
+            "code": {
+                "id": "astnode100000002",
+                "name": "exports.Greeter",
+                "type": "ClassDeclaration"
+            }
+        },
+        "classdesc": "Build personalized greetings without network access.",
+        "examples": [
+            "const greeter = new Greeter();\nconsole.log(greeter.greet('Docsy'));"
+        ],
+        "name": "Greeter",
+        "longname": "Greeter",
+        "kind": "class",
+        "scope": "global"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                154,
+                1333
+            ],
+            "filename": "javascript.js",
+            "lineno": 6,
+            "columnno": 7,
+            "path": "/private/tmp/appgram-dot-sy.qdzFLN/tests/generators/input",
+            "code": {
+                "id": "astnode100000003",
+                "name": "Greeter",
+                "type": "ClassDeclaration",
+                "paramnames": []
+            }
+        },
+        "undocumented": true,
+        "name": "Greeter",
+        "longname": "Greeter",
+        "kind": "class",
+        "scope": "global"
+    },
+    {
+        "comment": "/** Greeting prefix.\n   * @type {string}\n   * @default 'Hello'\n   */",
+        "meta": {
+            "range": [
+                243,
+                260
+            ],
+            "filename": "javascript.js",
+            "lineno": 11,
+            "columnno": 2,
+            "path": "/private/tmp/appgram-dot-sy.qdzFLN/tests/generators/input",
+            "code": {
+                "id": "astnode100000006",
+                "name": "prefix",
+                "type": "ClassProperty"
+            }
+        },
+        "description": "Greeting prefix.",
+        "type": {
+            "names": [
+                "string"
+            ]
+        },
+        "defaultvalue": "'Hello'",
+        "name": "prefix",
+        "longname": "Greeter#prefix",
+        "kind": "member",
+        "memberof": "Greeter",
+        "scope": "instance"
+    },
+    {
+        "comment": "/** Greet a reader.\n   * @param {string} name Reader name.\n   * @returns {string} A friendly greeting.\n   * @example\n   * new Greeter().greet('Docsy');\n   */",
+        "meta": {
+            "range": [
+                423,
+                472
+            ],
+            "filename": "javascript.js",
+            "lineno": 18,
+            "columnno": 2,
+            "path": "/private/tmp/appgram-dot-sy.qdzFLN/tests/generators/input",
+            "code": {
+                "id": "astnode100000008",
+                "name": "Greeter#greet",
+                "type": "MethodDefinition",
+                "paramnames": [
+                    "name"
+                ]
+            },
+            "vars": {
+                "": null
+            }
+        },
+        "description": "Greet a reader.",
+        "params": [
+            {
+                "type": {
+                    "names": [
+                        "string"
+                    ]
+                },
+                "description": "Reader name.",
+                "name": "name"
+            }
+        ],
+        "returns": [
+            {
+                "type": {
+                    "names": [
+                        "string"
+                    ]
+                },
+                "description": "A friendly greeting."
+            }
+        ],
+        "examples": [
+            "new Greeter().greet('Docsy');"
+        ],
+        "name": "greet",
+        "longname": "Greeter#greet",
+        "kind": "function",
+        "memberof": "Greeter",
+        "scope": "instance"
+    },
+    {
+        "comment": "/** Greet several readers in order.\n   * @param {string[]} names Reader names.\n   * @param {string} [separator=' / '] Separator between greetings.\n   * @returns {string} Joined greetings.\n   * @example\n   * new Greeter().greetMany(['Ada', 'Linus']);\n   */",
+        "meta": {
+            "range": [
+                733,
+                832
+            ],
+            "filename": "javascript.js",
+            "lineno": 26,
+            "columnno": 2,
+            "path": "/private/tmp/appgram-dot-sy.qdzFLN/tests/generators/input",
+            "code": {
+                "id": "astnode100000022",
+                "name": "Greeter#greetMany",
+                "type": "MethodDefinition",
+                "paramnames": [
+                    "names",
+                    "separator"
+                ]
+            },
+            "vars": {
+                "": null
+            }
+        },
+        "description": "Greet several readers in order.",
+        "params": [
+            {
+                "type": {
+                    "names": [
+                        "Array.<string>"
+                    ]
+                },
+                "description": "Reader names.",
+                "name": "names"
+            },
+            {
+                "type": {
+                    "names": [
+                        "string"
+                    ]
+                },
+                "optional": true,
+                "defaultvalue": "' / '",
+                "description": "Separator between greetings.",
+                "name": "separator"
+            }
+        ],
+        "returns": [
+            {
+                "type": {
+                    "names": [
+                        "string"
+                    ]
+                },
+                "description": "Joined greetings."
+            }
+        ],
+        "examples": [
+            "new Greeter().greetMany(['Ada', 'Linus']);"
+        ],
+        "name": "greetMany",
+        "longname": "Greeter#greetMany",
+        "kind": "function",
+        "memberof": "Greeter",
+        "scope": "instance"
+    },
+    {
+        "comment": "/** Reject an empty reader name.\n   * @param {string} name Reader name.\n   * @returns {string} A validated greeting.\n   * @throws {TypeError} When name is empty.\n   * @example\n   * new Greeter().greetChecked('Ada');\n   */",
+        "meta": {
+            "range": [
+                1059,
+                1171
+            ],
+            "filename": "javascript.js",
+            "lineno": 34,
+            "columnno": 2,
+            "path": "/private/tmp/appgram-dot-sy.qdzFLN/tests/generators/input",
+            "code": {
+                "id": "astnode100000046",
+                "name": "Greeter#greetChecked",
+                "type": "MethodDefinition",
+                "paramnames": [
+                    "name"
+                ]
+            },
+            "vars": {
+                "": null
+            }
+        },
+        "description": "Reject an empty reader name.",
+        "params": [
+            {
+                "type": {
+                    "names": [
+                        "string"
+                    ]
+                },
+                "description": "Reader name.",
+                "name": "name"
+            }
+        ],
+        "returns": [
+            {
+                "type": {
+                    "names": [
+                        "string"
+                    ]
+                },
+                "description": "A validated greeting."
+            }
+        ],
+        "exceptions": [
+            {
+                "type": {
+                    "names": [
+                        "TypeError"
+                    ]
+                },
+                "description": "When name is empty."
+            }
+        ],
+        "examples": [
+            "new Greeter().greetChecked('Ada');"
+        ],
+        "name": "greetChecked",
+        "longname": "Greeter#greetChecked",
+        "kind": "function",
+        "memberof": "Greeter",
+        "scope": "instance"
+    },
+    {
+        "comment": "/** @deprecated Use greet instead.\n   * @param {string} name Reader name.\n   * @returns {string} A greeting.\n   */",
+        "meta": {
+            "range": [
+                1291,
+                1331
+            ],
+            "filename": "javascript.js",
+            "lineno": 39,
+            "columnno": 2,
+            "path": "/private/tmp/appgram-dot-sy.qdzFLN/tests/generators/input",
+            "code": {
+                "id": "astnode100000067",
+                "name": "Greeter#hello",
+                "type": "MethodDefinition",
+                "paramnames": [
+                    "name"
+                ]
+            },
+            "vars": {
+                "": null
+            }
+        },
+        "deprecated": "Use greet instead.",
+        "params": [
+            {
+                "type": {
+                    "names": [
+                        "string"
+                    ]
+                },
+                "description": "Reader name.",
+                "name": "name"
+            }
+        ],
+        "returns": [
+            {
+                "type": {
+                    "names": [
+                        "string"
+                    ]
+                },
+                "description": "A greeting."
+            }
+        ],
+        "name": "hello",
+        "longname": "Greeter#hello",
+        "kind": "function",
+        "memberof": "Greeter",
+        "scope": "instance"
+    },
+    {
+        "kind": "package",
+        "longname": "package:undefined",
+        "files": [
+            "/private/tmp/appgram-dot-sy.qdzFLN/tests/generators/input/javascript.js"
+        ]
+    }
+]

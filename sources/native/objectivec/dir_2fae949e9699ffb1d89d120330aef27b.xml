@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="en-US">
+  <compounddef id="dir_2fae949e9699ffb1d89d120330aef27b" kind="dir">
+    <compoundname>tests/generators/input/objectivec</compoundname>
+    <innerfile refid="Greeter_8h">Greeter.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="tests/generators/input/objectivec/"/>
+  </compounddef>
+</doxygen>

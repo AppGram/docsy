@@ -34,15 +34,17 @@ async function collect(): Promise<SearchRecord[]> {
     for (const section of API_SECTIONS) for (const endpoint of filterEndpoints(spec, section)) records.push({
       id: `${context.version}:${context.locale}:api:${endpoint.id}`, type: 'api', title: endpoint.summary || endpoint.path,
       url: `${docsPath(`/api/${section.section}`, context)}#${endpoint.id}`, group: section.title,
-      body: [endpoint.description ?? '', endpoint.path, ...[...endpoint.pathParams, ...endpoint.queryParams, ...endpoint.headerParams, ...endpoint.bodyProperties].map((p) => `${p.name} ${p.description ?? ''}`), endpoint.curl, endpoint.responseExample ?? ''].join(' '),
+      body: [endpoint.description ?? '', endpoint.path, ...[...endpoint.pathParams, ...endpoint.queryParams, ...endpoint.headerParams, ...endpoint.bodyProperties].map((p) => `${p.name} ${p.description ?? ''}`), ...endpoint.requestExamples.map((example) => `${example.label} ${example.code}`), endpoint.responseExample ?? ''].join(' '),
       method: endpoint.method.toUpperCase(), path: endpoint.path, ...context, ...links(`/api/${section.section}`),
     });
     for (const source of getSdkSources()) {
       const sdk = loadSdk({ ...source, source: source.versions[context.version] ?? source.source });
+      records.push({ id: `${context.version}:${context.locale}:sdk:${source.id}:overview`, type: 'sdk', kind: 'overview', title: sdk.name, group: sdk.name,
+        url: docsPath(`/${source.slug}`, context), body: [sdk.overview, sdk.install, sdk.quickstart?.code].filter(Boolean).join(' '), ...context, ...links(`/${source.slug}`) });
       for (const category of sdk.categories) for (const item of category.items) records.push({
         id: `${context.version}:${context.locale}:sdk:${source.id}:${item.id}`, type: 'sdk', kind: item.kind,
         title: item.name, group: `${sdk.name} · ${category.title}`, url: `${docsPath(`/${source.slug}`, context)}#${item.id}`,
-        body: [item.summary, item.declaration, item.example, item.returnsDoc, ...item.parameters?.map((p) => `${p.name} ${p.type} ${p.description ?? ''}`) ?? []].filter(Boolean).join(' '),
+        body: [item.summary, item.remarks, item.declaration, item.example, item.returnsDoc, ...item.throws?.map((error) => `${error.type} ${error.description || ''}`) ?? [], ...item.parameters?.map((p) => `${p.name} ${p.type} ${p.description ?? ''}`) ?? [], ...item.relationships?.map((relation) => relation.name) ?? [], ...item.methods?.map((method) => `${method.name} ${method.description || ''}`) ?? [], ...item.properties?.map((property) => `${property.name} ${property.description || ''}`) ?? []].filter(Boolean).join(' '),
         ...context, ...links(`/${source.slug}`),
       });
     }

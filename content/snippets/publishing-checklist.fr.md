@@ -1,0 +1,3 @@
+- Validez les sources configurées, les liens internes et les ancres.
+- Construisez les versions et les langues que vous souhaitez publier.
+- Vérifiez les exemples et les permissions avant le déploiement.

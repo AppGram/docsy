@@ -1,5 +1,6 @@
 import { defaultContext, docsyConfig, type ApiSectionConfig } from '../config';
 import { readOpenApi } from './openapi';
+import { generateRequestExamples, type ExampleRequest, type RequestExample } from './request-examples';
 
 export type SwaggerParam = {
   name: string;
@@ -8,6 +9,8 @@ export type SwaggerParam = {
   description?: string;
   type?: string;
   schema?: SwaggerSchema;
+  example?: unknown;
+  examples?: Record<string, { value?: unknown }>;
 };
 
 export type SwaggerSchema = {
@@ -20,6 +23,7 @@ export type SwaggerSchema = {
   required?: string[];
   enum?: unknown[];
   example?: unknown;
+  default?: unknown;
   allOf?: SwaggerSchema[];
   oneOf?: SwaggerSchema[];
   anyOf?: SwaggerSchema[];
@@ -36,6 +40,7 @@ export type SwaggerOperation = {
     content?: Record<string, SwaggerMedia>;
   };
   security?: Array<Record<string, string[]>>;
+  'x-codeSamples'?: { lang: string; label?: string; source: string }[];
 };
 type SwaggerMedia = { schema?: SwaggerSchema; example?: unknown; examples?: Record<string, { value?: unknown }> };
 
@@ -86,6 +91,8 @@ export type NormalizedEndpoint = {
   curl: string;
   responseExample?: string;
   successCode?: string;
+  requestExamples: RequestExample[];
+  request: ExampleRequest;
 };
 
 const resolveSchema = (schema: SwaggerSchema | undefined, spec: SwaggerSpec, depth = 0): SwaggerSchema | undefined => {
@@ -137,34 +144,62 @@ const securityDetails = (op: SwaggerOperation, spec: SwaggerSpec) => {
   const args: string[] = [];
   const query: string[] = [];
   const descriptions: string[] = [];
+  const headers: { name: string; value: string }[] = [];
   for (const name of Object.keys(requirement)) {
     const scheme = schemes[name] as Record<string, any> | undefined;
     if (!scheme) throw new Error(`Unknown OpenAPI security scheme: ${name}`);
     if (scheme.type === 'apiKey') {
       descriptions.push(`${scheme.name} (${scheme.in})`);
       if (scheme.in === 'query') query.push(`${encodeURIComponent(scheme.name)}=<api-key>`);
-      else args.push(`--header ${shellQuote(`${scheme.in === 'cookie' ? 'Cookie' : scheme.name}: ${scheme.in === 'cookie' ? `${scheme.name}=` : ''}<api-key>`)}`);
+      else {
+        const header = { name: scheme.in === 'cookie' ? 'Cookie' : scheme.name, value: `${scheme.in === 'cookie' ? `${scheme.name}=` : ''}<api-key>` };
+        headers.push(header); args.push(`--header ${shellQuote(`${header.name}: ${header.value}`)}`);
+      }
     } else if (scheme.type === 'basic' || scheme.scheme?.toLowerCase() === 'basic') {
       args.push(`--user ${shellQuote('<username>:<password>')}`); descriptions.push('HTTP Basic');
+      headers.push({ name: 'Authorization', value: 'Basic <base64-credentials>' });
     } else if (['oauth2', 'openIdConnect'].includes(scheme.type) || scheme.scheme?.toLowerCase() === 'bearer') {
       args.push(`--header ${shellQuote('Authorization: Bearer <token>')}`); descriptions.push(name);
+      headers.push({ name: 'Authorization', value: 'Bearer <token>' });
     } else descriptions.push(`${name} (${scheme.scheme ?? scheme.type}; configure credentials for this scheme)`);
   }
-  return { args, query, description: descriptions.join(' + ') || (security.length ? 'Optional authentication' : 'None') };
+  return { args, query, headers, description: descriptions.join(' + ') || (security.length ? 'Optional authentication' : 'None') };
 };
-const buildCurl = (method: string, path: string, security: ReturnType<typeof securityDetails>, params: SwaggerParam[], bodyExample: unknown): string => {
+const parameterExample = (param: SwaggerParam): unknown => param.example
+  ?? Object.values(param.examples ?? {}).find((entry) => entry.value !== undefined)?.value
+  ?? param.schema?.example ?? param.schema?.default;
+const buildCurl = (method: string, path: string, security: ReturnType<typeof securityDetails>, params: SwaggerParam[], bodyExample: unknown, mimeType = 'application/json', fileFields: string[] = []): { curl: string; request: ExampleRequest } => {
   const lines = [`curl --request ${method.toUpperCase()} \\`];
-  const query = [...security.query, ...params.filter((p) => p.in === 'query' && p.required).map((p) => `${encodeURIComponent(p.name)}=<${p.name}>`)];
-  lines.push(`  --url ${shellQuote(`${API_BASE_URL}${path}${query.length ? `?${query.join('&')}` : ''}`)} \\`);
+  const examplePath = path.replace(/\{([^}]+)\}/g, (placeholder, name) => {
+    const param = params.find((p) => p.in === 'path' && p.name === name);
+    const value = param && parameterExample(param);
+    return value !== undefined ? encodeURIComponent(String(value)) : placeholder;
+  });
+  const includeParam = (p: SwaggerParam) => p.required || openapiConfig.examples.defaults === 'all' || parameterExample(p) !== undefined;
+  const query = [...security.query, ...params.filter((p) => p.in === 'query' && includeParam(p)).map((p) => {
+    const value = parameterExample(p);
+    return `${encodeURIComponent(p.name)}=${value !== undefined ? encodeURIComponent(String(value)) : `<${p.name}>`}`;
+  })];
+  const url = `${API_BASE_URL}${examplePath}${query.length ? `?${query.join('&')}` : ''}`;
+  const headers = [...security.headers];
+  lines.push(`  --url ${shellQuote(url)} \\`);
   for (const arg of security.args) lines.push(`  ${arg} \\`);
-  for (const param of params.filter((p) => p.in === 'header' && p.required)) lines.push(`  --header ${shellQuote(`${param.name}: <${param.name}>`)} \\`);
-  if (bodyExample !== undefined) {
-    lines.push(`  --header 'Content-Type: application/json' \\`);
-    lines.push(`  --data ${shellQuote(JSON.stringify(bodyExample, null, 2))}`);
+  for (const param of params.filter((p) => p.in === 'header' && includeParam(p))) {
+    lines.push(`  --header ${shellQuote(`${param.name}: ${parameterExample(param) ?? `<${param.name}>`}`)} \\`);
+    headers.push({ name: param.name, value: String(parameterExample(param) ?? `<${param.name}>`) });
+  }
+  const body = bodyExample === undefined ? undefined : /(?:^application\/json$|\+json$)/.test(mimeType) ? JSON.stringify(bodyExample, null, 2) : mimeType === 'application/x-www-form-urlencoded' && bodyExample && typeof bodyExample === 'object' ? new URLSearchParams(Object.entries(bodyExample as Record<string, unknown>).map(([name, value]) => [name, String(value)])).toString() : typeof bodyExample === 'string' ? bodyExample : JSON.stringify(bodyExample);
+  const formFields = mimeType === 'multipart/form-data' && bodyExample && typeof bodyExample === 'object' ? Object.entries(bodyExample).map(([name, value]) => ({ name, value: fileFields.includes(name) ? '<file-contents>' : typeof value === 'string' ? value : JSON.stringify(value), ...(fileFields.includes(name) ? { fileName: 'example.txt' } : {}) })) : undefined;
+  if (formFields?.length) {
+    formFields.forEach((field, index) => lines.push(`  --form ${shellQuote(`${field.name}=${field.fileName ? '@<path-to-file>' : field.value}`)}${index < formFields.length - 1 ? ' \\' : ''}`));
+  } else if (bodyExample !== undefined) {
+    lines.push(`  --header ${shellQuote(`Content-Type: ${mimeType}`)} \\`);
+    headers.push({ name: 'Content-Type', value: mimeType });
+    lines.push(`  --data ${shellQuote(body!)}`);
   } else {
     lines[lines.length - 1] = lines[lines.length - 1].replace(/ \\$/, '');
   }
-  return lines.join('\n');
+  return { curl: lines.join('\n'), request: { method: method.toUpperCase(), url, headers, ...(formFields ? { formFields, mimeType } : body !== undefined ? { body, mimeType } : {}) } };
 };
 
 const collectBodyProps = (schema: SwaggerSchema | undefined, spec: SwaggerSpec): NormalizedEndpoint['bodyProperties'] => {
@@ -205,6 +240,7 @@ export const filterEndpoints = (spec: SwaggerSpec | null, section: ApiSection): 
       const headerParams = params.filter((p) => p.in === 'header' && p.name.toLowerCase() !== 'authorization');
       const bodyParam = params.find((p) => p.in === 'body');
       const requestMedia = op.requestBody?.content?.['application/json'] ?? Object.values(op.requestBody?.content ?? {})[0];
+      const requestMimeType = op.requestBody?.content?.['application/json'] ? 'application/json' : Object.keys(op.requestBody?.content ?? {})[0] || 'application/json';
       const requestBodySchema = requestMedia?.schema;
       const bodySchema = bodyParam?.schema ?? requestBodySchema;
       const bodyProperties = collectBodyProps(bodySchema, spec);
@@ -212,7 +248,11 @@ export const filterEndpoints = (spec: SwaggerSpec | null, section: ApiSection): 
       const security = securityDetails(op, spec);
       const explicitBodyExample = mediaExample(requestMedia);
       const bodyExample = explicitBodyExample !== undefined ? explicitBodyExample : exampleForSchema(bodySchema, spec);
-      const curl = buildCurl(method, path, security, params, bodyExample);
+      const fileFields = Object.entries(resolveSchema(bodySchema, spec)?.properties || {}).filter(([, property]) => property.format === 'binary' || property.format === 'base64').map(([name]) => name);
+      const { curl, request } = buildCurl(method, path, security, params, bodyExample, requestMimeType, fileFields);
+      const customSamples = openapiConfig.examples.customSamples ? op['x-codeSamples'] ?? [] : [];
+      if (!Array.isArray(customSamples) || customSamples.some((sample) => !sample || typeof sample.lang !== 'string' || typeof sample.source !== 'string' || !sample.source.trim())) throw new Error(`Invalid x-codeSamples for ${method} ${path}`);
+      const requestExamples = generateRequestExamples(request, openapiConfig.examples.languages, curl, customSamples);
 
       const responses = op.responses ?? {};
       const successCode = Object.keys(responses).find((c) => c.startsWith('2')) ?? '200';
@@ -243,6 +283,8 @@ export const filterEndpoints = (spec: SwaggerSpec | null, section: ApiSection): 
         headerParams,
         bodyProperties,
         curl,
+        request,
+        requestExamples,
         responseExample,
         successCode,
       });

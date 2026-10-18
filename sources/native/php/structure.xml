@@ -1,0 +1,168 @@
+<?xml version="1.0"?>
+<project name="Documentation">
+                <file path="tests/generators/input/php/Greeter.php" hash="62c6ae9a62bc02258d1630d92e99b498">
+            <docblock line="0">
+    <description></description>
+    <long-description></long-description>
+                    <tag
+                name="package"
+                description="Application"
+                                                                                                />
+            </docblock>
+
+
+            
+                            <namespace-alias name="\Example"/>
+            
+
+            
+                        
+                        
+                        
+                                        <class final="false" abstract="false" namespace="\Example" line="6">
+                    <name>Greeter</name>
+                    <full_name>\Example\Greeter</full_name>
+                    <docblock line="6">
+    <description>Build personalized greetings without network access.</description>
+    <long-description></long-description>
+                    <tag
+                name="example"
+                description="$greeter = new Greeter(); echo $greeter-&gt;greet(&#039;Docsy&#039;);"
+                                                                                                />
+                            <tag
+                name="package"
+                description="Application"
+                                                                                                />
+                        </docblock>
+
+                    
+                    
+                                        
+                                            <property namespace="\Example\Greeter" line="10" visibility="public">
+    <name>prefix</name>
+    <full_name>\Example\Greeter::$prefix</full_name>
+    <default>&#039;Hello&#039;</default>
+        <docblock line="10">
+    <description>Greeting prefix used for future calls.</description>
+    <long-description></long-description>
+                    <tag
+                name="var"
+                description=""
+                                                                                                 type="string"/>
+                        </docblock>
+
+</property>
+
+                                        
+                                            <method final="false" abstract="false" static="false" namespace="\Example" line="16" visibility="public" returnByReference="false">
+    <name>greet</name>
+    <full_name>\Example\Greeter::greet()</full_name>
+    <value></value>
+                <argument line="16" by_reference="false">
+    <name>name</name>
+    <default></default>
+    <type>string</type>
+</argument>
+
+        <docblock line="16">
+    <description>Greet a reader.</description>
+    <long-description></long-description>
+                    <tag
+                name="param"
+                description="Reader name."
+                                                                 variable="name"                                 type="string"/>
+                            <tag
+                name="return"
+                description="A friendly greeting."
+                                                                                                 type="string"/>
+                            <tag
+                name="example"
+                description="echo (new Greeter())-&gt;greet(&#039;Ada&#039;);"
+                                                                                                />
+                        </docblock>
+
+</method>
+
+                                            <method final="false" abstract="false" static="false" namespace="\Example" line="23" visibility="public" returnByReference="false">
+    <name>greetMany</name>
+    <full_name>\Example\Greeter::greetMany()</full_name>
+    <value></value>
+                <argument line="23" by_reference="false">
+    <name>names</name>
+    <default></default>
+    <type>string[]</type>
+</argument>
+
+            <argument line="23" by_reference="false">
+    <name>separator</name>
+    <default>&#039; / &#039;</default>
+    <type>string</type>
+</argument>
+
+        <docblock line="23">
+    <description>Greet several readers while preserving input order.</description>
+    <long-description></long-description>
+                    <tag
+                name="param"
+                description="Reader names."
+                                                                 variable="names"                                 type="string[]"/>
+                <tag
+                name="param"
+                description="Separator between greetings."
+                                                                 variable="separator"                                 type="string"/>
+                            <tag
+                name="return"
+                description="Joined greetings."
+                                                                                                 type="string"/>
+                            <tag
+                name="example"
+                description="echo (new Greeter())-&gt;greetMany([&#039;Ada&#039;, &#039;Linus&#039;]);"
+                                                                                                />
+                        </docblock>
+
+</method>
+
+                                            <method final="false" abstract="false" static="false" namespace="\Example" line="29" visibility="public" returnByReference="false">
+    <name>greetChecked</name>
+    <full_name>\Example\Greeter::greetChecked()</full_name>
+    <value></value>
+                <argument line="29" by_reference="false">
+    <name>name</name>
+    <default></default>
+    <type>string</type>
+</argument>
+
+        <docblock line="29">
+    <description>Reject an empty reader name.</description>
+    <long-description></long-description>
+                    <tag
+                name="param"
+                description="Reader name."
+                                                                 variable="name"                                 type="string"/>
+                            <tag
+                name="return"
+                description="A validated greeting."
+                                                                                                 type="string"/>
+                            <tag
+                name="throws"
+                description="When name is empty."
+                                                                                                 type="\InvalidArgumentException"/>
+                        </docblock>
+
+</method>
+
+                                                                            </class>
+            
+                        
+            
+            <parse_markers></parse_markers>
+        </file>
+    
+            <namespace name="Example" full_name="\Example" />
+
+            <namespace name="\" full_name="\">
+            <namespace name="Example" full_name="\Example" />
+
+    </namespace>
+
+    </project>

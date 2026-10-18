@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: README
+  
+    &mdash; Documentation by YARD 0.9.38
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "README";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: README</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'>
+<p>&lt;p align=“center”&gt; &lt;picture&gt; &lt;source media=“(prefers-color-scheme: dark)” srcset=“docs/assets/docsy-logo-dark.png” /&gt; &lt;source media=“(prefers-color-scheme: light)” srcset=“docs/assets/docsy-logo.png” /&gt; &lt;img src=“docs/assets/docsy-logo.png” alt=“Docsy logo” width=“200” /&gt; &lt;/picture&gt; &lt;/p&gt;</p>
+<h1 align="center">Docsy</h1><p align="center"><strong>Documentation built for humans and coding agents.</strong></p><p align="center"><a href="https://appgram.github.io/docsy/">Documentation</a> · <a href="https://github.com/AppGram/docsy/issues">Issues</a></p>
+<p>Docsy turns Markdown, OpenAPI, and SDK metadata into a self-hosted documentation portal. Readers get searchable guides and reference pages in a polished interface. Coding agents get Markdown exports to read, structured configuration to edit, and a local validation and build workflow to check their changes.</p>
+
+<p>Product copy, navigation, visual tokens, ingestion, and access rules live in <code>docsy.config.yaml</code>. The generated Astro components and CSS stay in your repository, alongside <code>AGENTS.md</code> and <code>DOCSY_BRIEF.md</code> to guide your coding agent.</p>
+
+<p>Docsy can ship as a fully static site or as a server-rendered Node application with permission-gated documentation tiers and an optional agent query API. Node 22.22 or newer is required to build and run this release.</p>
+
+<blockquote>
+<p>This project is independent of the Hugo theme with a similar name.</p>
+</blockquote>
+
+<h2 id="label-For+humans+and+coding+agents">For humans and coding agents</h2>
+
+<p>For readers, Docsy brings authored guides, API endpoints, and SDK reference together with navigation, search, code examples, and light/dark themes.</p>
+
+<p>For coding agents, the same documentation is available as Markdown. An agent working in the generated repository can update articles, configure ingestion and branding in YAML, or edit the Astro interface. The CLI includes project instructions and a customization brief, and <code>npm run validate</code> plus <code>npm run build</code> check the result before review.</p>
+
+<p>Docsy also includes a maintenance loop: a committed API or code change triggers an impact report, agent updates to articles and examples, independent validation, and a draft pull request with migration notes and unresolved questions.</p>
+
+<p>Give your coding agent a concrete task:</p>
+
+<pre class="code ruby"><code class="ruby">Read AGENTS.md, DOCSY_BRIEF.md, and docsy.config.yaml.
+Use sources/openapi.json to write a first-request guide in content/.
+Register it in YAML and add it to the sidebar.
+Use the API source for endpoint names, parameters, and examples.
+Preserve the existing UI and access rules.
+Run npm run validate and npm run build, then summarize the diff.
+</code></pre>
+
+<p>Use <code>/format-md/...</code> exports when an agent needs to fetch documentation over HTTP. The Markdown menu exposes the current page’s export; <code>?format=md</code> opens its Markdown view in the browser. Your chosen coding agent works with the repository, and you review and publish its changes through your normal Git workflow.</p>
+
+<p>See <a href="content/tutorials/coding-agents_md.html">Work with coding agents</a> for both reading and authoring workflows.</p>
+
+<p>Agents can also discover <code>/llms.txt</code>, download the full-text corpus at <code>/agent/index.json</code>, or read a page as JSON at <code>/agent/pages/guides/getting-started.json</code>. Prefix these paths with your configured <code>site.basePath</code>. JSON documents include Markdown and citation URLs.</p>
+
+<p>For live retrieval, enable the Node-only endpoint:</p>
+
+<pre class="code ruby"><code class="ruby">agent:
+  enabled: true
+  query: true
+  maxResults: 10
+  maxQueryLength: 500
+</code></pre>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_curl'>curl</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>https://docs.example.com/docs/agent/query.json?q=authentication&amp;version=current&amp;locale=en&amp;limit=5</span><span class='tstring_end'>&#39;</span></span>
+</code></pre>
+
+<p>This returns ranked source excerpts and JSON/Markdown links, not a generated answer. It requires no AI provider key. Static deployments retain JSON/Markdown exports but cannot execute query parameters; keep <code>agent.query: false</code> for GitHub Pages. In locked mode, every retrieval surface follows the existing page permissions. <a href="content/tutorials/search-and-agents_md.html">Search and agent API guide</a>.</p>
+
+<h2 id="label-Preview">Preview</h2>
+
+<p>These screenshots show the default interface configured for the public Nager.Date OpenAPI—not AppGram product documentation.</p>
+
+<h3 id="label-Light+and+dark">Light and dark</h3>
+<table>
+  <tr>
+    <th width="50%">Light</th>
+    <th width="50%">Dark</th>
+  </tr>
+  <tr>
+    <td><img src="docs/assets/docsy-light.png" alt="Docsy OpenAPI reference using the light theme" /></td>
+    <td><img src="docs/assets/docsy-dark.png" alt="Docsy OpenAPI reference using the dark theme" /></td>
+  </tr>
+</table>
+<p>Both are the same generated OpenAPI page. Switching <code>theme.mode</code> and the YAML color tokens changes the presentation without replacing the interface.</p>
+
+<h3 id="label-Permission+gate">Permission gate</h3>
+
+<p><img src="docs/assets/docsy-lock-mode.png" alt="A"> Docsy API page protected by a configured documentation tier</p>
+
+<h2 id="label-What+Docsy+gives+you">What Docsy gives you</h2>
+<ul><li>
+<p>An editable Astro project with <code>AGENTS.md</code> and <code>DOCSY_BRIEF.md</code> for coding agents.</p>
+</li><li>
+<p>A YAML-configured maintenance workflow that turns source changes into validated draft documentation PRs.</p>
+</li><li>
+<p>OpenAPI 3 and Swagger 2 ingestion from local JSON/YAML or an HTTPS URL.</p>
+</li><li>
+<p>Native SDK documentation imports for 20 source languages across 16 generator formats, plus compact metadata and AppGram/docc2json compatibility.</p>
+</li><li>
+<p>Real generator-produced fixtures, source code, generator versions, reproduction commands, and SHA-256 provenance checks—not hand-authored JSON presented as native coverage. <a href="content/ingestion/sdk-samples_md.html">Coverage and limitations</a>.</p>
+</li><li>
+<p>YAML-selected OpenAPI request examples in 24 language/client targets, synchronized language selection, and custom <code>x-codeSamples</code> overrides.</p>
+</li><li>
+<p>Generated API pages, navigation, search data, curl examples, response examples, and Markdown exports.</p>
+</li><li>
+<p>First-class authored Markdown articles for guides, tutorials, concepts, and migration notes.</p>
+</li><li>
+<p>Theme-aware callouts, numbered steps, synchronized tabs, code groups, accordions, and reusable Markdown snippets.</p>
+</li><li>
+<p>Full-text section search across article bodies, examples, API parameters, and SDK symbols.</p>
+</li><li>
+<p>YAML-configured versions, locale routing, translated navigation, RTL, and explicit language fallbacks.</p>
+</li><li>
+<p>Static JSON/Markdown discovery plus an optional permission-aware JSON query endpoint for coding agents.</p>
+</li><li>
+<p>Strict source ingestion, OpenAPI reference/example validation, and internal/built-site link and anchor checks.</p>
+</li><li>
+<p>One YAML file for branding, content, navigation, routes, ingestion, theme tokens, and access rules.</p>
+</li><li>
+<p>A persisted light/dark theme toggle with independently configurable palettes.</p>
+</li><li>
+<p>Open mode for static hosting and lock mode for server-side permission checks.</p>
+</li><li>
+<p>Header-based identity for trusted auth proxies or webhook authorization for an existing application.</p>
+</li><li>
+<p>Docker and Docker Compose files for a short self-hosting path.</p>
+</li><li>
+<p>System font stacks by default: no hosted font service and no generated typographic tracking.</p>
+</li></ul>
+
+<h2 id="label-The+mental+model">The mental model</h2>
+
+<pre class="code ruby"><code class="ruby">Markdown / OpenAPI / SDK metadata
+        │
+        ▼
+ content loaders/adapters ──► normalized docs model
+        │
+        ▼
+ docsy.config.yaml ───► routes, navigation, theme, access rules
+        │
+        ▼
+ editable Astro source
+        │
+        ├── open mode   ──► static files in release/
+        └── locked mode ──► Node server with request-time authorization
+</code></pre>
+
+<p>The important boundary is simple:</p>
+<ul><li>
+<p>YAML owns durable configuration and content wiring.</p>
+</li><li>
+<p>Astro and CSS own the interface.</p>
+</li><li>
+<p>The article loader and ingestion adapters own source-format differences.</p>
+</li><li>
+<p>Lock mode owns request-time authorization, not user authentication itself.</p>
+</li></ul>
+
+<p>Docsy never requires a hosted control plane. A generated project builds and runs from its own repository.</p>
+
+<h2 id="label-Documentation">Documentation</h2>
+
+<p>The repository is its own Docsy documentation portal. Every article is readable on GitHub and rendered at <a href="https://appgram.github.io/docsy/">appgram.github.io/docsy</a> through <code>content.articles</code>:</p>
+
+<table role="table">
+<thead>
+<tr>
+<th>Article</th>
+<th>What it explains</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="content/getting-started_md.html">Get started with Docsy</a></td>
+<td>Run the portal, generate a project, and understand the ownership boundary</td>
+</tr>
+<tr>
+<td><a href="content/tutorials/coding-agents_md.html">Work with coding agents</a></td>
+<td>Read Markdown exports, give an agent a project brief, and validate documentation changes</td>
+</tr>
+<tr>
+<td><a href="content/tutorials/documentation-maintenance_md.html">Maintain documentation automatically</a></td>
+<td>Detect affected docs, correct stale examples, explain breaking changes, and open validated draft PRs</td>
+</tr>
+<tr>
+<td><a href="content/tutorials/yaml-configuration_md.html">Configure Docsy with YAML</a></td>
+<td>The configuration lifecycle, top-level sections, paths, and environment values</td>
+</tr>
+<tr>
+<td><a href="content/tutorials/authored-articles_md.html">Write authored documentation</a></td>
+<td>Markdown articles, YAML registration, navigation, search, exports, and permissions</td>
+</tr>
+<tr>
+<td><a href="content/tutorials/rich-articles_md.html">Rich article components</a></td>
+<td>Callouts, steps, tabs, code groups, accordions, and reusable snippets</td>
+</tr>
+<tr>
+<td><a href="content/tutorials/search-and-agents_md.html">Full-text search and agent JSON API</a></td>
+<td>Static retrieval exports, the optional Node query endpoint, and permission filtering</td>
+</tr>
+<tr>
+<td><a href="content/tutorials/versions-and-locales_md.html">Versions and localization</a></td>
+<td>Stable context URLs, translated UI/navigation, fallbacks, and versioned ingestion</td>
+</tr>
+<tr>
+<td><a href="content/tutorials/content-validation_md.html">Content validation</a></td>
+<td>Source failures, API linting, schema examples, links, anchors, and component checks</td>
+</tr>
+<tr>
+<td><a href="content/tutorials/openapi-ingestion_md.html">Ingest an OpenAPI document</a></td>
+<td>Local and remote sources, section matching, and navigation</td>
+</tr>
+<tr>
+<td><a href="content/ingestion/sdk-adapters_md.html">Ingest SDK documentation</a></td>
+<td>Native artifact formats, 20-language coverage, portable metadata, and bounded private ingestion</td>
+</tr>
+<tr>
+<td><a href="content/customization/default-ui_md.html">Customize the default UI</a></td>
+<td>YAML brand tokens and the source-owned Astro interface</td>
+</tr>
+<tr>
+<td><a href="content/tutorials/lock-mode_md.html">Protect documentation by tier</a></td>
+<td>Ordered access rules, trusted headers, webhooks, and locked deployment</td>
+</tr>
+<tr>
+<td><a href="content/deployment/github-pages_md.html">Deploy to GitHub Pages</a></td>
+<td>Static Pages configuration and the included Actions workflow</td>
+</tr>
+<tr>
+<td><a href="content/deployment/self-hosting_md.html">Self-host Docsy</a></td>
+<td>Static, Node, and Docker deployment shapes</td>
+</tr>
+<tr>
+<td><a href="content/reference/license_md.html">Understand the Docsy license</a></td>
+<td>What ELv2 permits, what it prohibits, and how it applies to generated sites</td>
+</tr>
+<tr>
+<td><a href="content/reference/cli_md.html">CLI reference</a></td>
+<td>Project generation, validation, building, and production startup</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="label-Quick+start">Quick start</h2>
+
+<p>Use Node 22.22 or newer. Run Docsy’s own documentation portal:</p>
+
+<pre class="code ruby"><code class="ruby">git clone https://github.com/AppGram/docsy.git docsy
+cd docsy
+npm ci
+npm run dev
+</code></pre>
+
+<p>Open <a href="http://localhost:4321/docsy/"><a href="http://localhost:4321/docsy">localhost:4321/docsy</a>/</a>.</p>
+
+<p>The portal uses the default light interface and renders every registered Markdown article. Its <a href="https://appgram.github.io/docsy/api/posts/">Posts request sample</a> and <a href="https://appgram.github.io/docsy/api/comments/">Comments query sample</a> are generated from the committed <code>sources/samples/jsonplaceholder.openapi.yaml</code> teaching subset. Copy GET, POST, PUT, PATCH, and DELETE curl examples against JSONPlaceholder; writes are simulated and not persisted. The Nager.Date snapshot remains available as an alternative source. <a href="content/tutorials/openapi-ingestion_md.html">How the OpenAPI sample is configured</a>.</p>
+
+<h2 id="label-Generate+a+project">Generate a project</h2>
+
+<p>From a clone of this repository:</p>
+
+<pre class="code ruby"><code class="ruby">npm run create -- ../holiday-docs \
+  --yes \
+  --name &quot;Holiday API&quot; \
+  --openapi ./sources/openapi.json \
+  --api-base https://date.nager.at \
+  --base /docs
+
+cd ../holiday-docs
+npm run dev
+</code></pre>
+
+<p>Use an OpenAPI URL instead of a local file when desired:</p>
+
+<pre class="code ruby"><code class="ruby">npm run create -- ../my-docs \
+  --yes \
+  --name &quot;Acme API&quot; \
+  --openapi https://api.example.com/openapi.json \
+  --api-base https://api.example.com \
+  --base /docs \
+  --locked
+</code></pre>
+
+<p>Without <code>--yes</code>, the CLI asks for the project directory, OpenAPI source, product name, mount path, and access mode. It then:</p>
+<ol><li>
+<p>Parses the OpenAPI document.</p>
+</li><li>
+<p>Groups operations into sections using tags and path segments.</p>
+</li><li>
+<p>Copies the editable Astro interface.</p>
+</li><li>
+<p>Writes a validated <code>docsy.config.yaml</code>.</p>
+</li><li>
+<p>Copies local ingestion sources into <code>sources/</code>.</p>
+</li><li>
+<p>Adds <code>AGENTS.md</code> and <code>DOCSY_BRIEF.md</code> for safe AI-assisted customization.</p>
+</li><li>
+<p>Installs dependencies unless <code>--no-install</code> is supplied.</p>
+</li></ol>
+
+<p>Run <code>node scripts/create-docsy.mjs --help</code> for every option.</p>
+
+<h2 id="label-Close+the+documentation+maintenance+loop">Close the documentation maintenance loop</h2>
+
+<p>Generated projects include a GitHub workflow and a local maintenance command. Enable the workflow through YAML:</p>
+
+<pre class="code ruby"><code class="ruby">maintenance:
+  enabled: true
+  watch: [sources/**, src/**]
+  docs: [content/**/*.md, README.md]
+  breakingChangesFile: content/maintenance/breaking-changes.md
+</code></pre>
+
+<p>Add the <code>OPENAI_API_KEY</code> Actions secret and allow GitHub Actions to create pull requests. On a default-branch source change, the workflow compares revisions, finds likely affected docs and stale examples, and runs Codex to prepare updates. A fresh job checks the allowed diff and runs validation and the production build. A final job opens a draft PR on a dedicated branch. Empty updates produce no PR; a failed check stops publication.</p>
+
+<p>Inspect or run it locally:</p>
+
+<pre class="code ruby"><code class="ruby">npm run maintain -- plan --base HEAD~1
+npm run maintain -- run --base HEAD~1
+# With authenticated gh, also create and push a draft PR:
+npm run maintain -- run --base HEAD~1 --pr
+</code></pre>
+
+<p>The planner compares local OpenAPI and Swagger contracts, flags likely breaking changes, and maps changed paths and symbols to Markdown articles. The agent uses the source diff to update guides and explain migrations. Use committed snapshots to track remote ingestion changes; the workflow reacts to Git changes rather than polling upstream URLs. <a href="content/tutorials/documentation-maintenance_md.html">Setup, scope, and review details</a>.</p>
+
+<h2 id="label-Configure+it+with+YAML">Configure it with YAML</h2>
+
+<p><code>docsy.config.yaml</code> is the source of truth for the generated site:</p>
+
+<pre class="code ruby"><code class="ruby">site:
+  name: Acme API
+  title: Acme API Documentation
+  origin: ${DOCSY_ORIGIN:-http://localhost:4321}
+  basePath: /docs
+  logo: assets/docsy-mark.svg
+
+theme:
+  mode: dark
+  colors:
+    ink: &quot;#f5f5f5&quot;
+    muted: &quot;#a3a3a3&quot;
+    line: &quot;#262626&quot;
+    paper: &quot;#000000&quot;
+    accent: &quot;#ffffff&quot;
+  fonts:
+    display: &#39;&quot;Aptos Display&quot;, &quot;SF Pro Display&quot;, &quot;Helvetica Neue&quot;, sans-serif&#39;
+    body: &#39;&quot;Aptos&quot;, &quot;SF Pro Text&quot;, &quot;Helvetica Neue&quot;, sans-serif&#39;
+    mono: &#39;ui-monospace, &quot;SF Mono&quot;, Menlo, monospace&#39;
+
+content:
+  articles:
+    - slug: getting-started
+      source: content/getting-started.md
+      title: Getting started
+      description: Make your first authenticated request.
+      eyebrow: GUIDE
+
+navigation:
+  - title: API Reference
+    items:
+      - title: Users
+        href: /api/users
+
+ingestion:
+  sdks: []
+  openapi:
+    enabled: true
+    source: sources/openapi.yaml
+    apiBaseUrl: https://api.example.com
+    sections:
+      - section: users
+        title: Users
+        description: Create and manage users.
+        tags: [users]
+        paths: [/users]
+</code></pre>
+
+<p><code>${ENV_NAME}</code> and <code>${ENV_NAME:-fallback}</code> placeholders are expanded before validation. Set <code>DOCSY_CONFIG</code> to use a different YAML file without changing source.</p>
+
+<p>Configuration errors fail with their exact YAML path. Run this before committing:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_npm'>npm</span> <span class='id identifier rubyid_run'>run</span> <span class='id identifier rubyid_validate'>validate</span>
+</code></pre>
+
+<h2 id="label-Authored+Markdown+articles">Authored Markdown articles</h2>
+
+<p>Docsy can render documentation you write directly; OpenAPI and SDK ingestion are optional companions, not the only content model.</p>
+
+<p>Create a Markdown file outside <code>public/</code>:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_content'>content</span><span class='op'>/</span><span class='id identifier rubyid_guides'>guides</span><span class='op'>/</span><span class='id identifier rubyid_authentication'>authentication</span><span class='period'>.</span><span class='id identifier rubyid_md'>md</span>
+</code></pre>
+
+<p>Register it in YAML:</p>
+
+<pre class="code ruby"><code class="ruby">content:
+  articles:
+    - slug: authentication
+      source: content/guides/authentication.md
+      title: Authentication
+      description: Create a token and authenticate API requests.
+      eyebrow: GUIDE
+
+navigation:
+  - title: Guides
+    items:
+      - title: Authentication
+        href: /guides/authentication
+</code></pre>
+
+<p>Docsy serves it at <code>/guides/authentication</code> underneath <code>site.basePath</code>. Nested slugs such as <code>platform/security/authentication</code> create nested guide URLs. Level-two and level-three headings populate the page rail.</p>
+
+<p>Authored articles automatically participate in navigation, search, Markdown export, and lock-mode permission rules. Keep protected Markdown outside <code>public/</code>, because files under <code>public/</code> are served as unprotected static assets.</p>
+
+<h2 id="label-OpenAPI+ingestion">OpenAPI ingestion</h2>
+
+<p><code>ingestion.openapi.source</code> accepts:</p>
+<ul><li>
+<p>A project-relative <code>.json</code>, <code>.yaml</code>, or <code>.yml</code> file.</p>
+</li><li>
+<p>An <code>http://</code> or <code>https://</code> URL fetched during the build.</p>
+</li></ul>
+
+<p>The adapter handles Swagger 2 and OpenAPI 3 parameters, request bodies, response content, component schemas, examples, and security declarations. Each configured section matches operations by tag substring, path substring, or both.</p>
+
+<p>For deterministic, private, or air-gapped builds, commit a spec snapshot under <code>sources/</code>. Do not place a protected specification under <code>public/</code>; files there bypass lock-mode middleware.</p>
+
+<h2 id="label-SDK+ingestion+adapters">SDK ingestion adapters</h2>
+
+<p>Every adapter normalizes its input into the same internal <code>SDKDoc</code> model. Rendering, search, and Markdown export therefore do not need to know which documentation generator produced the source.</p>
+
+<table role="table">
+<thead>
+<tr>
+<th>Adapter</th>
+<th>Input shape</th>
+<th>Typical source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>typedoc-lite</code></td>
+<td><code>modules[0].types</code> plus <code>navigation.categories</code></td>
+<td>Language-neutral compact metadata, including React/React Native</td>
+</tr>
+<tr>
+<td><code>swift-symbols</code></td>
+<td>Types, protocols, enums, and navigation categories</td>
+<td><a href="https://github.com/AppGram/docc2json">AppGram/docc2json</a> output from DocC archives</td>
+</tr>
+<tr>
+<td><code>typedoc</code>, <code>jsdoc</code></td>
+<td>TypeDoc JSON / JSDoc doclets</td>
+<td>TypeScript, JavaScript</td>
+</tr>
+<tr>
+<td><code>sphinx</code>, <code>javadoc</code>, <code>dokka</code>, <code>scaladoc</code></td>
+<td>Native JSON-builder / HTML artifacts</td>
+<td>Python, Java, Kotlin, Scala 2</td>
+</tr>
+<tr>
+<td><code>docfx</code></td>
+<td>ManagedReference YAML from compiler assemblies + XML</td>
+<td>C#, F#, Visual Basic</td>
+</tr>
+<tr>
+<td><code>doxygen</code></td>
+<td>Native XML directory</td>
+<td>C, C++, Objective-C</td>
+</tr>
+<tr>
+<td><code>godoc</code>, <code>rustdoc</code>, <code>docc</code></td>
+<td><code>go doc -all</code> text / stable rustdoc HTML / DocC render JSON</td>
+<td>Go, Rust, Swift</td>
+</tr>
+<tr>
+<td><code>dartdoc</code>, <code>phpdoc</code>, <code>yard</code>, <code>exdoc</code>, <code>ldoc</code></td>
+<td>Native HTML or XML artifacts</td>
+<td>Dart, PHP, Ruby, Elixir, Lua</td>
+</tr>
+</tbody>
+</table>
+
+<pre class="code ruby"><code class="ruby">ingestion:
+  sdks:
+    - id: javascript
+      slug: javascript-sdk
+      adapter: typedoc
+      source: sources/javascript/docs.json
+      name: JavaScript SDK
+      language: typescript
+      install: npm install @acme/sdk
+      overview: Typed client for the Acme API.
+      icon: assets/sdks/javascript.svg
+</code></pre>
+
+<p>Source paths are resolved from the project root.</p>
+
+<p>The portal uses original output generated from <code>tests/generators/input/</code>, with versions, commands, source hashes, and output hashes in <code>sources/native/provenance.json</code>. <code>npm test</code> verifies all 20 fixtures. Regenerate with <code>npm run fixtures:image</code> followed by <code>npm run fixtures:generate</code>; generators are not required to consume committed output. Native inputs remain outside <code>public/</code>, bounded by YAML file/byte limits; scripts, pickle/Marshal data, XML entities, and symlinks are not executed or followed. F# DocFX output may provide C# declarations, which are labeled C#. HTML selectors target the recorded generator versions. <a href="content/ingestion/sdk-samples_md.html">Exact coverage and reproduction</a>.</p>
+
+<h3 id="label-Multilingual+OpenAPI+requests">Multilingual OpenAPI requests</h3>
+
+<pre class="code ruby"><code class="ruby">ingestion:
+  openapi:
+    enabled: true
+    source: sources/openapi.yaml
+    apiBaseUrl: https://api.example.com
+    examples:
+      languages: [curl, javascript, typescript, python, go, java, kotlin, csharp, rust, swift, dart]
+      defaults: required
+      customSamples: true
+</code></pre>
+
+<p>The native select remembers the reader’s choice across endpoint cards and pages. Auth headers, path/query values, and JSON request bodies come from the same normalized request. <code>x-codeSamples</code> can replace generated examples for a selected language with actual SDK calls. All configured samples also reach Markdown and agent exports. <a href="content/tutorials/openapi-ingestion_md.html">Options and supported request targets</a>.</p>
+
+<h2 id="label-Permission-gated+lock+mode">Permission-gated lock mode</h2>
+
+<p>Open mode is the static default:</p>
+
+<pre class="code ruby"><code class="ruby">access:
+  mode: open
+</code></pre>
+
+<p>Locked mode switches the Astro build to Node SSR and evaluates ordered access rules on every protected request:</p>
+
+<pre class="code ruby"><code class="ruby">access:
+  mode: locked
+  provider:
+    type: header
+    tierHeader: x-docsy-tiers
+    userHeader: x-docsy-user
+  tiers:
+    developer:
+      label: Developer
+    enterprise:
+      label: Enterprise
+      description: Restricted platform operations.
+  rules:
+    - pattern: /api/license-keys
+      tiers: [enterprise]
+    - pattern: /api/**
+      tiers: [developer, enterprise]
+  gate:
+    title: This API reference is locked.
+    description: Sign in with an account that can access this reference.
+    loginUrl: https://app.example.com/login
+    loginLabel: Sign in to continue
+</code></pre>
+
+<p>Rules are evaluated from top to bottom. <code>*</code> matches one path segment; <code>**</code> matches any number of segments. The same rules protect rendered pages and Markdown exports, and search results are filtered to the visitor’s tiers.</p>
+
+<h3 id="label-Trusted-header+provider">Trusted-header provider</h3>
+
+<p>Use this behind Cloudflare Access, oauth2-proxy, an ingress gateway, or your own authentication proxy. The proxy must:</p>
+<ol><li>
+<p>Remove client-supplied copies of the identity headers.</p>
+</li><li>
+<p>Authenticate the visitor.</p>
+</li><li>
+<p>Set the trusted tier and optional user headers.</p>
+</li><li>
+<p>Prevent visitors from reaching Docsy around the proxy.</p>
+</li></ol>
+
+<p>Tier values may be comma- or space-separated.</p>
+
+<h3 id="label-Webhook+provider">Webhook provider</h3>
+
+<p>If authorization belongs in your application:</p>
+
+<pre class="code ruby"><code class="ruby">access:
+  mode: locked
+  provider:
+    type: webhook
+    endpoint: https://app.example.com/internal/docsy/authorize
+    method: POST
+    forwardHeaders: [cookie, authorization]
+    pathHeader: x-docsy-path
+    timeoutMs: 3000
+</code></pre>
+
+<p>The endpoint returns:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='lbrace'>{</span>
+  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>authenticated</span><span class='label_end'>&quot;:</span> <span class='kw'>true</span><span class='comma'>,</span>
+  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>subject</span><span class='label_end'>&quot;:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>user_123</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>tiers</span><span class='label_end'>&quot;:</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>developer</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+<span class='rbrace'>}</span>
+</code></pre>
+
+<p>Timeouts, errors, and non-2xx responses fail closed.</p>
+
+<h2 id="label-Customize+the+interface">Customize the interface</h2>
+
+<p>Start with YAML for branding and stable tokens. Edit source when the request is truly about layout or behavior:</p>
+
+<table role="table">
+<thead>
+<tr>
+<th>Concern</th>
+<th>File</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Product, routes, colors, fonts, access</td>
+<td><code>docsy.config.yaml</code></td>
+</tr>
+<tr>
+<td>Shell, header, search, mobile navigation</td>
+<td><code>src/layouts/DocsLayout.astro</code></td>
+</tr>
+<tr>
+<td>API and SDK presentation</td>
+<td><code>src/components/docs/</code></td>
+</tr>
+<tr>
+<td>Base design primitives</td>
+<td><code>src/styles/docsy.css</code></td>
+</tr>
+<tr>
+<td>YAML validation and path helpers</td>
+<td><code>src/config.ts</code></td>
+</tr>
+<tr>
+<td>OpenAPI normalization</td>
+<td><code>src/lib/swagger-loader.ts</code></td>
+</tr>
+<tr>
+<td>SDK normalization</td>
+<td><code>src/lib/sdk-loaders.ts</code></td>
+</tr>
+</tbody>
+</table>
+
+<p>Generated projects include a customization brief for coding agents. Its rule is deliberate: preserve the working reference interface by default, use YAML for configuration, and touch Astro/CSS only for an explicitly requested UI change.</p>
+
+<h2 id="label-Self-hosting">Self-hosting</h2>
+
+<h3 id="label-Docker+Compose">Docker Compose</h3>
+
+<p>This is the shortest path for both access modes:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_docker'>docker</span> <span class='id identifier rubyid_compose'>compose</span> <span class='id identifier rubyid_up'>up</span> <span class='op'>-</span><span class='op'>-</span><span class='id identifier rubyid_build'>build</span>
+</code></pre>
+
+<p>Open <a href="http://localhost:8080/docs/"><a href="http://localhost:8080/docs">localhost:8080/docs</a>/</a>.</p>
+
+<p>The container detects the build type automatically. Open mode with <code>agent.query: false</code> serves staged static files; locked mode or <code>agent.query: true</code> starts the Astro Node server. The runtime image includes authored content and snippets as well as ingestion sources.</p>
+
+<h3 id="label-Static+host">Static host</h3>
+
+<p>For <code>access.mode: open</code>:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_npm'>npm</span> <span class='id identifier rubyid_ci'>ci</span>
+<span class='id identifier rubyid_npm'>npm</span> <span class='id identifier rubyid_run'>run</span> <span class='id identifier rubyid_build'>build</span>
+</code></pre>
+
+<p>Publish <code>release/</code> as the web root. The configured <code>site.basePath</code> is already staged underneath it, and <code>release/index.html</code> redirects to that mount path.</p>
+
+<p>Any conventional static server, object storage website, or CDN can host this output.</p>
+
+<h3 id="label-GitHub+Pages">GitHub Pages</h3>
+
+<p>The repository includes <code>.github/workflows/pages.yml</code>. It validates and builds the open-mode portal, uploads <code>dist/</code>, and deploys it through the <code>github-pages</code> environment whenever <code>main</code> changes.</p>
+
+<p>For a repository site, set <code>site.origin</code> to the GitHub Pages host and <code>site.basePath</code> to the repository name. The Docsy portal uses <code>https://appgram.github.io</code> and <code>/docsy</code>.</p>
+
+<h3 id="label-Node+server">Node server</h3>
+
+<p>For <code>access.mode: locked</code>:</p>
+
+<pre class="code ruby"><code class="ruby">npm ci
+npm run build
+HOST=0.0.0.0 PORT=8080 npm run preview
+</code></pre>
+
+<p>Put the process behind the trusted authentication proxy described above. Rebuild after changing <code>access.mode</code>, <code>site.basePath</code>, or ingestion configuration.</p>
+
+<h2 id="label-Commands">Commands</h2>
+
+<table role="table">
+<thead>
+<tr>
+<th>Command</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>npm run dev</code></td>
+<td>Start Astro development mode</td>
+</tr>
+<tr>
+<td><code>npm run validate</code></td>
+<td>Validate YAML, sources, API examples, components, links, anchors, and Astro types</td>
+</tr>
+<tr>
+<td><code>npm run build</code></td>
+<td>Validate, build, and stage production output</td>
+</tr>
+<tr>
+<td><code>npm run preview</code></td>
+<td>Serve the staged static build or locked Node build</td>
+</tr>
+<tr>
+<td><code>npm run create -- &lt;dir&gt;</code></td>
+<td>Generate a new editable project</td>
+</tr>
+<tr>
+<td><code>npm run maintain -- plan --base &lt;ref&gt;</code></td>
+<td>Inspect source changes and documentation impact</td>
+</tr>
+<tr>
+<td><code>npm run maintain -- run --base &lt;ref&gt;</code></td>
+<td>Update docs with the agent and validate the result</td>
+</tr>
+<tr>
+<td><code>npm test</code></td>
+<td>Run maintenance workflow regression tests</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="label-Project+structure">Project structure</h2>
+
+<pre class="code ruby"><code class="ruby">.
+├── docsy.config.yaml       # Product, theme, ingestion, navigation, access
+├── content/                # Authored Markdown articles
+├── sources/                # Private build-time OpenAPI and SDK inputs
+├── public/                 # Public assets only
+├── src/
+│   ├── components/docs/    # API and SDK UI
+│   ├── layouts/            # Documentation shell
+│   ├── lib/                # Ingestion, access, Markdown export
+│   ├── pages/              # Generated routes
+│   └── styles/             # Source-owned styling
+├── scripts/                # CLI, build staging, runtime launcher
+├── Dockerfile
+└── compose.yaml
+</code></pre>
+
+<h2 id="label-Contributing">Contributing</h2>
+
+<p>Issues and pull requests are welcome. Before submitting a change:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_npm'>npm</span> <span class='id identifier rubyid_ci'>ci</span>
+<span class='id identifier rubyid_npm'>npm</span> <span class='id identifier rubyid_run'>run</span> <span class='id identifier rubyid_validate'>validate</span>
+<span class='id identifier rubyid_npm'>npm</span> <span class='id identifier rubyid_run'>run</span> <span class='id identifier rubyid_build'>build</span>
+</code></pre>
+
+<p>Please preserve the configuration/source boundary, keep permission checks server-side, and avoid external font services or typographic tracking.</p>
+
+<p>Contributions are distributed under ELv2. By submitting a pull request, you confirm that you have the right to contribute the code under those terms. See <a href="CONTRIBUTING_md.html">CONTRIBUTING.md</a> for the complete project contribution guidance.</p>
+
+<h2 id="label-License">License</h2>
+
+<p>Docsy is <strong>source-available</strong>, not OSI-approved open-source software. It is licensed under the <a href="LICENSE">Elastic License 2.0</a> © AppGram.</p>
+
+<h3 id="label-You+may">You may</h3>
+<ul><li>
+<p>Self-host Docsy for your own public, private, personal, or commercial documentation.</p>
+</li><li>
+<p>Configure and modify the YAML, Markdown, Astro components, styles, adapters, and runtime.</p>
+</li><li>
+<p>Replace or remove visible Docsy and AppGram branding from your documentation pages, including the default footer and logo.</p>
+</li><li>
+<p>Copy, redistribute, and publish modified versions when you include ELv2 and clearly state that you changed the software.</p>
+</li><li>
+<p>Hire a consultant to configure or deploy Docsy for you.</p>
+</li><li>
+<p>Keep your Markdown, OpenAPI files, SDK metadata, branding, and other documentation content under terms of your choosing.</p>
+</li></ul>
+
+<h3 id="label-You+may+not">You may not</h3>
+<ul><li>
+<p>Offer Docsy to third parties as a hosted or managed documentation service that exposes a substantial set of Docsy’s features.</p>
+</li><li>
+<p>Rebrand Docsy as your own competing SaaS documentation builder and charge customers to access it.</p>
+</li><li>
+<p>Remove or hide the <code>LICENSE</code> terms or copyright notices from the Docsy software or copies you redistribute.</p>
+</li><li>
+<p>Circumvent license-key functionality or protected features if Docsy adds them.</p>
+</li></ul>
+
+<p>ELv2 does not require a visible “Powered by Docsy” or “Docsy provided by AppGram” notice on your published documentation. It does require the legal notices to remain with the software. ELv2 also does not require you to publish private modifications or prohibit commercial activity generally: consulting, integration, and using Docsy for a commercial product’s own documentation remain allowed. The restriction is providing Docsy itself as a hosted or managed service. The <a href="LICENSE">license text</a> controls if this summary and ELv2 differ.</p>
+</div></div>
+
+      <div id="footer">
+  Generated on Sun Oct 18 14:38:57 2026 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.38 (ruby-4.0.1).
+</div>
+
+    </div>
+  </body>
+</html>

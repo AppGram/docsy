@@ -1,0 +1,100 @@
+{
+  "modules": [
+    {
+      "name": "AtlasSDK",
+      "types": [
+        {
+          "kind": "struct",
+          "name": "AtlasClient",
+          "description": {
+            "summary": "An asynchronous client for the fictional Atlas API.",
+            "example": "let client = AtlasClient::new(\"https://api.example.com\")?;\nlet document = client.get_document(\"intro\").await?;\nprintln!(\"{}\", document.title);"
+          },
+          "declaration": "pub struct AtlasClient { /* private fields */ }\n\nimpl AtlasClient {\n    pub fn new(base_url: &str) -> Result<Self, Error>;\n    pub async fn get_document(&self, id: &str) -> Result<Document, Error>;\n}",
+          "methods": [
+            {
+              "name": "get_document",
+              "isAsync": true,
+              "returnType": "Result<Document, Error>",
+              "description": {
+                "summary": "Fetch a document or return an API error."
+              },
+              "parameters": [
+                {
+                  "name": "id",
+                  "type": "&str"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "struct",
+          "name": "Document",
+          "description": {
+            "summary": "An owned document record."
+          },
+          "declaration": "pub struct Document {\n    pub id: String,\n    pub title: String,\n    pub state: DocumentState,\n}",
+          "properties": [
+            {
+              "name": "id",
+              "type": "String",
+              "description": {
+                "summary": "Stable identifier."
+              }
+            },
+            {
+              "name": "title",
+              "type": "String",
+              "description": {
+                "summary": "Human-readable title."
+              }
+            },
+            {
+              "name": "state",
+              "type": "DocumentState",
+              "description": {
+                "summary": "Publication state."
+              }
+            }
+          ]
+        },
+        {
+          "kind": "enum",
+          "name": "DocumentState",
+          "description": {
+            "summary": "The publication state of a document."
+          },
+          "declaration": "pub enum DocumentState { Draft, Published, Archived }",
+          "values": [
+            "Draft",
+            "Published",
+            "Archived"
+          ]
+        }
+      ]
+    }
+  ],
+  "navigation": {
+    "categories": [
+      {
+        "title": "Clients",
+        "items": [
+          "AtlasClient"
+        ]
+      },
+      {
+        "title": "Models",
+        "items": [
+          "Document"
+        ]
+      },
+      {
+        "title": "Enums",
+        "items": [
+          "DocumentState"
+        ]
+      }
+    ]
+  }
+}

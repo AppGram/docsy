@@ -1,0 +1,26 @@
+[
+  {
+    "name": "AtlasClient",
+    "qualifiedName": "atlas_sdk.AtlasClient",
+    "kind": 3,
+    "desc": "An asynchronous client for the fictional Atlas document API. Creates requests against a configured base URL."
+  },
+  {
+    "name": "Document",
+    "qualifiedName": "atlas_sdk.Document",
+    "kind": 3,
+    "desc": "A document record with an identifier, title, and publication state."
+  },
+  {
+    "name": "DocumentState",
+    "qualifiedName": "atlas_sdk.DocumentState",
+    "kind": 5,
+    "desc": "Publication state: draft, published, or archived."
+  },
+  {
+    "name": "DocumentDiagnostics",
+    "qualifiedName": "atlas_sdk.DocumentDiagnostics",
+    "kind": 8,
+    "desc": "Convenience diagnostics for displaying a document in development tools."
+  }
+]

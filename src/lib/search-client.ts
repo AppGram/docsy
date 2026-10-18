@@ -36,7 +36,7 @@ export function initSearch() {
   const close = () => { modal.hidden = true; document.body.style.overflow = ''; trigger.focus(); };
   const open = async () => {
     modal.hidden = false; document.body.style.overflow = 'hidden'; field.value = ''; field.focus(); render();
-    loading ??= fetch(document.body.dataset.searchIndex!).then((response) => { if (!response.ok) throw new Error('Index unavailable'); return response.json(); }).then((data) => { index = data.entries; }).catch(() => { loading = undefined; hint('Search could not be loaded. Close and retry.'); });
+    loading ??= fetch(document.body.dataset.searchIndex!).then((response) => { if (!response.ok) throw new Error('Index unavailable'); return response.json(); }).then((data) => { index = data.entries; }).catch(() => { loading = undefined; hint(results.dataset.error || 'Search could not be loaded. Close and retry.'); });
     await loading; if (index) render();
   };
   trigger.addEventListener('click', open); scrim.addEventListener('click', close);

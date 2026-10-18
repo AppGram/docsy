@@ -3,6 +3,9 @@ import { resolve } from 'node:path';
 import { load } from 'js-yaml';
 import { z } from 'zod';
 import { maintenanceSchema } from '../scripts/maintenance/config.mjs';
+import { REQUEST_LANGUAGES } from './lib/request-languages';
+import { SDK_FORMATS } from './lib/sdk-formats';
+import { bundledThemes } from 'shiki';
 
 // Astro bundles server modules into dist during static generation, so module
 // URLs no longer point at the project. Builds and dev both run from this root.
@@ -33,14 +36,20 @@ const navItemSchema: z.ZodType<NavItemInput> = z.lazy(() => z.object({
 const sdkSchema = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),
   slug: z.string().regex(/^[a-z0-9-]+$/),
-  adapter: z.enum(['typedoc-lite', 'swift-symbols', 'dartdoc', 'typedoc']),
+  adapter: z.enum(SDK_FORMATS),
   source: z.string().min(1),
   name: z.string().min(1),
   language: z.string().min(1),
   install: z.string(),
+  installLanguage: z.string().optional(),
+  quickstart: z.object({ code: z.string().min(1), language: z.string().optional() }).optional(),
   overview: z.string(),
   icon: z.string().optional(),
+  iconDark: z.string().optional(),
   versions: z.record(z.string()).default({}),
+  maxFiles: z.number().int().min(1).max(50000).default(10000),
+  maxFileBytes: z.number().int().min(1024).max(100 * 1024 * 1024).default(10 * 1024 * 1024),
+  maxTotalBytes: z.number().int().min(1024).max(1024 * 1024 * 1024).default(100 * 1024 * 1024),
 });
 
 const apiSectionSchema = z.object({
@@ -159,7 +168,7 @@ const configSchema = z.object({
     cta: actionSchema.optional(),
   }).default({}),
   footer: z.object({
-    prefix: z.string().default('Built by'),
+    prefix: z.string().default('Docsy provided by'),
     label: z.string().min(1),
     href: z.string().url(),
   }).optional(),
@@ -172,6 +181,10 @@ const configSchema = z.object({
     colors: themeColorsSchema(LIGHT_THEME_COLORS),
     lightColors: themeColorsSchema(LIGHT_THEME_COLORS),
     darkColors: themeColorsSchema(DARK_THEME_COLORS),
+    code: z.object({
+      lightTheme: z.string().refine((name) => Object.hasOwn(bundledThemes, name), 'Unknown bundled syntax theme').default('github-light'),
+      darkTheme: z.string().refine((name) => Object.hasOwn(bundledThemes, name), 'Unknown bundled syntax theme').default('github-dark-high-contrast'),
+    }).default({}),
     fonts: z.object({
       display: z.string().default('"Aptos Display", "SF Pro Display", "Helvetica Neue", sans-serif'),
       body: z.string().default('"Aptos", "SF Pro Text", "Helvetica Neue", sans-serif'),
@@ -252,6 +265,11 @@ const configSchema = z.object({
       guide: actionSchema.optional(),
       sections: z.array(apiSectionSchema).default([]),
       versions: z.record(z.string()).default({}),
+      examples: z.object({
+        languages: z.array(z.enum(REQUEST_LANGUAGES)).min(1).refine((values) => new Set(values).size === values.length, 'Request languages must be unique').default(['curl', 'javascript', 'python']),
+        defaults: z.enum(['required', 'all']).default('required'),
+        customSamples: z.boolean().default(true),
+      }).default({}),
     }),
   }),
 }).superRefine((config, context) => {

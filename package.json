@@ -21,6 +21,7 @@
     "LICENSE",
     ".github/workflows/docsy-maintenance.yml",
     "content",
+    "sources",
     "src",
     "public",
     "scripts",
@@ -44,18 +45,26 @@
     "check": "node scripts/docsy.mjs validate",
     "maintain": "node scripts/docsy.mjs maintain",
     "test": "node --import tsx --test tests/*.test.mjs tests/*.test.ts",
-    "test:maintenance:live": "node tests/maintenance.live.mjs"
+    "fixtures:generate": "node scripts/generate-native-fixtures.mjs",
+    "fixtures:image": "docker build -t docsy-generators:local -f tests/generators/Dockerfile tests/generators",
+    "test:maintenance:live": "node tests/maintenance.live.mjs",
+    "test:requests:live": "node --import tsx tests/request-examples.live.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.3.3",
     "@astrojs/node": "^11.1.8",
+    "@readme/httpsnippet": "^11.4.1",
     "@redocly/openapi-core": "^2.64.1",
     "astro": "^7.4.0",
+    "fast-xml-parser": "^5.11.2",
+    "fast-xml-validator": "^1.4.2",
+    "hast-util-to-html": "^9.0.5",
     "js-yaml": "^4.2.0",
     "parse5": "^8.0.1",
     "remark-directive": "^4.0.0",
     "remark-parse": "^11.0.0",
     "remark-stringify": "^11.0.0",
+    "shiki": "^4.5.0",
     "tsx": "^4.23.15",
     "unified": "^11.0.5",
     "zod": "^3.25.76"
@@ -64,6 +73,8 @@
     "@astrojs/check": "^0.9.4",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^24.7.2",
+    "jsdoc": "^4.0.5",
+    "typedoc": "^0.28.20",
     "typescript": "^5.9.3"
   },
   "engines": {

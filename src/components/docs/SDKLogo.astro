@@ -1,0 +1,15 @@
+---
+interface Props { icon: string; iconDark?: string; size?: number; lazy?: boolean }
+const { icon, iconDark, size = 24, lazy = false } = Astro.props;
+---
+<span class:list={['sdk-logo', { 'has-dark': Boolean(iconDark) }]} style={`--sdk-logo-size:${size}px`}>
+  <img class="sdk-logo-light" src={icon} alt="" width={size} height={size} loading={lazy ? 'lazy' : 'eager'} />
+  {iconDark && <img class="sdk-logo-dark" src={iconDark} alt="" width={size} height={size} loading={lazy ? 'lazy' : 'eager'} />}
+</span>
+<style>
+  .sdk-logo { display: inline-grid; width: var(--sdk-logo-size); height: var(--sdk-logo-size); flex-shrink: 0; }
+  .sdk-logo img { grid-area: 1 / 1; width: 100%; height: 100%; object-fit: contain; }
+  .sdk-logo-dark { display: none; }
+  :global(html[data-theme="dark"]) .has-dark .sdk-logo-light { display: none; }
+  :global(html[data-theme="dark"]) .sdk-logo-dark { display: block; }
+</style>

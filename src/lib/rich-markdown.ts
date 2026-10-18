@@ -11,6 +11,18 @@ const text = (value: string): Node => ({ type: 'text', value });
 const paragraph = (value: string, tag = 'p'): Node => ({ type: 'paragraph', children: [text(value)], data: { hName: tag, hProperties: { className: ['docsy-component-title'] } } });
 const label = (node: Node) => node.children?.find((child) => child.data?.directiveLabel)?.children?.map((child) => child.value ?? '').join('') || node.attributes?.title || '';
 const body = (node: Node) => node.children?.filter((child) => !child.data?.directiveLabel) ?? [];
+const calloutIcon = (kind: string): Node => {
+  const paths: Record<string, string[]> = {
+    note: ['M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z', 'M12 11v6', 'M12 7h.01'],
+    tip: ['M9 18h6', 'M10 21h4', 'M8.6 14.5a6 6 0 1 1 6.8 0c-.9.6-1.4 1.5-1.4 2.5h-4c0-1-.5-1.9-1.4-2.5Z'],
+    warning: ['m10.3 4.1-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-2.9l-8-14a2 2 0 0 0-3.4 0Z', 'M12 9v4', 'M12 17h.01'],
+    danger: ['m8 2-6 6v8l6 6h8l6-6V8l-6-6H8Z', 'M12 7v6', 'M12 17h.01'],
+  };
+  return { type: 'paragraph', children: [], data: {
+    hName: 'span', hProperties: { className: ['docsy-callout-icon'], 'aria-hidden': 'true' },
+    hChildren: [{ type: 'element', tagName: 'svg', properties: { viewBox: '0 0 24 24', width: 20, height: 20, fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round', strokeLinejoin: 'round', focusable: 'false' }, children: paths[kind].map((d) => ({ type: 'element', tagName: 'path', properties: { d }, children: [] })) }],
+  } };
+};
 
 export function expandSnippets(markdown: string, stack: string[] = []): string {
   // Parse includes, so a directive inside a fenced code example is never expanded.
@@ -48,7 +60,7 @@ export const richComponents = () => (tree: Node) => {
         node.data.hName = 'aside';
         node.data.hProperties.className = ['docsy-callout'];
         node.data.hProperties['data-kind'] = name;
-        node.children = [paragraph(title || name[0].toUpperCase() + name.slice(1)), ...children];
+        node.children = [calloutIcon(name), { type: 'blockquote', children: [paragraph(title || name[0].toUpperCase() + name.slice(1)), ...children], data: { hName: 'div', hProperties: { className: ['docsy-callout-content'] } } }];
       } else if (name === 'accordion') {
         node.data.hName = 'details';
         node.children = [paragraph(title || 'Details', 'summary'), ...children];

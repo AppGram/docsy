@@ -1,0 +1,24 @@
+### YamlMime:ManagedReference
+items:
+- uid: Example
+  commentId: N:Example
+  id: Example
+  children:
+  - Example.Greeter
+  langs:
+  - csharp
+  - vb
+  name: Example
+  nameWithType: Example
+  fullName: Example
+  type: Namespace
+  assemblies:
+  - Greeter
+references:
+- uid: Example.Greeter
+  commentId: T:Example.Greeter
+  isExternal: true
+  href: Example.Greeter.html
+  name: Greeter
+  nameWithType: Greeter
+  fullName: Example.Greeter

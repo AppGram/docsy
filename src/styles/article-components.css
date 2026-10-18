@@ -1,10 +1,44 @@
 .article-body .docsy-callout {
+  --callout-accent: color-mix(in srgb, var(--violet) 76%, var(--ink));
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  column-gap: 13px;
   margin: 24px 0;
-  padding: 18px 20px;
-  border: 1px solid var(--line);
-  border-inline-start: 3px solid var(--violet);
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--paper) 97%, var(--ink));
+  padding: 20px 22px;
+  border: 1px solid color-mix(in srgb, var(--callout-accent) 22%, var(--paper));
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--callout-accent) 5%, var(--paper));
+}
+.article-body .docsy-callout[data-kind="tip"] { --callout-accent: color-mix(in srgb, var(--green) 66%, var(--ink)); }
+.article-body .docsy-callout[data-kind="warning"] { --callout-accent: #a66110; }
+.article-body .docsy-callout[data-kind="danger"] { --callout-accent: #c63f46; }
+html[data-theme="dark"] .article-body .docsy-callout[data-kind="warning"] { --callout-accent: #e6b26a; }
+html[data-theme="dark"] .article-body .docsy-callout[data-kind="danger"] { --callout-accent: #f08c91; }
+.article-body .docsy-callout-icon {
+  display: flex;
+  align-items: center;
+  height: 24px;
+  color: var(--callout-accent);
+}
+.article-body .docsy-callout-icon svg { display: block; width: 20px; height: 20px; max-width: none; }
+.article-body .docsy-callout-content { min-width: 0; }
+.article-body .docsy-callout .docsy-component-title {
+  margin: 0 0 6px;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 24px;
+}
+.article-body .docsy-callout-content > :not(.docsy-component-title) {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.article-body .docsy-callout-content > :last-child { margin-bottom: 0; }
+.article-body .docsy-callout-content pre code { font-size: 12px; }
+@media (max-width: 560px) {
+  .article-body .docsy-callout { padding: 17px 18px; column-gap: 11px; }
 }
 .article-body .docsy-component-title {
   margin: 0 0 8px;
@@ -72,7 +106,9 @@ html[dir="rtl"] .article-body .docsy-steps > ol > li { padding: 0 46px 24px 0; }
 .docsy-tab > :last-child { margin-bottom: 0; }
 .docs-context-bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 22px; }
 .docs-context-bar label { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; }
-.docs-context-bar select { max-width: 180px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); padding: 6px 10px; font: inherit; }
+.docs-context-select { display: inline-flex; position: relative; }
+.docs-context-bar select { appearance: none; max-width: 180px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); padding: 6px 12px; padding-inline-end: 34px; font: inherit; cursor: pointer; }
+.docs-context-select > svg { position: absolute; inset-inline-end: 12px; top: 50%; transform: translateY(-50%); width: 12px; height: 12px; color: var(--muted); pointer-events: none; }
 .docs-context-notice { padding: 12px 16px; border: 1px solid var(--line); border-radius: 8px; color: var(--muted); margin-bottom: 24px; font-size: 13px; }
 .article-reader-nav { display: flex; justify-content: space-between; gap: 20px; margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); }
 .article-reader-nav a { max-width: 48%; }

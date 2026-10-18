@@ -21,7 +21,7 @@ header:
     label: View on GitHub
     href: https://github.com/AppGram/docsy
 footer:
-  prefix: Built by
+  prefix: Docsy provided by
   label: AppGram
   href: https://github.com/AppGram
 eyebrow:
@@ -29,6 +29,96 @@ eyebrow:
   size: 14
 theme:
   mode: light
+  code:
+    lightTheme: github-light
+    darkTheme: github-dark-high-contrast
+versions:
+  default: current
+  items:
+    - id: current
+      label: Current
+    - id: preview
+      label: Preview (demo)
+      status: beta
+localization:
+  defaultLocale: en
+  fallback: true
+  locales:
+    - code: en
+      label: English
+    - code: fr
+      label: Français
+    - code: es
+      label: Español
+  messages:
+    es:
+      guides: Guías
+      apiReference: Referencia de la API
+      onThisPage: En esta página
+      version: Versión
+      language: Idioma
+      previous: Anterior
+      next: Siguiente
+      searchLabel: Buscar
+      searchPlaceholder: Buscar en la documentación
+      searchHint: Empieza a escribir para buscar.
+      searchLoading: Cargando el índice…
+      searchEmpty: No hay resultados
+      searchNavigate: para navegar
+      searchSelect: para seleccionar
+      searchClose: para cerrar
+      searchError: No se pudo cargar la búsqueda. Cierra y vuelve a intentarlo.
+      page: Página
+      fallback: Esta página aún no está traducida. Se muestra la versión en inglés.
+      beta: Versión de demostración para probar las variantes. No es una nueva versión publicada de Docsy.
+      deprecated: Estás consultando una versión antigua de la documentación.
+      llmLabel: Markdown
+      openNavigation: Abrir la navegación
+      closeNavigation: Cerrar la navegación
+      documentation: Documentación
+      articleNavigation: Navegación entre artículos
+      lightTheme: Cambiar al tema claro
+      darkTheme: Cambiar al tema oscuro
+      switchTheme: Cambiar de tema
+      footerPrefix: Docsy, ofrecido por
+      articlesDescription: Guías y tutoriales escritos en Markdown y configurados con YAML.
+      sdkHeading: Ejemplos de SDK
+      sdkDescription: Veinte lenguajes importados desde resultados reales de sus generadores de documentación. Se incluyen fuentes, versiones, comandos y hashes. Son bibliotecas de prueba, no paquetes publicados.
+      symbols: símbolos
+    fr:
+      guides: Guides
+      apiReference: Référence API
+      onThisPage: Sur cette page
+      version: Version
+      language: Langue
+      previous: Précédent
+      next: Suivant
+      searchLabel: Rechercher
+      searchPlaceholder: Rechercher dans la documentation
+      searchHint: Commencez à écrire pour rechercher.
+      searchLoading: Chargement de l’index…
+      searchEmpty: Aucun résultat
+      searchNavigate: pour naviguer
+      searchSelect: pour sélectionner
+      searchClose: pour fermer
+      searchError: La recherche est indisponible. Fermez puis réessayez.
+      page: Page
+      fallback: Cette page n’est pas encore traduite. La version anglaise est affichée.
+      beta: Version de démonstration pour tester les variantes. Ce n’est pas une nouvelle version publiée de Docsy.
+      deprecated: Vous consultez une ancienne version de la documentation.
+      llmLabel: Markdown
+      openNavigation: Ouvrir la navigation
+      closeNavigation: Fermer la navigation
+      documentation: Documentation
+      articleNavigation: Navigation entre les articles
+      lightTheme: Passer au thème clair
+      darkTheme: Passer au thème sombre
+      switchTheme: Changer de thème
+      footerPrefix: Docsy, proposé par
+      articlesDescription: Guides et tutoriels rédigés en Markdown et configurés en YAML.
+      sdkHeading: Exemples de SDK
+      sdkDescription: Vingt langages importés à partir de sorties réelles de générateurs de documentation. Sources, versions, commandes et empreintes sont incluses. Ces bibliothèques de test ne sont pas des paquets publiés.
+      symbols: symboles
 search:
   enabled: true
   maxResults: 30
@@ -51,11 +141,26 @@ home:
   secondaryAction:
     label: Work with coding agents
     href: /guides/tutorials/coding-agents
-  sdkHeading: Documentation
-  sdkDescription: Guides and reference for building documentation with your team and coding agents.
+  sdkHeading: Native SDK samples
+  sdkDescription: Twenty languages imported from actual native documentation-generator output. Fixture sources, generator versions, commands, and SHA-256 hashes are checked in. These teaching libraries are not published SDK packages.
+  translations:
+    es:
+      eyebrow: DOCUMENTACIÓN DE DOCSY
+      title: Documentación para personas y agentes de programación.
+      description: Un portal cuidado para tus lectores, exportaciones Markdown para tus agentes y código que tú controlas. Escribe guías, importa referencias de API y SDK y alójalo todo en tu propia infraestructura.
+      primaryActionLabel: Primeros pasos →
+      secondaryActionLabel: Trabajar con agentes
+    fr:
+      eyebrow: DOCUMENTATION DOCSY
+      title: La documentation pour les humains et les agents de code.
+      description: Un portail soigné pour vos lecteurs, des exports Markdown pour vos agents, et du code que vous contrôlez. Rédigez des guides, importez vos références API et SDK, puis hébergez le tout vous-même.
+      primaryActionLabel: Bien démarrer →
+      secondaryActionLabel: Travailler avec des agents
 content:
   snippets:
     publishing: content/snippets/publishing-checklist.md
+    publicationFr: content/snippets/publishing-checklist.fr.md
+    publicacionEs: content/snippets/publishing-checklist.es.md
   articles:
     - slug: getting-started
       source: content/getting-started.md
@@ -110,8 +215,13 @@ content:
     - slug: ingestion/sdk-adapters
       source: content/ingestion/sdk-adapters.md
       title: Ingest SDK documentation
-      description: Normalize TypeDoc, Swift symbol, and Dart documentation into consistent SDK reference pages.
+      description: Import 16 native generator formats covering 20 source languages into consistent SDK reference pages.
       eyebrow: INGESTION
+    - slug: ingestion/sdk-samples
+      source: content/ingestion/sdk-samples.md
+      title: Explore 20 native SDK samples
+      description: Inspect actual generator output, source fixtures, tool versions, reproduction commands, and provenance hashes.
+      eyebrow: EXAMPLES
     - slug: customization/default-ui
       source: content/customization/default-ui.md
       title: Customize the default UI
@@ -142,6 +252,62 @@ content:
       title: Docsy license
       description: Understand what ELv2 permits, what it prohibits, and how it applies to self-hosting and contributions.
       eyebrow: REFERENCE
+    - slug: getting-started
+      locale: fr
+      source: content/fr/getting-started.md
+      title: Bien démarrer avec Docsy
+      description: Créez un portail pour les humains et les agents, générez un projet et prenez le contrôle de son code.
+      eyebrow: PREMIERS PAS
+    - slug: tutorials/rich-articles
+      locale: fr
+      source: content/fr/rich-articles.md
+      title: Des articles plus expressifs
+      description: Ajoutez des encadrés, des étapes, des onglets, des blocs de code et des extraits réutilisables en Markdown.
+      eyebrow: RÉDACTION
+    - slug: tutorials/versions-and-locales
+      locale: fr
+      source: content/fr/versions-and-locales.md
+      title: Versions et langues
+      description: Testez les sélecteurs, les variantes d’un article et le repli vers la langue par défaut.
+      eyebrow: CONFIGURATION
+    - slug: getting-started
+      version: preview
+      source: content/preview/getting-started.md
+      title: Get started — preview workspace
+      description: A distinct demo article for testing version switching, localized content, and English fallbacks.
+      eyebrow: PREVIEW DEMO
+    - slug: getting-started
+      version: preview
+      locale: fr
+      source: content/preview/fr/getting-started.md
+      title: Bien démarrer — espace de démonstration
+      description: Un article propre à la version Preview pour tester les variantes, les traductions et le repli en anglais.
+      eyebrow: DÉMONSTRATION
+    - slug: getting-started
+      locale: es
+      source: content/es/getting-started.md
+      title: Primeros pasos con Docsy
+      description: Crea un portal para personas y agentes, genera un proyecto y toma el control de su código.
+      eyebrow: PRIMEROS PASOS
+    - slug: tutorials/rich-articles
+      locale: es
+      source: content/es/rich-articles.md
+      title: Artículos enriquecidos
+      description: Añade avisos, pasos, pestañas, grupos de código y fragmentos reutilizables con Markdown.
+      eyebrow: REDACCIÓN
+    - slug: tutorials/versions-and-locales
+      locale: es
+      source: content/es/versions-and-locales.md
+      title: Versiones e idiomas
+      description: Prueba los selectores, las variantes de los artículos y el contenido en inglés cuando falta una traducción.
+      eyebrow: CONFIGURACIÓN
+    - slug: getting-started
+      version: preview
+      locale: es
+      source: content/preview/es/getting-started.md
+      title: Primeros pasos — espacio de demostración
+      description: Un artículo específico de Preview para probar las versiones, las traducciones y el contenido alternativo en inglés.
+      eyebrow: DEMOSTRACIÓN
 access:
   mode: open
 maintenance:
@@ -151,57 +317,343 @@ maintenance:
   breakingChangesFile: content/maintenance/breaking-changes.md
 navigation:
   - title: Introduction
+    titles: { fr: Introduction, es: Introducción }
     items:
       - title: Overview
+        titles: { fr: Vue d’ensemble, es: Resumen }
         href: /
       - title: Get started
+        titles: { fr: Bien démarrer, es: Primeros pasos }
         href: /guides/getting-started
       - title: Coding agents
+        titles: { fr: Agents de code, es: Agentes de programación }
         href: /guides/tutorials/coding-agents
       - title: Documentation maintenance
+        titles: { fr: Maintenance documentaire, es: Mantenimiento de la documentación }
         href: /guides/tutorials/documentation-maintenance
   - title: Content
+    titles: { fr: Contenu, es: Contenido }
     items:
       - title: YAML configuration
+        titles: { fr: Configuration YAML, es: Configuración YAML }
         href: /guides/tutorials/yaml-configuration
       - title: Authored articles
+        titles: { fr: Rédiger des articles, es: Escribir artículos }
         href: /guides/tutorials/authored-articles
       - title: Rich article components
+        titles: { fr: Articles enrichis, es: Artículos enriquecidos }
         href: /guides/tutorials/rich-articles
       - title: Versions and localization
+        titles: { fr: Versions et langues, es: Versiones e idiomas }
         href: /guides/tutorials/versions-and-locales
       - title: Search and agent API
+        titles: { fr: Recherche et API pour les agents, es: Búsqueda y API para agentes }
         href: /guides/tutorials/search-and-agents
       - title: Content validation
+        titles: { fr: Validation du contenu, es: Validación del contenido }
         href: /guides/tutorials/content-validation
   - title: Ingestion
+    titles: { fr: Importation, es: Importación }
     items:
       - title: OpenAPI ingestion
+        titles: { fr: Importer une spécification OpenAPI, es: Importar OpenAPI }
         href: /guides/tutorials/openapi-ingestion
       - title: SDK adapters
+        titles: { fr: Adaptateurs SDK, es: Adaptadores de SDK }
         href: /guides/ingestion/sdk-adapters
   - title: Customization
+    titles: { fr: Personnalisation, es: Personalización }
     items:
       - title: Default UI
+        titles: { fr: Interface par défaut, es: Interfaz predeterminada }
         href: /guides/customization/default-ui
+  - title: Native SDK samples
+    titles: { fr: SDK natifs, es: SDK nativos }
+    items:
+      - title: Sample guide
+        titles: { fr: Guide des exemples, es: Guía de ejemplos }
+        href: /guides/ingestion/sdk-samples
+      - title: Swift · DocC
+        href: /swift-sdk
+      - title: Dart · Dartdoc
+        href: /dart-sdk
+      - title: TypeScript · TypeDoc
+        href: /typescript-sdk
+      - title: JavaScript · JSDoc
+        href: /javascript-sdk
+      - title: Python · Sphinx
+        href: /python-sdk
+      - title: Rust · rustdoc
+        href: /rust-sdk
+      - title: C# · DocFX
+        href: /dotnet-sdk
+      - title: F# · DocFX
+        href: /fsharp-sdk
+      - title: Visual Basic · DocFX
+        href: /visualbasic-sdk
+      - title: Kotlin · Dokka
+        href: /kotlin-sdk
+      - title: Java · Javadoc
+        href: /java-sdk
+      - title: Scala · Scaladoc
+        href: /scala-sdk
+      - title: Go · go doc
+        href: /go-sdk
+      - title: C · Doxygen
+        href: /c-sdk
+      - title: C++ · Doxygen
+        href: /cpp-sdk
+      - title: Objective-C · Doxygen
+        href: /objectivec-sdk
+      - title: PHP · phpDocumentor
+        href: /php-sdk
+      - title: Ruby · YARD
+        href: /ruby-sdk
+      - title: Elixir · ExDoc
+        href: /elixir-sdk
+      - title: Lua · LDoc
+        href: /lua-sdk
+      - title: Portable metadata (manual)
+        href: /compact-sdk
+  - title: OpenAPI sample
+    titles: { fr: Exemple OpenAPI, es: Ejemplo de OpenAPI }
+    items:
+      - title: Posts · requests
+        titles: { fr: Articles · requêtes, es: Publicaciones · solicitudes }
+        href: /api/posts
+      - title: Comments · query parameters
+        titles: { fr: Commentaires · paramètres, es: Comentarios · parámetros }
+        href: /api/comments
   - title: Access and deployment
+    titles: { fr: Accès et déploiement, es: Acceso y despliegue }
     items:
       - title: Lock mode
+        titles: { fr: Contrôle d’accès, es: Control de acceso }
         href: /guides/tutorials/lock-mode
       - title: GitHub Pages
+        titles: { fr: GitHub Pages, es: GitHub Pages }
         href: /guides/deployment/github-pages
       - title: Self-hosting
+        titles: { fr: Auto-hébergement, es: Alojamiento propio }
         href: /guides/deployment/self-hosting
   - title: Reference
+    titles: { fr: Référence, es: Referencia }
     items:
       - title: CLI
+        titles: { fr: Ligne de commande, es: Línea de comandos }
         href: /guides/reference/cli
       - title: License
+        titles: { fr: Licence, es: Licencia }
         href: /guides/reference/license
 ingestion:
-  sdks: []
+  sdks:
+    - id: swift
+      slug: swift-sdk
+      adapter: docc
+      source: sources/native/swift
+      name: Swift · DocC
+      language: swift
+      install: ''
+      overview: Real Swift DocC output from the checked-in swift fixture source. Generated artifacts, commands, versions, and SHA-256 hashes are recorded under sources/native. This is a teaching library, not a published SDK.
+      icon: assets/sdks/swift.svg
+    - id: dart
+      slug: dart-sdk
+      adapter: dartdoc
+      source: sources/native/dart
+      name: Dart · Dartdoc
+      language: dart
+      install: ''
+      overview: Real dart doc output from the checked-in dart fixture source. Generated artifacts, commands, versions, and SHA-256 hashes are recorded under sources/native. This is a teaching library, not a published SDK.
+      icon: assets/sdks/dart.svg
+    - id: typescript
+      slug: typescript-sdk
+      adapter: typedoc
+      source: sources/native/typescript
+      name: TypeScript · TypeDoc
+      language: typescript
+      install: ''
+      overview: Real TypeDoc output from the checked-in typescript fixture source. Generated artifacts, commands, versions, and SHA-256 hashes are recorded under sources/native. This is a teaching library, not a published SDK.
+      icon: assets/sdks/typescript.svg
+    - id: javascript
+      slug: javascript-sdk
+      adapter: jsdoc
+      source: sources/native/javascript
+      name: JavaScript · JSDoc
+      language: javascript
+      install: ''
+      overview: Real JSDoc output from the checked-in javascript fixture source. Generated artifacts, commands, versions, and SHA-256 hashes are recorded under sources/native. This is a teaching library, not a published SDK.
+      icon: assets/sdks/javascript.svg
+    - id: python
+      slug: python-sdk
+      adapter: sphinx
+      source: sources/native/python
+      name: Python · Sphinx
+      language: python
+      icon: assets/sdks/python.svg
+      install: ''
+      overview: Real Sphinx JSON builder output from the checked-in python fixture source. Generated artifacts, commands, versions, and SHA-256 hashes are recorded under sources/native. This is a teaching library, not a published SDK.
+    - id: rust
+      slug: rust-sdk
+      adapter: rustdoc
+      source: sources/native/rust
+      name: Rust · rustdoc
+      language: rust
+      icon: assets/sdks/rust.svg
+      iconDark: assets/sdks/rust-dark.svg
+      install: ''
+      overview: Real stable rustdoc HTML output from the checked-in rust fixture source. Generated artifacts, commands, versions, and SHA-256 hashes are recorded under sources/native. This is a teaching library, not a published SDK.
+    - id: dotnet
+      slug: dotnet-sdk
+      adapter: docfx
+      source: sources/native/csharp
+      name: C# · DocFX
+      language: csharp
+      icon: assets/sdks/csharp.svg
+      install: ''
+      overview: Real DocFX assembly and compiler XML output from the checked-in csharp fixture source. Generated artifacts, commands, versions, and SHA-256 hashes are recorded under sources/native. This is a teaching library, not a published SDK.
+    - id: fsharp
+      slug: fsharp-sdk
+      adapter: docfx
+      source: sources/native/fsharp
+      name: F# · DocFX
+      language: fsharp
+      icon: assets/sdks/fsharp.svg
+      install: ''
+      overview: Real DocFX assembly and compiler XML (declarations are C# when F# syntax is absent) output from the checked-in fsharp fixture source. Generated artifacts, commands, versions, and SHA-256 hashes are recorded under sources/native. This is a teaching library, not a published SDK.
+    - id: visualbasic
+      slug: visualbasic-sdk
+      adapter: docfx
+      source: sources/native/visualbasic
+      name: Visual Basic · DocFX
+      language: visualbasic
+      icon: assets/sdks/visualbasic.svg
+      install: ''
+      overview: Real DocFX assembly and compiler XML output from the checked-in visualbasic fixture source. Generated artifacts, commands, versions, and SHA-256 hashes are recorded under sources/native. This is a teaching library, not a published SDK.
+    - id: kotlin
+      slug: kotlin-sdk
+      adapter: dokka
+      source: sources/native/kotlin
+      name: Kotlin · Dokka
+      language: kotlin
+      icon: assets/sdks/kotlin.svg
+      install: ''
+      overview: Real Dokka HTML output from the checked-in kotlin fixture source. Generated artifacts, commands, versions, and SHA-256 hashes are recorded under sources/native. This is a teaching library, not a published SDK.
+    - id: java
+      slug: java-sdk
+      adapter: javadoc
+      source: sources/native/java
+      name: Java · Javadoc
+      language: java
+      icon: assets/sdks/java.svg
+      install: ''
+      overview: Real Javadoc HTML output from the checked-in java fixture source. Generated artifacts, commands, versions, and SHA-256 hashes are recorded under sources/native. This is a teaching library, not a published SDK.
+    - id: scala
+      slug: scala-sdk
+      adapter: scaladoc
+      source: sources/native/scala
+      name: Scala · Scaladoc
+      language: scala
+      icon: assets/sdks/scala.svg
+      install: ''
+      overview: Real Scaladoc 2 HTML output from the checked-in scala fixture source. Generated artifacts, commands, versions, and SHA-256 hashes are recorded under sources/native. This is a teaching library, not a published SDK.
+    - id: go
+      slug: go-sdk
+      adapter: godoc
+      source: sources/native/go
+      name: Go · go doc
+      language: go
+      icon: assets/sdks/go.svg
+      install: ''
+      overview: Real go doc -all output from the checked-in go fixture source. Generated artifacts, commands, versions, and SHA-256 hashes are recorded under sources/native. This is a teaching library, not a published SDK.
+    - id: c
+      slug: c-sdk
+      adapter: doxygen
+      source: sources/native/c
+      name: C · Doxygen
+      language: c
+      icon: assets/sdks/c.svg
+      install: ''
+      overview: Real Doxygen XML output from the checked-in c fixture source. Generated artifacts, commands, versions, and SHA-256 hashes are recorded under sources/native. This is a teaching library, not a published SDK.
+    - id: cpp
+      slug: cpp-sdk
+      adapter: doxygen
+      source: sources/native/cpp
+      name: C++ · Doxygen
+      language: cpp
+      icon: assets/sdks/cpp.svg
+      install: ''
+      overview: Real Doxygen XML output from the checked-in cpp fixture source. Generated artifacts, commands, versions, and SHA-256 hashes are recorded under sources/native. This is a teaching library, not a published SDK.
+    - id: objectivec
+      slug: objectivec-sdk
+      adapter: doxygen
+      source: sources/native/objectivec
+      name: Objective-C · Doxygen
+      language: objectivec
+      icon: assets/sdks/objectivec.svg
+      install: ''
+      overview: Real Doxygen XML output from the checked-in objectivec fixture source. Generated artifacts, commands, versions, and SHA-256 hashes are recorded under sources/native. This is a teaching library, not a published SDK.
+    - id: php
+      slug: php-sdk
+      adapter: phpdoc
+      source: sources/native/php
+      name: PHP · phpDocumentor
+      language: php
+      icon: assets/sdks/php.svg
+      install: ''
+      overview: Real phpDocumentor XML output from the checked-in php fixture source. Generated artifacts, commands, versions, and SHA-256 hashes are recorded under sources/native. This is a teaching library, not a published SDK.
+    - id: ruby
+      slug: ruby-sdk
+      adapter: yard
+      source: sources/native/ruby
+      name: Ruby · YARD
+      language: ruby
+      icon: assets/sdks/ruby.svg
+      install: ''
+      overview: Real YARD HTML output from the checked-in ruby fixture source. Generated artifacts, commands, versions, and SHA-256 hashes are recorded under sources/native. This is a teaching library, not a published SDK.
+    - id: elixir
+      slug: elixir-sdk
+      adapter: exdoc
+      source: sources/native/elixir
+      name: Elixir · ExDoc
+      language: elixir
+      icon: assets/sdks/elixir.svg
+      install: ''
+      overview: Real ExDoc HTML output from the checked-in elixir fixture source. Generated artifacts, commands, versions, and SHA-256 hashes are recorded under sources/native. This is a teaching library, not a published SDK.
+    - id: lua
+      slug: lua-sdk
+      adapter: ldoc
+      source: sources/native/lua
+      name: Lua · LDoc
+      language: lua
+      icon: assets/sdks/lua.svg
+      iconDark: assets/sdks/lua-dark.svg
+      install: ''
+      overview: Real LDoc HTML output from the checked-in lua fixture source. Generated artifacts, commands, versions, and SHA-256 hashes are recorded under sources/native. This is a teaching library, not a published SDK.
+    - id: compact
+      slug: compact-sdk
+      adapter: typedoc-lite
+      source: sources/samples/compact.json
+      name: Portable metadata · manual example
+      language: typescript
+      install: ''
+      overview: An explicitly hand-authored compact-format example for custom converters. Not a native generator fixture and not counted among the 20 native languages.
   openapi:
-    enabled: false
-    source: sources/openapi.json
-    apiBaseUrl: https://api.example.com
-    sections: []
+    enabled: true
+    source: sources/samples/jsonplaceholder.openapi.yaml
+    apiBaseUrl: https://jsonplaceholder.typicode.com
+    examples:
+      languages: [curl, javascript, typescript, node, python, go, java, kotlin, csharp, c, cpp, rust, swift, objectivec, dart, php, ruby, scala, elixir, lua, fsharp, visualbasic, powershell, r]
+      defaults: required
+      customSamples: true
+    guide:
+      label: How this OpenAPI sample works
+      href: /guides/tutorials/openapi-ingestion
+    sections:
+      - section: posts
+        title: Posts · OpenAPI sample
+        description: Public JSONPlaceholder requests, generated from a local OpenAPI file. Copy GET, POST, PUT, PATCH, and DELETE examples. Writes are simulated and are not persisted.
+        tags: [posts]
+      - section: comments
+        title: Comments · OpenAPI sample
+        description: A public GET request with an optional postId filter. The query value, curl command, and response example come from the OpenAPI source.
+        tags: [comments]

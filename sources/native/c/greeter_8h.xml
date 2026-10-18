@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="en-US">
+  <compounddef id="greeter_8h" kind="file" language="C++">
+    <compoundname>greeter.h</compoundname>
+    <innerclass refid="structGreetingOptions" prot="public">GreetingOptions</innerclass>
+      <sectiondef kind="enum">
+      <memberdef kind="enum" id="greeter_8h_1ac115185d9ed11e355765e4b0f445c062" prot="public" static="no" strong="no">
+        <type></type>
+        <name>Mood</name>
+        <enumvalue id="greeter_8h_1ac115185d9ed11e355765e4b0f445c062a9ef919d689041f694e2f9b448684cb64" prot="public">
+          <name>Friendly</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="greeter_8h_1ac115185d9ed11e355765e4b0f445c062a8ac97b7ce79fa4c379fe16d2b45158bc" prot="public">
+          <name>Formal</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Supported greeting moods. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="tests/generators/input/c/greeter.h" line="18" column="1" bodyfile="tests/generators/input/c/greeter.h" bodystart="18" bodyend="18"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="greeter_8h_1a8e8a368d7046f781661640488a133c4a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char * greet</definition>
+        <argsstring>(const char *name)</argsstring>
+        <name>greet</name>
+        <param>
+          <type>const char *</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Greet a reader. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Reader name. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A friendly greeting. <programlisting filename=".c"><codeline><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*message<sp/>=<sp/><ref refid="greeter_8h_1a8e8a368d7046f781661640488a133c4a" kindref="member">greet</ref>(</highlight><highlight class="stringliteral">&quot;Docsy&quot;</highlight><highlight class="normal">);</highlight></codeline>
+</programlisting> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="tests/generators/input/c/greeter.h" line="9" column="12" declfile="tests/generators/input/c/greeter.h" declline="9" declcolumn="12"/>
+      </memberdef>
+      <memberdef kind="function" id="greeter_8h_1ab9c6725be26980eda3eef1804c835262" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int greet_many</definition>
+        <argsstring>(const char **names, unsigned int count)</argsstring>
+        <name>greet_many</name>
+        <param>
+          <type>const char **</type>
+          <declname>names</declname>
+        </param>
+        <param>
+          <type>unsigned int</type>
+          <declname>count</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Greet a batch of readers. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>names</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Reader names. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>count</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of names. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Zero on success; a non-zero error code for invalid input. <programlisting filename=".c"><codeline><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*names[]<sp/>=<sp/>{</highlight><highlight class="stringliteral">&quot;Ada&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;Linus&quot;</highlight><highlight class="normal">};</highlight></codeline>
+<codeline><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>status<sp/>=<sp/><ref refid="greeter_8h_1ab9c6725be26980eda3eef1804c835262" kindref="member">greet_many</ref>(names,<sp/>2);</highlight></codeline>
+</programlisting> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="tests/generators/input/c/greeter.h" line="28" column="5" declfile="tests/generators/input/c/greeter.h" declline="28" declcolumn="5"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Native C Doxygen fixture. </para>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9" refid="greeter_8h_1a8e8a368d7046f781661640488a133c4a" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*<ref refid="greeter_8h_1a8e8a368d7046f781661640488a133c4a" kindref="member">greet</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*name);</highlight></codeline>
+<codeline lineno="11" refid="structGreetingOptions" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structGreetingOptions" kindref="compound">GreetingOptions</ref><sp/>{</highlight></codeline>
+<codeline lineno="13" refid="structGreetingOptions_1a8eb131d0d3f4f6ab547fadf4f97510c6" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*<ref refid="structGreetingOptions_1a8eb131d0d3f4f6ab547fadf4f97510c6" kindref="member">prefix</ref>;</highlight></codeline>
+<codeline lineno="15" refid="structGreetingOptions_1a7ab0200f0bae1ad9c8aa877270dfb560" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structGreetingOptions_1a7ab0200f0bae1ad9c8aa877270dfb560" kindref="member">limit</ref>;</highlight></codeline>
+<codeline lineno="16"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="18" refid="greeter_8h_1ac115185d9ed11e355765e4b0f445c062a8ac97b7ce79fa4c379fe16d2b45158bc" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">enum</highlight><highlight class="normal"><sp/><ref refid="greeter_8h_1ac115185d9ed11e355765e4b0f445c062" kindref="member">Mood</ref><sp/>{<sp/><ref refid="greeter_8h_1ac115185d9ed11e355765e4b0f445c062a9ef919d689041f694e2f9b448684cb64" kindref="member">Friendly</ref>,<sp/><ref refid="greeter_8h_1ac115185d9ed11e355765e4b0f445c062a8ac97b7ce79fa4c379fe16d2b45158bc" kindref="member">Formal</ref><sp/>};</highlight></codeline>
+<codeline lineno="28" refid="greeter_8h_1ab9c6725be26980eda3eef1804c835262" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="greeter_8h_1ab9c6725be26980eda3eef1804c835262" kindref="member">greet_many</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>**names,<sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>count);</highlight></codeline>
+    </programlisting>
+    <location file="tests/generators/input/c/greeter.h"/>
+  </compounddef>
+</doxygen>

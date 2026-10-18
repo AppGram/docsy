@@ -16,7 +16,7 @@ You can change `docsy.config.yaml`, write Markdown articles, replace branding, c
 
 Your documentation inputs remain yours. Docsy does not claim ownership of your Markdown, OpenAPI documents, SDK metadata, images, or branding.
 
-You can also replace or remove visible Docsy and AppGram branding from the published documentation page. The default logo and `Built by AppGram` footer are configurable branding, not mandatory attribution.
+You can also replace or remove visible Docsy and AppGram branding from the published documentation page. The default logo and `Docsy provided by AppGram` footer are configurable branding, not mandatory attribution.
 
 ### Redistribute a modified version
 

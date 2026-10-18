@@ -1,0 +1,3 @@
+- Valida las fuentes configuradas, los enlaces internos y las anclas.
+- Genera las versiones y los idiomas que quieras publicar.
+- Revisa los ejemplos y los permisos antes del despliegue.

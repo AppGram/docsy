@@ -1,0 +1,210 @@
+{
+  "schemaVersion": "1.0.0",
+  "metadata": {
+    "sdkName": "AtlasSDK",
+    "platform": "iOS",
+    "language": "swift",
+    "generatedAt": "2026-10-18T00:00:00Z"
+  },
+  "modules": [
+    {
+      "name": "AtlasSDK",
+      "types": [
+        {
+          "kind": "class",
+          "name": "AtlasClient",
+          "fullName": "AtlasClient",
+          "description": {
+            "abstract": "An asynchronous client for the fictional Atlas document API.",
+            "examples": [
+              {
+                "code": "let client = AtlasClient(baseURL: URL(string: \"https://api.example.com\")!)\nlet document = try await client.getDocument(id: \"intro\")"
+              }
+            ]
+          },
+          "declaration": "public final class AtlasClient: Sendable",
+          "properties": [
+            {
+              "name": "baseURL",
+              "type": "URL",
+              "description": {
+                "abstract": "The API origin used for all document requests."
+              }
+            }
+          ],
+          "initializers": [
+            {
+              "name": "init(baseURL:)",
+              "description": {
+                "abstract": "Create a client for an explicit API origin."
+              },
+              "signature": {
+                "parameters": [
+                  {
+                    "name": "baseURL",
+                    "type": "URL",
+                    "label": "baseURL",
+                    "isOptional": false,
+                    "description": "The API origin."
+                  }
+                ],
+                "name": "init",
+                "async": false,
+                "throws": false
+              },
+              "access": "public"
+            }
+          ],
+          "methods": [
+            {
+              "name": "getDocument(id:)",
+              "isAsync": true,
+              "throws": true,
+              "description": {
+                "abstract": "Fetch one document by its stable identifier."
+              },
+              "signature": {
+                "returnType": "Document",
+                "parameters": [
+                  {
+                    "name": "id",
+                    "type": "String",
+                    "label": "id",
+                    "isOptional": false,
+                    "description": "Stable document identifier."
+                  }
+                ],
+                "name": "getDocument",
+                "async": true,
+                "throws": true
+              },
+              "access": "public"
+            }
+          ],
+          "access": "public"
+        },
+        {
+          "kind": "struct",
+          "name": "Document",
+          "fullName": "Document",
+          "description": {
+            "abstract": "An immutable documentation record."
+          },
+          "declaration": "public struct Document: Codable, Sendable",
+          "properties": [
+            {
+              "name": "id",
+              "type": "String",
+              "description": {
+                "abstract": "Stable document identifier."
+              }
+            },
+            {
+              "name": "title",
+              "type": "String",
+              "description": {
+                "abstract": "Human-readable title."
+              }
+            },
+            {
+              "name": "state",
+              "type": "DocumentState",
+              "description": {
+                "abstract": "Publication state."
+              }
+            }
+          ],
+          "access": "public"
+        }
+      ],
+      "protocols": [
+        {
+          "kind": "protocol",
+          "name": "DocumentStore",
+          "fullName": "DocumentStore",
+          "description": {
+            "abstract": "A storage boundary that can be implemented by a network client or a test double."
+          },
+          "declaration": "public protocol DocumentStore: Sendable",
+          "access": "public",
+          "requirements": [
+            {
+              "kind": "func",
+              "name": "getDocument(id:)",
+              "signature": {
+                "returnType": "Document",
+                "parameters": [
+                  {
+                    "name": "id",
+                    "type": "String",
+                    "label": "id",
+                    "isOptional": false
+                  }
+                ],
+                "name": "getDocument",
+                "async": true,
+                "throws": true,
+                "keywords": [
+                  "func",
+                  "async",
+                  "throws"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "enums": [
+        {
+          "kind": "enum",
+          "name": "DocumentState",
+          "fullName": "DocumentState",
+          "description": {
+            "abstract": "The publication state of a document."
+          },
+          "declaration": "public enum DocumentState: String, Codable",
+          "cases": [
+            {
+              "name": "draft"
+            },
+            {
+              "name": "published"
+            },
+            {
+              "name": "archived"
+            }
+          ],
+          "access": "public"
+        }
+      ]
+    }
+  ],
+  "navigation": {
+    "categories": [
+      {
+        "title": "Clients",
+        "items": [
+          "AtlasClient"
+        ]
+      },
+      {
+        "title": "Models",
+        "items": [
+          "Document"
+        ]
+      },
+      {
+        "title": "Protocols",
+        "items": [
+          "DocumentStore"
+        ]
+      },
+      {
+        "title": "Enums",
+        "items": [
+          "DocumentState"
+        ]
+      }
+    ]
+  }
+}

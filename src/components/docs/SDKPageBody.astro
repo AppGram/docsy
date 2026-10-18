@@ -1,10 +1,13 @@
 ---
 import type { SDKDoc } from '../../lib/sdk-loaders';
 import CodeBlock from './CodeBlock.astro';
+import SDKLogo from './SDKLogo.astro';
+import { sdkCoverage } from '../../lib/sdk-coverage';
 
 interface Props {
   doc: SDKDoc;
   icon?: string;
+  iconDark?: string;
   installLanguage?: string;
   builtWith?: {
     label: string;
@@ -12,13 +15,14 @@ interface Props {
   };
 }
 
-const { doc, icon, installLanguage = 'bash', builtWith } = Astro.props;
+const { doc, icon, iconDark, installLanguage = 'bash', builtWith } = Astro.props;
+const coverage = sdkCoverage(doc);
 ---
 
 <div class="sdk-hero">
   {icon && (
     <span class="sdk-hero-mark" aria-hidden="true">
-      <img src={icon} alt="" width="32" height="32" />
+      <SDKLogo icon={icon} iconDark={iconDark} size={32} />
     </span>
   )}
   <div class="sdk-hero-copy">
@@ -39,7 +43,8 @@ const { doc, icon, installLanguage = 'bash', builtWith } = Astro.props;
   </div>
 </div>
 
-<CodeBlock language={installLanguage} title="Install" code={doc.install} />
+{doc.install && <CodeBlock language={installLanguage} title="Install" code={doc.install} />}
+{doc.quickstart && <CodeBlock language={doc.quickstart.language} title="Quickstart" code={doc.quickstart.code} />}
 
 <div class="sdk-meta-row">
   <span class="sdk-meta-pill">
@@ -51,9 +56,14 @@ const { doc, icon, installLanguage = 'bash', builtWith } = Astro.props;
   <span class="sdk-meta-pill sdk-meta-lang">{doc.language}</span>
 </div>
 
+{coverage.length > 0 && <nav class="sdk-coverage" aria-label="Included in this reference">
+  <span>In this reference</span>
+  {coverage.map((feature) => <a href={feature.href}>{feature.count} {feature.label}</a>)}
+</nav>}
+
 {doc.categories.length === 0 ? (
   <div class="sdk-empty">
-    <p>Reference JSON isn&rsquo;t available locally. Regenerate the SDK docs to populate this page.</p>
+    <p>Reference artifacts aren&rsquo;t available locally. Regenerate the SDK docs to populate this page.</p>
   </div>
 ) : (
   <>
@@ -83,8 +93,13 @@ const { doc, icon, installLanguage = 'bash', builtWith } = Astro.props;
                 </div>
               )}
 
-              <div class="sdk-item-grid">
+              <div class:list={['sdk-item-grid', { 'has-code': Boolean(item.declaration || item.example) }]}>
                 <div class="sdk-item-doc">
+                  {item.remarks && <section class="sdk-detail"><h4>Remarks</h4><p>{item.remarks}</p></section>}
+                  {item.throws && item.throws.length > 0 && <section class="sdk-detail">
+                    <h4>Errors</h4>
+                    <div class="sdk-detail-list">{item.throws.map((error) => <div class="sdk-detail-row"><code class="sdk-detail-name">{error.type}</code>{error.description && <p>{error.description}</p>}</div>)}</div>
+                  </section>}
                   {item.parameters && item.parameters.length > 0 && (
                     <section class="sdk-detail">
                       <h4>Parameters</h4>
@@ -111,6 +126,15 @@ const { doc, icon, installLanguage = 'bash', builtWith } = Astro.props;
                           <code class="sdk-detail-type is-return">{item.returnType}</code>
                         </div>
                         {item.returnsDoc && <p>{item.returnsDoc}</p>}
+                      </div>
+                    </section>
+                  )}
+
+                  {item.relationships && item.relationships.length > 0 && (
+                    <section class="sdk-detail">
+                      <h4>Related types</h4>
+                      <div class="sdk-values">
+                        {item.relationships.map((relation) => relation.target ? <a href={relation.target}><code>{relation.name}</code></a> : <code>{relation.name}</code>)}
                       </div>
                     </section>
                   )}
@@ -178,14 +202,14 @@ const { doc, icon, installLanguage = 'bash', builtWith } = Astro.props;
                   )}
                 </div>
 
-                <aside class="sdk-item-side">
+                {(item.declaration || item.example) && <aside class="sdk-item-side">
                   {item.declaration && (
                     <CodeBlock language={item.language} title="Declaration" code={item.declaration} />
                   )}
                   {item.example && (
-                    <CodeBlock language={item.language} title="Example" code={item.example} />
+                    <div id={`${item.id}-example`} class="sdk-example"><CodeBlock language={item.exampleLanguage || item.language} title="Example" code={item.example} /></div>
                   )}
-                </aside>
+                </aside>}
               </div>
             </article>
           ))}
@@ -196,6 +220,11 @@ const { doc, icon, installLanguage = 'bash', builtWith } = Astro.props;
 )}
 
 <style is:global>
+  .sdk-coverage { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 0 0 24px; margin-bottom: 8px; font-size: 13px; }
+  .sdk-coverage > span { color: var(--soft-muted); }
+  .sdk-coverage a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 4px; }
+  .sdk-coverage a:hover { text-decoration-color: currentColor; }
+  .sdk-example { min-width: 0; scroll-margin-top: 110px; }
   .sdk-hero {
     display: flex;
     align-items: flex-start;
@@ -209,8 +238,8 @@ const { doc, icon, installLanguage = 'bash', builtWith } = Astro.props;
     width: 56px;
     height: 56px;
     border-radius: 14px;
-    background: #fafafd;
-    border: 1px solid #ebebf1;
+    background: color-mix(in srgb, var(--paper) 97%, var(--ink));
+    border: 1px solid var(--line);
     flex-shrink: 0;
     margin-top: 4px;
   }
@@ -310,7 +339,7 @@ const { doc, icon, installLanguage = 'bash', builtWith } = Astro.props;
     gap: 6px;
     padding: 4px 10px;
     border-radius: 999px;
-    background: #f4f4f8;
+    background: color-mix(in srgb, var(--paper) 94%, var(--ink));
     color: var(--muted);
     font-size: 12.5px;
     line-height: 1;
@@ -334,8 +363,8 @@ const { doc, icon, installLanguage = 'bash', builtWith } = Astro.props;
     margin: 24px 0 40px;
     padding: 16px 20px;
     border-radius: 12px;
-    background: #fafafd;
-    border: 1px solid #ebebf1;
+    background: color-mix(in srgb, var(--paper) 97%, var(--ink));
+    border: 1px solid var(--line);
   }
 
   .sdk-toc-label {
@@ -389,7 +418,7 @@ const { doc, icon, installLanguage = 'bash', builtWith } = Astro.props;
   .sdk-category h2 {
     margin: 0 0 24px !important;
     padding-bottom: 12px;
-    border-bottom: 1px solid #ebebf1;
+    border-bottom: 1px solid var(--line);
     font-family: var(--font-display);
     font-size: 22px !important;
     font-weight: 460;
@@ -397,7 +426,7 @@ const { doc, icon, installLanguage = 'bash', builtWith } = Astro.props;
 
   .sdk-item {
     padding: 24px 0 32px;
-    border-bottom: 1px solid #f2f3f8;
+    border-bottom: 1px solid var(--line);
     scroll-margin-top: 72px;
   }
 
@@ -499,10 +528,12 @@ const { doc, icon, installLanguage = 'bash', builtWith } = Astro.props;
 
   .sdk-item-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
     gap: 28px;
     align-items: start;
   }
+
+  .sdk-item-grid.has-code { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); }
 
   .sdk-item-doc {
     min-width: 0;
@@ -527,7 +558,7 @@ const { doc, icon, installLanguage = 'bash', builtWith } = Astro.props;
   .sdk-detail h4 {
     margin: 0 0 10px !important;
     padding-bottom: 6px;
-    border-bottom: 1px solid #ebebf1;
+    border-bottom: 1px solid var(--line);
     font-family: var(--font-display);
     font-size: 13px !important;
     font-weight: 500;
@@ -543,7 +574,7 @@ const { doc, icon, installLanguage = 'bash', builtWith } = Astro.props;
 
   .sdk-detail-row + .sdk-detail-row {
     padding-top: 12px;
-    border-top: 1px solid #f2f3f8;
+    border-top: 1px solid var(--line);
   }
 
   .sdk-detail-row-head {
@@ -594,7 +625,7 @@ const { doc, icon, installLanguage = 'bash', builtWith } = Astro.props;
   .sdk-detail-tag.is-static   { background: rgba(87, 196, 104, 0.14); color: #2c8b3a; }
 
   .sdk-detail-return {
-    color: var(--soft-muted);
+    color: var(--muted);
     font-family: var(--font-mono);
     font-size: 11.5px;
     margin-left: auto;
@@ -624,7 +655,7 @@ const { doc, icon, installLanguage = 'bash', builtWith } = Astro.props;
     list-style: none;
     margin: 6px 0 0 !important;
     padding: 6px 0 0 12px !important;
-    border-left: 2px solid #ebebf1;
+    border-inline-start: 2px solid var(--line);
     display: grid;
     gap: 4px;
   }
@@ -635,7 +666,7 @@ const { doc, icon, installLanguage = 'bash', builtWith } = Astro.props;
     gap: 4px;
     margin: 0 !important;
     font-size: 12px;
-    color: var(--soft-muted);
+    color: var(--muted);
   }
 
   .sdk-detail-params li code {
@@ -656,7 +687,7 @@ const { doc, icon, installLanguage = 'bash', builtWith } = Astro.props;
   .sdk-values code {
     padding: 3px 8px !important;
     border-radius: 5px !important;
-    background: #f2f3f8 !important;
+    background: color-mix(in srgb, var(--paper) 92%, var(--ink)) !important;
     color: var(--ink) !important;
     font-family: var(--font-mono);
     font-size: 12px !important;
@@ -677,7 +708,8 @@ const { doc, icon, installLanguage = 'bash', builtWith } = Astro.props;
   }
 
   @media (max-width: 1100px) {
-    .sdk-item-grid {
+    .sdk-item-grid,
+    .sdk-item-grid.has-code {
       grid-template-columns: 1fr;
     }
 

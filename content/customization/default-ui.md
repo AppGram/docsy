@@ -25,7 +25,7 @@ header:
     href: https://app.example.com
 
 footer:
-  prefix: Built by
+  prefix: Docsy provided by
   label: Acme
   href: https://example.com
 ```
@@ -87,6 +87,27 @@ theme:
 The header includes a light/dark toggle. `theme.mode` is the first-visit default, and the visitor's selection is saved locally for later pages and sessions.
 
 Search uses the same palette: its surface, text, result badges, selection highlight, borders, and keyboard hints follow the active theme and your YAML overrides.
+
+## Syntax highlighting and language logos
+
+SDK declarations and examples, OpenAPI requests and responses, and Markdown fences all use the same build-time syntax renderer. Code groups, tabs, callouts, and included snippets use it too. Highlighting is included in the generated HTML: no highlighter script, CDN, icon font, or external font request is needed in the browser.
+
+Choose the two bundled Shiki palettes in YAML. Switching the portal theme also switches token colors without reloading:
+
+```yaml
+theme:
+  code:
+    lightTheme: github-light
+    darkTheme: github-dark-high-contrast
+```
+
+Use any bundled [Shiki theme](https://shiki.style/themes). An unknown theme name fails configuration validation. The code-card surface follows Docsy's light/dark styling; these settings control syntax token colors.
+
+Put the language after a Markdown fence, such as `typescript`, `scala`, `python`, `yaml`, or `json`. Common aliases such as `ts`, `js`, `sh`, `objc`, and `vbnet` work. A missing/unknown language stays safely escaped plain text instead of guessing a grammar. Blocks over 100,000 characters also use plain text to bound highlighting work. Inline code labels remain inline code, not standalone syntax-highlighted cards.
+
+Each code header uses its language logo rather than an uppercase name. The language name remains available as an accessible label and tooltip. Native SDK badges respect the SDK's YAML `icon` and optional `iconDark` overrides; other supported logos are served locally. Languages/formats without a logo use a neutral code or terminal symbol. F# examples retain the F# mark even where DocFX emits a C# declaration with a C# mark.
+
+The shared renderer is `src/lib/code-renderer.ts`, language aliases and default logo mappings are in `src/lib/code-languages.ts`, and card/token styling is in `src/styles/code-blocks.css`. Copy buttons copy plain code, never syntax markup.
 
 Override individual tokens when the product needs them:
 

@@ -57,6 +57,9 @@ test('rich Markdown renders callouts, tabs, steps, accordions and code groups wi
   const rendered = await processor.render(markdown);
   for (const className of ['docsy-callout', 'docsy-tabs', 'docsy-steps', 'docsy-accordion']) assert.ok(rendered.code.includes(className));
   assert.match(rendered.code, /<summary[^>]*>More/); assert.ok(rendered.code.includes('data-sync="runtime"'));
+  assert.match(rendered.code, /class="docsy-callout-icon" aria-hidden="true"/);
+  assert.match(rendered.code, /<svg[^>]*viewBox="0 0 24 24"/);
+  assert.match(rendered.code, /class="docsy-callout-content"/);
   const exported = plainMarkdown(markdown); assert.ok(!exported.includes(':::')); assert.match(exported, /Use Python/);
 });
 test('unknown components and orphan tabs fail validation instead of silently degrading', async () => {
@@ -111,6 +114,28 @@ test('explicit JSON media examples and scalar/empty request bodies are preserved
   assert.match(endpoint.curl, /--data 'false'/); assert.match(endpoint.responseExample!, /"accepted": true/);
   api.paths['/widgets'].post.requestBody.content['application/json'].example = {};
   assert.match(filterEndpoints(api, section).find((entry) => entry.method === 'post')!.curl, /--data '\{\}'/);
+});
+test('curl parameter examples are inherited, encoded and preserve false and zero', () => {
+  const api = spec();
+  api.paths = { '/widgets/{id}': {
+    parameters: [{ name: 'id', in: 'path', required: true, example: 'a/b c' }],
+    get: {
+      parameters: [
+        { name: 'page', in: 'query', schema: { default: 0 } },
+        { name: 'enabled', in: 'query', examples: { disabled: { value: false } } },
+        { name: 'q', in: 'query', schema: { example: 'x&y=z' } },
+        { name: 'omit', in: 'query' },
+        { name: 'X-Example', in: 'header', example: "reader's value" },
+      ],
+      responses: { 200: { description: 'OK' } },
+    },
+  } };
+  const endpoint = filterEndpoints(api, section)[0];
+  assert.match(endpoint.curl, /\/widgets\/a%2Fb%20c\?page=0&enabled=false&q=x%26y%3Dz/);
+  assert.ok(!endpoint.curl.includes('omit='));
+  assert.ok(endpoint.curl.includes(`X-Example: reader'"'"'s value`));
+  api.paths['/widgets/{id}'].get.parameters.push({ name: 'id', in: 'path', required: true, example: 2 });
+  assert.match(filterEndpoints(api, section)[0].curl, /\/widgets\/2\?/);
 });
 test('SDK source errors and incorrect adapter shapes fail loudly', () => {
   const root = temp(); const source = write(root, 'sdk.json', '{}');

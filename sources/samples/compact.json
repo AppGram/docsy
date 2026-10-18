@@ -1,0 +1,137 @@
+{
+  "modules": [
+    {
+      "name": "AtlasSDK",
+      "types": [
+        {
+          "kind": "class",
+          "name": "AtlasClient",
+          "description": {
+            "summary": "An asynchronous client for the fictional Atlas document API.",
+            "example": "const client = new AtlasClient({ baseUrl: \"https://api.example.com\" });\nconst document = await client.getDocument(\"intro\");"
+          },
+          "declaration": "declare class AtlasClient {\n  constructor(options: { baseUrl: string });\n  getDocument(id: string): Promise<Document>;\n}",
+          "properties": [
+            {
+              "name": "baseUrl",
+              "type": "string",
+              "description": {
+                "summary": "The configured API origin."
+              }
+            }
+          ],
+          "methods": [
+            {
+              "name": "getDocument",
+              "isAsync": true,
+              "returnType": "Promise<Document>",
+              "description": {
+                "summary": "Fetch a document by its stable identifier."
+              },
+              "parameters": [
+                {
+                  "name": "id",
+                  "type": "string",
+                  "description": {
+                    "summary": "Document identifier."
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "interface",
+          "name": "Document",
+          "description": {
+            "summary": "A document returned by the Atlas API."
+          },
+          "declaration": "interface Document {\n  id: string;\n  title: string;\n  state: DocumentState;\n}",
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "description": {
+                "summary": "Stable identifier."
+              }
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "description": {
+                "summary": "Human-readable title."
+              }
+            },
+            {
+              "name": "state",
+              "type": "DocumentState",
+              "description": {
+                "summary": "Publication state."
+              }
+            }
+          ]
+        },
+        {
+          "kind": "hook",
+          "name": "useDocument",
+          "description": {
+            "summary": "A React hook for loading one document.",
+            "returns": "The current document and loading state.",
+            "example": "const { document, loading } = useDocument(\"intro\");"
+          },
+          "declaration": "declare function useDocument(id: string): {\n  document?: Document;\n  loading: boolean;\n};",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "string",
+              "description": {
+                "summary": "Stable document identifier."
+              }
+            }
+          ],
+          "returnType": "{ document?: Document; loading: boolean }"
+        },
+        {
+          "kind": "enum",
+          "name": "DocumentState",
+          "description": {
+            "summary": "The publication state of a document."
+          },
+          "values": [
+            "draft",
+            "published",
+            "archived"
+          ]
+        }
+      ]
+    }
+  ],
+  "navigation": {
+    "categories": [
+      {
+        "title": "Clients",
+        "items": [
+          "AtlasClient"
+        ]
+      },
+      {
+        "title": "Models",
+        "items": [
+          "Document"
+        ]
+      },
+      {
+        "title": "Hooks",
+        "items": [
+          "useDocument"
+        ]
+      },
+      {
+        "title": "Enums",
+        "items": [
+          "DocumentState"
+        ]
+      }
+    ]
+  }
+}

@@ -2,6 +2,7 @@
 import '../styles/docsy.css';
 import '../styles/docsy-dark.css';
 import '../styles/article-components.css';
+import '../styles/code-blocks.css';
 import { getDocsNav, isNavItemActive } from '../data/docs-nav';
 import ContextSwitcher from '../components/docs/ContextSwitcher.astro';
 import SEO from '../components/SEO.astro';
@@ -124,11 +125,6 @@ const themeStyle = [
       noindex={noindex}
       structuredData={structuredData}
     />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/styles/github-dark.min.css"
-    />
-    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/highlight.min.js" is:inline></script>
   </head>
   <body
     data-docs-version={context.version}
@@ -169,8 +165,10 @@ const themeStyle = [
             type="button"
             class="docs-topbar-icon docs-theme-toggle"
             id="docs-theme-toggle"
-            aria-label="Switch to dark theme"
-            title="Switch theme"
+            aria-label={message(context, 'darkTheme')}
+            title={message(context, 'switchTheme')}
+            data-light-label={message(context, 'lightTheme')}
+            data-dark-label={message(context, 'darkTheme')}
           >
             <svg class="docs-theme-icon docs-theme-icon-moon" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true">
               <path d="M20.2 15.1A8.6 8.6 0 0 1 8.9 3.8 8.6 8.6 0 1 0 20.2 15.1Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
@@ -233,7 +231,10 @@ const themeStyle = [
           type="button"
           class="docs-mobile-toggle"
           id="docs-mobile-toggle"
-          aria-label="Open navigation"
+          aria-label={message(context, 'openNavigation')}
+          aria-expanded="false"
+          data-open-label={message(context, 'openNavigation')}
+          data-close-label={message(context, 'closeNavigation')}
         >
           <span></span><span></span><span></span>
         </button>
@@ -242,7 +243,7 @@ const themeStyle = [
 
     <div class:list={['docs-shell', wide && 'is-wide']}>
       <aside class="docs-sidebar" id="docs-sidebar">
-        <nav aria-label="Documentation">
+        <nav aria-label={message(context, 'documentation')}>
           {docsNav.map((section) => (
             <div class="docs-sidebar-section">
               <p class="docs-sidebar-title">{section.title}</p>
@@ -297,7 +298,7 @@ const themeStyle = [
       </main>
 
       {wide && (
-        <aside class="docs-toc-rail" aria-label="On this page">
+        <aside class="docs-toc-rail" aria-label={message(context, 'onThisPage')}>
           <slot name="toc" />
         </aside>
       )}
@@ -306,7 +307,7 @@ const themeStyle = [
     {docsyConfig.footer && (
       <footer class="docs-footer">
         <p>
-          <span>{docsyConfig.footer.prefix}</span>{' '}
+          <span>{message(context, 'footerPrefix', docsyConfig.footer.prefix)}</span>{' '}
           <a href={docsyConfig.footer.href} target="_blank" rel="noopener noreferrer">
             {docsyConfig.footer.label}
           </a>
@@ -314,7 +315,7 @@ const themeStyle = [
       </footer>
     )}
 
-    <div class="docs-search-modal" id="docs-search-modal" hidden role="dialog" aria-modal="true" aria-label="Search documentation">
+    <div class="docs-search-modal" id="docs-search-modal" hidden role="dialog" aria-modal="true" aria-label={message(context, 'searchLabel', docsyConfig.header.searchLabel)}>
       <div class="docs-search-scrim" id="docs-search-scrim"></div>
       <div class="docs-search-panel">
         <div class="docs-search-input">
@@ -331,7 +332,7 @@ const themeStyle = [
           />
           <kbd>ESC</kbd>
         </div>
-        <div class="docs-search-results" id="docs-search-results" data-empty-hint={message(context, 'searchHint')} data-loading={message(context, 'searchLoading')} data-empty={message(context, 'searchEmpty')} data-page-label={message(context, 'page')}></div>
+        <div class="docs-search-results" id="docs-search-results" data-empty-hint={message(context, 'searchHint')} data-loading={message(context, 'searchLoading')} data-empty={message(context, 'searchEmpty')} data-page-label={message(context, 'page')} data-error={message(context, 'searchError')}></div>
         <div class="docs-search-foot">
           <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd> {message(context, 'searchNavigate')}</span>
           <span><kbd>&crarr;</kbd> {message(context, 'searchSelect')}</span>
@@ -344,7 +345,7 @@ const themeStyle = [
       const themeToggle = document.getElementById('docs-theme-toggle');
       const syncThemeToggle = () => {
         const currentTheme = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
-        themeToggle?.setAttribute('aria-label', `Switch to ${currentTheme === 'dark' ? 'light' : 'dark'} theme`);
+        themeToggle?.setAttribute('aria-label', currentTheme === 'dark' ? themeToggle.dataset.lightLabel : themeToggle.dataset.darkLabel);
       };
       syncThemeToggle();
       themeToggle?.addEventListener('click', () => {
@@ -353,20 +354,6 @@ const themeStyle = [
         try { localStorage.setItem('docsy-theme', nextTheme); } catch {}
         syncThemeToggle();
       });
-
-      // hljs highlight all code on load
-      const runHighlight = () => {
-        if (typeof window === 'undefined' || !window.hljs) return;
-        document.querySelectorAll('pre code[class*="language-"]:not([data-highlighted])').forEach((el) => {
-          window.hljs.highlightElement(el);
-          el.setAttribute('data-highlighted', 'yes');
-        });
-      };
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', runHighlight);
-      } else {
-        runHighlight();
-      }
 
       // Copy buttons
       document.querySelectorAll('[data-copy-target]').forEach((btn) => {
@@ -400,6 +387,7 @@ const themeStyle = [
       mobileBtn?.addEventListener('click', () => {
         const open = sidebar?.classList.toggle('is-open');
         mobileBtn.setAttribute('aria-expanded', String(open));
+        mobileBtn.setAttribute('aria-label', open ? mobileBtn.dataset.closeLabel : mobileBtn.dataset.openLabel);
       });
 
       // Keep the reader's place in long documentation navigation between pages.

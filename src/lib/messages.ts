@@ -8,6 +8,10 @@ export const english = {
   deprecated: 'You are reading an older, deprecated documentation version.', beta: 'This documentation version is in beta.',
   request: 'Request', response: 'Response', pathParameters: 'Path parameters', queryParameters: 'Query parameters',
   headerParameters: 'Header parameters', authorization: 'Authorizations', required: 'required',
+  openNavigation: 'Open navigation', closeNavigation: 'Close navigation', documentation: 'Documentation',
+  articleNavigation: 'Article navigation', lightTheme: 'Switch to light theme', darkTheme: 'Switch to dark theme', switchTheme: 'Switch theme',
+  articlesDescription: 'Guides and tutorials written in Markdown and configured in YAML.',
+  searchError: 'Search could not be loaded. Close and retry.',
 };
 export function message(context: DocsContext, key: string, fallback?: string): string {
   return docsyConfig.localization?.messages[context.locale]?.[key] ?? fallback ?? english[key as keyof typeof english] ?? key;

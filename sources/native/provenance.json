@@ -1,0 +1,801 @@
+{
+  "schemaVersion": 1,
+  "fixtures": [
+    {
+      "language": "c",
+      "adapter": "doxygen",
+      "generator": "Doxygen",
+      "version": "1.9.4",
+      "commands": [
+        "doxygen .docsy/generators/c.doxyfile"
+      ],
+      "input": [
+        {
+          "path": "tests/generators/input/c/greeter.h",
+          "sha256": "ef3688134115c6776be44778ab7a9d6e6d648d1fdf4f2b780f472c8cdbf79425"
+        }
+      ],
+      "output": [
+        {
+          "path": "sources/native/c/dir_018e7f3dcbbdbb7de59599670b59440a.xml",
+          "sha256": "98ab4a8be707dc3a99a1cabae0cb481a933f3e6adfb230bdd031c98774d11395"
+        },
+        {
+          "path": "sources/native/c/dir_4736c8b5caf274455b5c461d9161d049.xml",
+          "sha256": "134a5d374246cad8516616ef6d9ed7fe4dde4adad3f6569b86d47952515a8f86"
+        },
+        {
+          "path": "sources/native/c/dir_59425e443f801f1f2fd8bbe4959a3ccf.xml",
+          "sha256": "5134e321b865eb1e6b74b390c43686c0ad85293b89975959b384a6c5aa49364f"
+        },
+        {
+          "path": "sources/native/c/dir_70c18ff164f34fb4c03a5558287dc2ec.xml",
+          "sha256": "eeaed8ddbe96bef45773dbb9caf0eed590d4a23306b03d2bd784671678c83b7d"
+        },
+        {
+          "path": "sources/native/c/greeter_8h.xml",
+          "sha256": "c17642c66b30fda467a5792f16e7fd3a5233899d53bb202d0a20328192c4a382"
+        },
+        {
+          "path": "sources/native/c/index.xml",
+          "sha256": "d0a780689d35eef8836777c1caa2def1d880fd2a2d7142856cf82d158c87cb9b"
+        },
+        {
+          "path": "sources/native/c/structGreetingOptions.xml",
+          "sha256": "c5c807be1a17098e20706a93b594b66068b94f4eb1fa03bc5c08b3e2845562ec"
+        }
+      ]
+    },
+    {
+      "language": "cpp",
+      "adapter": "doxygen",
+      "generator": "Doxygen",
+      "version": "1.9.4",
+      "commands": [
+        "doxygen .docsy/generators/cpp.doxyfile"
+      ],
+      "input": [
+        {
+          "path": "tests/generators/input/cpp/greeter.hpp",
+          "sha256": "0a3cf346ef5f8454404390a28a26df37ee7a4e67fa73617a25817eb913617fe7"
+        }
+      ],
+      "output": [
+        {
+          "path": "sources/native/cpp/classGreeter.xml",
+          "sha256": "a9fd979bf7e979edae780d6c98d1178d88428b9d78bd66c5e9b2bd43fe86cc0b"
+        },
+        {
+          "path": "sources/native/cpp/dir_018e7f3dcbbdbb7de59599670b59440a.xml",
+          "sha256": "ad9a80022c25cb18f9c9ec21f0a88da491d76bb85c5f33b77a5cd991884d23a6"
+        },
+        {
+          "path": "sources/native/cpp/dir_4736c8b5caf274455b5c461d9161d049.xml",
+          "sha256": "134a5d374246cad8516616ef6d9ed7fe4dde4adad3f6569b86d47952515a8f86"
+        },
+        {
+          "path": "sources/native/cpp/dir_59425e443f801f1f2fd8bbe4959a3ccf.xml",
+          "sha256": "5134e321b865eb1e6b74b390c43686c0ad85293b89975959b384a6c5aa49364f"
+        },
+        {
+          "path": "sources/native/cpp/dir_d9a82e85323e315eec76e49f3a103646.xml",
+          "sha256": "dc36af3c08b242f07840c151be44918a746d60e575e3be2e98aa80ae5658c017"
+        },
+        {
+          "path": "sources/native/cpp/greeter_8hpp.xml",
+          "sha256": "ce5a3243752d05bdc35f9d3ce26763766c150a8d12b92785f7620765bd2b3c23"
+        },
+        {
+          "path": "sources/native/cpp/index.xml",
+          "sha256": "e64b8db5e71b8c0b8a379ffd99da89580cd9c3e7fe8bfe9a4414cbafc9ec52ee"
+        }
+      ]
+    },
+    {
+      "language": "csharp",
+      "adapter": "docfx",
+      "generator": "DocFX (assembly + compiler XML)",
+      "version": "2.78.3+850a61c2ecb83b0bda21448f1393e480934556fd",
+      "commands": [
+        "dotnet build tests/generators/input/csharp/Greeter.csproj -c Release",
+        "/tools/docfx metadata <assembly-and-XML-config>"
+      ],
+      "input": [
+        {
+          "path": "tests/generators/input/csharp/Greeter.cs",
+          "sha256": "c2d2c90fbf5060aeb545690816cdc28b689040606eed1eeb7c9c35c5afa0eeb6"
+        },
+        {
+          "path": "tests/generators/input/csharp/Greeter.csproj",
+          "sha256": "51f8c0ddd06f88da65252b3f4678c33677c50a92a7e7333b0d04eb146fd4e15b"
+        }
+      ],
+      "output": [
+        {
+          "path": "sources/native/csharp/Example.Greeter.yml",
+          "sha256": "7183f1c4afdfc5702143f4aa669cf109f41a730a0caba10b5271f07ab035bfbc"
+        },
+        {
+          "path": "sources/native/csharp/Example.Mood.yml",
+          "sha256": "a78146bc9620c1fd5a2af65cc3fa0b8f831d67df59e4293c23caba63fcacbce2"
+        },
+        {
+          "path": "sources/native/csharp/Example.yml",
+          "sha256": "223b72d9143bc49640a4cb876cf92b32ec0978e524d177500e0239a25698c442"
+        }
+      ]
+    },
+    {
+      "language": "dart",
+      "adapter": "dartdoc",
+      "generator": "dart doc",
+      "version": "Dart SDK version: 3.11.0 (stable) (Mon Feb 9 00:38:07 2026 -0800) on \"macos_arm64\"",
+      "commands": [
+        "cd tests/generators/input/dart && dart pub get && dart doc --output ../../../../sources/native/dart"
+      ],
+      "input": [
+        {
+          "path": "tests/generators/input/dart/lib/greeter.dart",
+          "sha256": "5a9e161d7122815357c14fc49cf11c23c1ebb6bc52e5d1bde4ae1ada88c98b67"
+        },
+        {
+          "path": "tests/generators/input/dart/pubspec.lock",
+          "sha256": "c74b92b4e747d5c51790c478c031b7ed0023c66f27deb62bfbfa781b432e85fa"
+        },
+        {
+          "path": "tests/generators/input/dart/pubspec.yaml",
+          "sha256": "5a26e0b8d467e45d2a4f5cda6fd32658a7f9fe22cd83116e52f0242a59a8b682"
+        }
+      ],
+      "output": [
+        {
+          "path": "sources/native/dart/__404error.html",
+          "sha256": "424ae88cf437d350ca4da5b6610841d4d2f2b76ea0444ad5fc7d8a2735848771"
+        },
+        {
+          "path": "sources/native/dart/greeter/Greeter/greet.html",
+          "sha256": "a3fb5ed270c6c2e0ab132f5f9d5b2e9d799140e5c9eb3fb094fb2754009b8729"
+        },
+        {
+          "path": "sources/native/dart/greeter/Greeter/greetChecked.html",
+          "sha256": "1f44637fb7ac7534177d8bc8b7c779a7f8f9e67e923e9f7926cb8c17a48f3a95"
+        },
+        {
+          "path": "sources/native/dart/greeter/Greeter/Greeter.html",
+          "sha256": "b4984244d9eedcdb058b6e553b8cea37794409261352d37d034ad171bc5de1ac"
+        },
+        {
+          "path": "sources/native/dart/greeter/Greeter/greetMany.html",
+          "sha256": "df3d74bcf0fdafb6e099607b366ad1a854f114a9ca84aa09aba5c4dddd5bd1cc"
+        },
+        {
+          "path": "sources/native/dart/greeter/Greeter/prefix.html",
+          "sha256": "29259505fe06cd4b249ad9cbc96d89e4550a0cfa4167241e4fb55ab61a129100"
+        },
+        {
+          "path": "sources/native/dart/greeter/Greeter-class-sidebar.html",
+          "sha256": "9e4cc068a76b96b9cdeb83107ff5063c3079e280beaed6f6669db1e2ed5f51c7"
+        },
+        {
+          "path": "sources/native/dart/greeter/Greeter-class.html",
+          "sha256": "81d82f7c5052614e779acecd243758538fb5fe75d77252ff5addc331b4d1613a"
+        },
+        {
+          "path": "sources/native/dart/greeter/greeter-library-sidebar.html",
+          "sha256": "1311561fff320129f7a66786aaab9b514075be23650ee875b101715e5f4cab85"
+        },
+        {
+          "path": "sources/native/dart/greeter/greeter-library.html",
+          "sha256": "541526c934f828af7f443024db6c2f90d76384add59061e3de52081cc997106c"
+        },
+        {
+          "path": "sources/native/dart/greeter/index.html",
+          "sha256": "7461301526263ce10af5b407a20d186b1fbb75b30ce250b091d91ee2e6fc7bfd"
+        },
+        {
+          "path": "sources/native/dart/greeter/Mood/values-constant.html",
+          "sha256": "18eacafd7d2c70ae85628092dc3dab8b2f8ece7f32f0b44d2b96378b416c6481"
+        },
+        {
+          "path": "sources/native/dart/greeter/Mood-enum-sidebar.html",
+          "sha256": "22074abc08264ec9505a6a37a47e72bc24b1abff320c6dd529aba1833876c4c3"
+        },
+        {
+          "path": "sources/native/dart/greeter/Mood.html",
+          "sha256": "98174fcd8b73390dc907a15243615e220ba69135cfa3a5733d2755238a798ec7"
+        },
+        {
+          "path": "sources/native/dart/index.html",
+          "sha256": "c837e1570244a50c443b9accb281c6ff2f5ae5794e9e22a68875425b5722c4a4"
+        }
+      ]
+    },
+    {
+      "language": "elixir",
+      "adapter": "exdoc",
+      "generator": "ExDoc",
+      "version": "0.34.2",
+      "commands": [
+        "cd tests/generators/input/elixir && mix deps.get && mix docs --output ../../../../sources/native/elixir"
+      ],
+      "input": [
+        {
+          "path": "tests/generators/input/elixir/lib/greeter.ex",
+          "sha256": "e7920d712b6dfbb0f811aeb21591db3800ae58a8b12266e348eb1f67a4d18d63"
+        },
+        {
+          "path": "tests/generators/input/elixir/mix.exs",
+          "sha256": "3170031cbaefc2fdf05d664cd1283e225a2ee26f781dc92c97b4b4a8c7b2e34c"
+        },
+        {
+          "path": "tests/generators/input/elixir/mix.lock",
+          "sha256": "f8e8b46b0b95b0658b51cc848b5164a32edd38f6838f6e5393ec9c6f1a9f98f1"
+        }
+      ],
+      "output": [
+        {
+          "path": "sources/native/elixir/404.html",
+          "sha256": "c952662aaa70e150b18538559d8807bd88cdd5a017d578f1cfd83b84bb1977da"
+        },
+        {
+          "path": "sources/native/elixir/api-reference.html",
+          "sha256": "57f42de282c967ee71de8d68d281fec393d584e5c634587146bba38a5e099074"
+        },
+        {
+          "path": "sources/native/elixir/Greeter.html",
+          "sha256": "7eee48b5794447b46a95e2ab444c76273b3bc028a1d1621e22126e68c7c208aa"
+        },
+        {
+          "path": "sources/native/elixir/index.html",
+          "sha256": "8abf1b6f119db2953bb2a83c97391524aa003ebb4c09a71c76270560593feb63"
+        }
+      ]
+    },
+    {
+      "language": "fsharp",
+      "adapter": "docfx",
+      "generator": "DocFX (assembly + compiler XML)",
+      "version": "2.78.3+850a61c2ecb83b0bda21448f1393e480934556fd",
+      "commands": [
+        "dotnet build tests/generators/input/fsharp/Greeter.fsproj -c Release",
+        "/tools/docfx metadata <assembly-and-XML-config>"
+      ],
+      "input": [
+        {
+          "path": "tests/generators/input/fsharp/Greeter.fs",
+          "sha256": "3552c4420525441231e6e95a514457628431e7392f082383b6452e360ef358e7"
+        },
+        {
+          "path": "tests/generators/input/fsharp/Greeter.fsproj",
+          "sha256": "7d922cb57bb1d25f2bcb6c4f8ee66a4d7b458c5c5fb02c0b0db01703d4dc2310"
+        }
+      ],
+      "output": [
+        {
+          "path": "sources/native/fsharp/Example.Greeter.yml",
+          "sha256": "3da82ece6a2c06a48f34499862f097757aab9a773c59a3aad4ec243d9d553432"
+        },
+        {
+          "path": "sources/native/fsharp/Example.yml",
+          "sha256": "f04c07dc3c9e1f175193fbf0ad44cc77e9bb734d890520789ccdf0f839cb08cf"
+        }
+      ]
+    },
+    {
+      "language": "go",
+      "adapter": "godoc",
+      "generator": "go doc",
+      "version": "go version go1.23.2 darwin/arm64",
+      "commands": [
+        "cd tests/generators/input/go && go doc -all . > ../../../../sources/native/go/api.txt"
+      ],
+      "input": [
+        {
+          "path": "tests/generators/input/go/go.mod",
+          "sha256": "3473b046c51bc78f8fe99d059d10bba84e041b85ea56f9e6c539cd05ed0e111b"
+        },
+        {
+          "path": "tests/generators/input/go/greeter.go",
+          "sha256": "90d8d081cf814ec1f7eef4190c912866308962c90fc02ec81e31527aecf60145"
+        }
+      ],
+      "output": [
+        {
+          "path": "sources/native/go/api.txt",
+          "sha256": "70d60b8b5a59c0b63d072a743cd578450e41b80d45c3bd47502d1ceee0894179"
+        }
+      ]
+    },
+    {
+      "language": "java",
+      "adapter": "javadoc",
+      "generator": "Javadoc",
+      "version": "javadoc 21.0.9",
+      "commands": [
+        "javadoc -d sources/native/java tests/generators/input/java/Greeter.java"
+      ],
+      "input": [
+        {
+          "path": "tests/generators/input/java/Greeter.java",
+          "sha256": "8e72b7fbf7ef21a27723ec532d90652447bd6171271407fb7b449379b6fda773"
+        }
+      ],
+      "output": [
+        {
+          "path": "sources/native/java/example/Greeter.html",
+          "sha256": "4172ffba864ff4f3a705325543a75876cc93ada59828bcc98b77e7ccfc109262"
+        },
+        {
+          "path": "sources/native/java/example/Greeter.Mood.html",
+          "sha256": "ee1f3a9c3fdb0944901f3cede1d869d638be804d61900280bcf5ded67ff5ee03"
+        },
+        {
+          "path": "sources/native/java/example/package-summary.html",
+          "sha256": "52cf0f4b11b938886d7334d09b864e79d6ff4c067815fbfba8e78f161ac76985"
+        },
+        {
+          "path": "sources/native/java/example/package-tree.html",
+          "sha256": "d8191f506fd976683e6e887a84b8ac3b3aa71385529cc5431deb61b8f7786055"
+        },
+        {
+          "path": "sources/native/java/index.html",
+          "sha256": "1d634d5e0b2ffd1e42895d7bbc8cb1a12087d600d0a0b945301f34fa76ecea7b"
+        },
+        {
+          "path": "sources/native/java/overview-tree.html",
+          "sha256": "cf9cef430afdf6cba9b4ba7100c04716babddcf877365af82a381179a9a817c0"
+        }
+      ]
+    },
+    {
+      "language": "javascript",
+      "adapter": "jsdoc",
+      "generator": "JSDoc",
+      "version": "JSDoc 4.0.5 (Wed, 08 Oct 2025 02:56:52 GMT)",
+      "commands": [
+        "npx jsdoc -X tests/generators/input/javascript.js > sources/native/javascript/api.json"
+      ],
+      "input": [
+        {
+          "path": "tests/generators/input/javascript.js",
+          "sha256": "4653b1fe1ee37a4e0eb44af1b917ac0788619d8133f3df3d3ad2a9a61e3af1ed"
+        }
+      ],
+      "output": [
+        {
+          "path": "sources/native/javascript/api.json",
+          "sha256": "5043bfb853fe50893fd189877fee4a5542382780b6c9e28c3acf11ce868c3ea6"
+        }
+      ]
+    },
+    {
+      "language": "kotlin",
+      "adapter": "dokka",
+      "generator": "Dokka",
+      "version": "2.2.0",
+      "commands": [
+        "java -jar dokka-cli-2.2.0.jar -pluginsClasspath \"<Dokka HTML dependencies>\" -sourceSet \"-src tests/generators/input/kotlin -noStdlibLink -noJdkLink\" -moduleName Greeter -offlineMode -outputDir sources/native/kotlin"
+      ],
+      "input": [
+        {
+          "path": "tests/generators/input/kotlin/Greeter.kt",
+          "sha256": "a5f21de8db3bd2701f752837dc7f3efc14edac71d0457f835acb5ff2e7e392b6"
+        }
+      ],
+      "output": [
+        {
+          "path": "sources/native/kotlin/-greeter/example/-greeter/-greeter.html",
+          "sha256": "ea4a1f0f6caf7d1c828450b1b75e9fbe344b82ec943bf43544b648b5fc91defb"
+        },
+        {
+          "path": "sources/native/kotlin/-greeter/example/-greeter/greet-checked.html",
+          "sha256": "bb38b8915e42e6fcd36a17d596f0b563efeca57a077ee6963dfd9f46abc84f2f"
+        },
+        {
+          "path": "sources/native/kotlin/-greeter/example/-greeter/greet-many.html",
+          "sha256": "33f190211fef52c78a9a228bff6dbc7bedc9ae1797f957c0a1e21ba8401a1bac"
+        },
+        {
+          "path": "sources/native/kotlin/-greeter/example/-greeter/greet.html",
+          "sha256": "bbd1ff2c64445cb12eb1ab2b493d4530f6134f08e2ba61de22a6ac8a9ec9aa6a"
+        },
+        {
+          "path": "sources/native/kotlin/-greeter/example/-greeter/index.html",
+          "sha256": "25967a3103322b3955a0ca0f30c131279d5f7754b8622e2294a8152711944a9d"
+        },
+        {
+          "path": "sources/native/kotlin/-greeter/example/-greeter/prefix.html",
+          "sha256": "fd518da19216069a602b3d04194833fb198d9b449e8074202501c1796b221548"
+        },
+        {
+          "path": "sources/native/kotlin/-greeter/example/-mood/-formal/index.html",
+          "sha256": "1f2f6f54ca5038730471187891daa8a6a2de019fd9556ebe2339832df1655386"
+        },
+        {
+          "path": "sources/native/kotlin/-greeter/example/-mood/-friendly/index.html",
+          "sha256": "b563d77c8f54f6bb01a192dde9c0c6f294418ec6dc74787e3f9ac4e71245e8a5"
+        },
+        {
+          "path": "sources/native/kotlin/-greeter/example/-mood/index.html",
+          "sha256": "44aa1cfc66e6831a40433a04fc2ee02dcfcfee7e7fefc4e457275bb803feb5a4"
+        },
+        {
+          "path": "sources/native/kotlin/-greeter/example/-mood/value-of.html",
+          "sha256": "a60217e4f7e5dd8351753e30784976457a7595a82a56c58be782161cba801dfd"
+        },
+        {
+          "path": "sources/native/kotlin/-greeter/example/-mood/values.html",
+          "sha256": "5c77737fe2f9d238643c52480e1919366e6c502cfc7f463174443ab1b47903cc"
+        },
+        {
+          "path": "sources/native/kotlin/-greeter/example/index.html",
+          "sha256": "62972a328e78ecdd06e0848f677638b87a264dbed5a52eff33c2688089a9deb4"
+        },
+        {
+          "path": "sources/native/kotlin/index.html",
+          "sha256": "9c8e1fc57f43103b9ef085c7ab3dc1f0ab2c59edff321a17c06b7a62aa0fc6ec"
+        }
+      ]
+    },
+    {
+      "language": "lua",
+      "adapter": "ldoc",
+      "generator": "LDoc",
+      "version": "lua-ldoc\t1.4.6-2",
+      "commands": [
+        "ldoc --dir sources/native/lua tests/generators/input/lua/greeter.lua"
+      ],
+      "input": [
+        {
+          "path": "tests/generators/input/lua/greeter.lua",
+          "sha256": "4f5a88a34c6b902f980359711955808361d69cdf581c6e5ec759db83a2cc7e92"
+        }
+      ],
+      "output": [
+        {
+          "path": "sources/native/lua/index.html",
+          "sha256": "79ab58a61b5ffdb6d04cb53f179d2d9b2e97282dd633febe38c6111a3c3b500f"
+        }
+      ]
+    },
+    {
+      "language": "objectivec",
+      "adapter": "doxygen",
+      "generator": "Doxygen",
+      "version": "1.9.4",
+      "commands": [
+        "doxygen .docsy/generators/objectivec.doxyfile"
+      ],
+      "input": [
+        {
+          "path": "tests/generators/input/objectivec/Greeter.h",
+          "sha256": "a73c00335832643ec70290fd2b667e52c673e5386c510c2b99dcecc72db6602a"
+        }
+      ],
+      "output": [
+        {
+          "path": "sources/native/objectivec/dir_018e7f3dcbbdbb7de59599670b59440a.xml",
+          "sha256": "a7cba349a1e0259ff59af3e855ad44352bdfc1b1a9b0ecf34f01d43392b856df"
+        },
+        {
+          "path": "sources/native/objectivec/dir_2fae949e9699ffb1d89d120330aef27b.xml",
+          "sha256": "02da078a4b360b9c0ba7d443f45ee7aa790dd997841795a60d38323d7b18cb16"
+        },
+        {
+          "path": "sources/native/objectivec/dir_4736c8b5caf274455b5c461d9161d049.xml",
+          "sha256": "134a5d374246cad8516616ef6d9ed7fe4dde4adad3f6569b86d47952515a8f86"
+        },
+        {
+          "path": "sources/native/objectivec/dir_59425e443f801f1f2fd8bbe4959a3ccf.xml",
+          "sha256": "5134e321b865eb1e6b74b390c43686c0ad85293b89975959b384a6c5aa49364f"
+        },
+        {
+          "path": "sources/native/objectivec/Greeter_8h.xml",
+          "sha256": "278a6af416d68d161c56e7e799d712bed890626f9dfd3111ac503b6791376a36"
+        },
+        {
+          "path": "sources/native/objectivec/index.xml",
+          "sha256": "9e1c1fc8dfd6493fd0b1db0b9120f5d1f231259ba1da2cc6f675ce1331a7980e"
+        },
+        {
+          "path": "sources/native/objectivec/interfaceGreeter.xml",
+          "sha256": "650661ef89361079fe94c59c440a2f9347c511e92e0bc80722f8f1e566fc29df"
+        }
+      ]
+    },
+    {
+      "language": "php",
+      "adapter": "phpdoc",
+      "generator": "phpDocumentor",
+      "version": "phpDocumentor v3.10.0",
+      "commands": [
+        "php phpDocumentor.phar -d tests/generators/input/php -t sources/native/php --template=xml"
+      ],
+      "input": [
+        {
+          "path": "tests/generators/input/php/Greeter.php",
+          "sha256": "4057d7bb9198710af7e3d9e5e23447e6995ac17f7dbe8ae3ab67989f7fc870c3"
+        }
+      ],
+      "output": [
+        {
+          "path": "sources/native/php/structure.xml",
+          "sha256": "abfbf2fab05872e08e51bbcfdd356ce230fa949288688f9192a4750484faa8bd"
+        }
+      ]
+    },
+    {
+      "language": "python",
+      "adapter": "sphinx",
+      "generator": "Sphinx",
+      "version": "sphinx-build 8.2.3",
+      "commands": [
+        "sphinx-build -b json tests/generators/input/python sources/native/python"
+      ],
+      "input": [
+        {
+          "path": "tests/generators/input/python/conf.py",
+          "sha256": "f18283f2cdc51ae5c128cf5c9f3be26122ae99f24a490bde91c3eb0106341ff3"
+        },
+        {
+          "path": "tests/generators/input/python/greeter.py",
+          "sha256": "cd9e07090b6379303275956f15e326056db69e92e8a70baad7d12eb164b3b28c"
+        },
+        {
+          "path": "tests/generators/input/python/index.rst",
+          "sha256": "a25c808d2d4113bec7c0583b5e5daf49c31fd5b29074f9dca66012a601700613"
+        }
+      ],
+      "output": [
+        {
+          "path": "sources/native/python/genindex.fjson",
+          "sha256": "21966c5b520f67ddc600cd63fc282af8b41dc68b5128a556c1f7fab374d57741"
+        },
+        {
+          "path": "sources/native/python/index.fjson",
+          "sha256": "73b8ee38215af940c1e499420775a97af34174287a4b9435a112c7b37ae5c4fb"
+        },
+        {
+          "path": "sources/native/python/py-modindex.fjson",
+          "sha256": "7dbed6c36098a4c785f9683a9a531b7f761b49e12ed60d9a260e3e54744de5db"
+        },
+        {
+          "path": "sources/native/python/search.fjson",
+          "sha256": "2f2aca54d815b0617cf50580aa29f7f7136184d623375f476f448460f5caf86b"
+        }
+      ]
+    },
+    {
+      "language": "ruby",
+      "adapter": "yard",
+      "generator": "YARD",
+      "version": "0.9.38",
+      "commands": [
+        "yard doc --db .docsy/generators/fixture.yardoc --no-cache --no-document --no-yardopts --output-dir sources/native/ruby tests/generators/input/ruby/greeter.rb"
+      ],
+      "input": [
+        {
+          "path": "tests/generators/input/ruby/greeter.rb",
+          "sha256": "746bcfd6d2783d2e7f6ae1eebe3db4e043bdc0484df5ccbc93539364660116d8"
+        }
+      ],
+      "output": [
+        {
+          "path": "sources/native/ruby/_index.html",
+          "sha256": "b0c5275709627818d0207e6fd53687888fbc98c72bc39b5d025676d8a247ba20"
+        },
+        {
+          "path": "sources/native/ruby/class_list.html",
+          "sha256": "9a3c74aa4656773a8618d5f225a449660186067bf5c2d71b7c867b06cef42313"
+        },
+        {
+          "path": "sources/native/ruby/file_list.html",
+          "sha256": "f4f0ca544959f8e4eba838e37a1d4315f2c99ccc5d84a83f2274faf8299fac6f"
+        },
+        {
+          "path": "sources/native/ruby/file.README.html",
+          "sha256": "b61a22692190e80244a81008fd4d7b0539beed4ef72716680e52af628c2ced0a"
+        },
+        {
+          "path": "sources/native/ruby/frames.html",
+          "sha256": "01ef6070a0a1ef5bb77222edca4729885326a2f21fa9da9f771d833703ac69e3"
+        },
+        {
+          "path": "sources/native/ruby/Greeter.html",
+          "sha256": "9bd92218fa3254a627a965c474da45660925ef37ccdc05083b84b1f961991eda"
+        },
+        {
+          "path": "sources/native/ruby/index.html",
+          "sha256": "5d9e1c6beb763c2bdf567555bddfee74436410f54c774fb91ca3d31ad6772af9"
+        },
+        {
+          "path": "sources/native/ruby/method_list.html",
+          "sha256": "67b4045403a983ea18c9e88b7a00662956132287533c6a1bc18313599354add6"
+        },
+        {
+          "path": "sources/native/ruby/top-level-namespace.html",
+          "sha256": "c90737501b6efcf776d46e3fd9f34f89963de243422062fb2ca57fb2fa24709f"
+        }
+      ]
+    },
+    {
+      "language": "rust",
+      "adapter": "rustdoc",
+      "generator": "rustdoc (stable HTML)",
+      "version": "rustdoc 1.92.0 (ded5c06cf 2025-12-08)",
+      "commands": [
+        "rustdoc --edition=2021 --crate-name greeter tests/generators/input/rust/greeter.rs -o sources/native/rust"
+      ],
+      "input": [
+        {
+          "path": "tests/generators/input/rust/greeter.rs",
+          "sha256": "30f8a2014cfaf3d9358e6d24602ea0f4c66b54de86e16820c6bebc4cdf7fde71"
+        }
+      ],
+      "output": [
+        {
+          "path": "sources/native/rust/greeter/all.html",
+          "sha256": "44785373f6ac3bb983364aca17b6808ff6e33d492dfbff1404634c4dea89cb94"
+        },
+        {
+          "path": "sources/native/rust/greeter/enum.GreetingError.html",
+          "sha256": "862a05433c1c481db5cb5e6a92be6875b225b3ee02f21d6392034788cc1533e3"
+        },
+        {
+          "path": "sources/native/rust/greeter/index.html",
+          "sha256": "1f53d2180afcb832f09d2b091c56dc5e806719eca73cfc8044558d77c27fec9c"
+        },
+        {
+          "path": "sources/native/rust/greeter/struct.Greeter.html",
+          "sha256": "21e4d092882bd9b597c404a70954d892f74b147b228ef11a6c7c97286eee2f84"
+        },
+        {
+          "path": "sources/native/rust/settings.html",
+          "sha256": "9a37011cdb8184bfa9f30b537a156eb09da7f5aed87cc1bb4cd4ca7dda08308b"
+        }
+      ]
+    },
+    {
+      "language": "scala",
+      "adapter": "scaladoc",
+      "generator": "Scaladoc",
+      "version": "2.13.16",
+      "commands": [
+        "java -Dscala.usejavacp=true -cp \"<Scala compiler dependencies>\" scala.tools.nsc.ScalaDoc -d sources/native/scala tests/generators/input/scala/Greeter.scala"
+      ],
+      "input": [
+        {
+          "path": "tests/generators/input/scala/Greeter.scala",
+          "sha256": "103e81aef087fcdeeeedcc30ddd40f1926eba37c78d1f93d4e5cf68092b7a789"
+        }
+      ],
+      "output": [
+        {
+          "path": "sources/native/scala/example/Greeter.html",
+          "sha256": "2217f5c29474a44e951246699f15c0c5f3fbdfd9700958b1c2454b96212d4151"
+        },
+        {
+          "path": "sources/native/scala/example/index.html",
+          "sha256": "52ae46e76463875d481d4ba885887cdfbfda4188df821d98578f6252fa5ce945"
+        },
+        {
+          "path": "sources/native/scala/index.html",
+          "sha256": "a3bd3fc7c24120b13ebc5da51b74b27243f805b780b91876d4fa311603591c18"
+        }
+      ]
+    },
+    {
+      "language": "swift",
+      "adapter": "docc",
+      "generator": "Swift DocC",
+      "version": "Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)\nTarget: arm64-apple-macosx26.0\nswift-driver version: 1.148.6",
+      "commands": [
+        "swiftc -emit-module -emit-symbol-graph -emit-symbol-graph-dir <cache> -module-name Greeter tests/generators/input/swift/Greeter.swift",
+        "docc convert --additional-symbol-graph-dir <cache> --fallback-display-name Greeter --fallback-bundle-identifier com.example.greeter --output-path sources/native/swift"
+      ],
+      "input": [
+        {
+          "path": "tests/generators/input/swift/Greeter.swift",
+          "sha256": "800628d0ec4736840531e92a7590fff5b26772f76a66b6aa5ad28b694f31dd51"
+        }
+      ],
+      "output": [
+        {
+          "path": "sources/native/swift/data/documentation/greeter/greeter/greet(name:).json",
+          "sha256": "9898f56bb0e9b2a5fa4e2fbd7553bd860f3d35b38085c525c900cacbc9838705"
+        },
+        {
+          "path": "sources/native/swift/data/documentation/greeter/greeter/greetchecked(name:).json",
+          "sha256": "ff6fdc6a452ca76fdcdba34dca416729d5455244d23a59f1d2a71d33bbad2046"
+        },
+        {
+          "path": "sources/native/swift/data/documentation/greeter/greeter/greetmany(names:separator:).json",
+          "sha256": "475ca1890add009ba0cb5dabaddaa223d45b6a57775b978fec264542185df227"
+        },
+        {
+          "path": "sources/native/swift/data/documentation/greeter/greeter/init().json",
+          "sha256": "cab63496c659a97d05d7ea08edad4e8ec6d86ff7ba1303d1bf4af61f25b6e031"
+        },
+        {
+          "path": "sources/native/swift/data/documentation/greeter/greeter/prefix.json",
+          "sha256": "ca47878502c1b1b2b533335b3b0a35989c7c86a1b73450fb6a6fbaa77e0ec7f7"
+        },
+        {
+          "path": "sources/native/swift/data/documentation/greeter/greeter.json",
+          "sha256": "a0477aefdcc541749515a13d85c67114c438619300dbf166edef64f14b141b5d"
+        },
+        {
+          "path": "sources/native/swift/data/documentation/greeter/greetingerror/!=(_:_:).json",
+          "sha256": "b8c2503e0d4e851becce45df9c53fc5b421c24b79b8030f341cc3056f6e4eed6"
+        },
+        {
+          "path": "sources/native/swift/data/documentation/greeter/greetingerror/emptyname.json",
+          "sha256": "ac48d08f93a9f2c58c6ada1c5559fd424be9a9d4a569d5e7f7a4ee07a7c42062"
+        },
+        {
+          "path": "sources/native/swift/data/documentation/greeter/greetingerror/equatable-implementations.json",
+          "sha256": "ebbbe606237a51cf916c7b71d6c1addc693a5a53a50610600f649781ef53c1bc"
+        },
+        {
+          "path": "sources/native/swift/data/documentation/greeter/greetingerror.json",
+          "sha256": "71e1e0eb1e0d15068435ac3154de9785c6bede0ec647fa6efb62216390f4645b"
+        },
+        {
+          "path": "sources/native/swift/data/documentation/greeter.json",
+          "sha256": "27a437bc050a76253dbc470de635ca94db3b08d396490de218585a2b6dbeff0c"
+        }
+      ]
+    },
+    {
+      "language": "typescript",
+      "adapter": "typedoc",
+      "generator": "TypeDoc",
+      "version": "TypeDoc 0.28.20\nUsing TypeScript 5.9.3 from ./node_modules/typescript",
+      "commands": [
+        "npx typedoc --tsconfig tests/generators/tsconfig.json --json sources/native/typescript/api.json tests/generators/input/typescript.ts"
+      ],
+      "input": [
+        {
+          "path": "tests/generators/input/typescript.ts",
+          "sha256": "2299dd57aefbd8013ffb2612817aee2ec87f6f8dbe7589a0e0da13582a8c3dad"
+        }
+      ],
+      "output": [
+        {
+          "path": "sources/native/typescript/api.json",
+          "sha256": "061f9cb12acd9090471a43ae044a8987b6d7d7c0ffa85567d2ef971464c7149f"
+        }
+      ]
+    },
+    {
+      "language": "visualbasic",
+      "adapter": "docfx",
+      "generator": "DocFX (assembly + compiler XML)",
+      "version": "2.78.3+850a61c2ecb83b0bda21448f1393e480934556fd",
+      "commands": [
+        "dotnet build tests/generators/input/visualbasic/Greeter.vbproj -c Release",
+        "/tools/docfx metadata <assembly-and-XML-config>"
+      ],
+      "input": [
+        {
+          "path": "tests/generators/input/visualbasic/Greeter.vb",
+          "sha256": "3ba5da23b10dfdf6c2f79e19306b865854f4431a14b0d4037c62bb588f49ceab"
+        },
+        {
+          "path": "tests/generators/input/visualbasic/Greeter.vbproj",
+          "sha256": "5e9fa933fea3e5c3ea5f05a26ba97441b40372fcfe6fc90eec2012c8aeb82712"
+        }
+      ],
+      "output": [
+        {
+          "path": "sources/native/visualbasic/Example.Greeter.yml",
+          "sha256": "26d973ae6979783bdaffdedceb4a0e2ec1e6c6baa993bd8f40bacec9c287515f"
+        },
+        {
+          "path": "sources/native/visualbasic/Example.yml",
+          "sha256": "f04c07dc3c9e1f175193fbf0ad44cc77e9bb734d890520789ccdf0f839cb08cf"
+        }
+      ]
+    }
+  ]
+}

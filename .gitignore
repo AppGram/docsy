@@ -4,3 +4,10 @@ dist/
 release/
 .env
 .docsy/maintenance/
+.docsy/generators/
+tests/generators/input/**/bin/
+tests/generators/input/**/obj/
+tests/generators/input/**/_build/
+tests/generators/input/**/deps/
+tests/generators/input/**/.dart_tool/
+tests/generators/input/**/__pycache__/

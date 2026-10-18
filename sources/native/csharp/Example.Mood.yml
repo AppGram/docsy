@@ -1,0 +1,76 @@
+### YamlMime:ManagedReference
+items:
+- uid: Example.Mood
+  commentId: T:Example.Mood
+  id: Mood
+  parent: Example
+  children:
+  - Example.Mood.Formal
+  - Example.Mood.Friendly
+  langs:
+  - csharp
+  - vb
+  name: Mood
+  nameWithType: Mood
+  fullName: Example.Mood
+  type: Enum
+  assemblies:
+  - Greeter
+  namespace: Example
+  summary: Supported greeting moods.
+  example: []
+  syntax:
+    content: public enum Mood
+    content.vb: Public Enum Mood
+- uid: Example.Mood.Friendly
+  commentId: F:Example.Mood.Friendly
+  id: Friendly
+  parent: Example.Mood
+  langs:
+  - csharp
+  - vb
+  name: Friendly
+  nameWithType: Mood.Friendly
+  fullName: Example.Mood.Friendly
+  type: Field
+  assemblies:
+  - Greeter
+  namespace: Example
+  syntax:
+    content: Friendly = 0
+    return:
+      type: Example.Mood
+- uid: Example.Mood.Formal
+  commentId: F:Example.Mood.Formal
+  id: Formal
+  parent: Example.Mood
+  langs:
+  - csharp
+  - vb
+  name: Formal
+  nameWithType: Mood.Formal
+  fullName: Example.Mood.Formal
+  type: Field
+  assemblies:
+  - Greeter
+  namespace: Example
+  syntax:
+    content: Formal = 1
+    return:
+      type: Example.Mood
+references:
+- uid: Example
+  commentId: N:Example
+  isExternal: true
+  href: Example.html
+  name: Example
+  nameWithType: Example
+  fullName: Example
+- uid: Example.Mood
+  commentId: T:Example.Mood
+  parent: Example
+  isExternal: true
+  href: Example.Mood.html
+  name: Mood
+  nameWithType: Mood
+  fullName: Example.Mood

@@ -1,5 +1,7 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, statSync } from 'node:fs';
 import { docsyConfig, resolveSource, type SdkSourceConfig } from '../config';
+import { loadNativeSdk } from './native-sdk';
+import { SDK_FORMATS } from './sdk-formats';
 
 export type NormalizedParameter = {
   name: string;
@@ -41,6 +43,11 @@ export type NormalizedItem = {
   methods?: NormalizedMethod[];
   values?: string[];
   example?: string;
+  exampleLanguage?: string;
+  remarks?: string;
+  throws?: { type: string; description?: string }[];
+  category?: string;
+  relationships?: { name: string; target?: string }[];
 };
 
 export type NormalizedCategory = {
@@ -52,7 +59,9 @@ export type SDKDoc = {
   name: string;
   language: string;
   install: string;
+  installLanguage?: string;
   overview: string;
+  quickstart?: { code: string; language: string };
   itemCount: number;
   categories: NormalizedCategory[];
 };
@@ -172,7 +181,7 @@ const loadReactShape = (path: string, meta: Omit<SDKDoc, 'itemCount' | 'categori
 };
 
 // ---------------------------------------------------------------------------
-// Swift (iOS) — { modules[0].types|protocols|enums, navigation.categories[{items:[fullName]}] }
+// AppGram/docc2json — modules[0].types|protocols|enums + navigation.categories.
 // ---------------------------------------------------------------------------
 type IOSProperty = {
   name: string;
@@ -187,8 +196,8 @@ type IOSMethod = {
   isAsync?: boolean;
   throws?: boolean;
   declaration?: string;
-  description?: { abstract?: string };
-  signature?: { returnType?: string; parameters?: { name: string; type: string; label?: string }[] };
+  description?: { abstract?: string; discussion?: string };
+  signature?: { returnType?: string; async?: boolean; throws?: boolean; keywords?: string[]; parameters?: { name: string; type: string; label?: string; isOptional?: boolean; defaultValue?: string; description?: string }[] };
 };
 type IOSType = {
   kind: string;
@@ -199,12 +208,27 @@ type IOSType = {
   properties?: IOSProperty[];
   methods?: IOSMethod[];
   initializers?: IOSMethod[];
+  requirements?: (IOSMethod & { kind: string })[];
   cases?: { name: string }[];
 };
 type IOSData = {
   modules: { types?: IOSType[]; protocols?: IOSType[]; enums?: IOSType[] }[];
   navigation: { categories: { title: string; items: string[] }[] };
 };
+
+const normalizeSwiftMethod = (method: IOSMethod, initializer = false): NormalizedMethod => ({
+  name: method.name,
+  isAsync: method.isAsync ?? method.signature?.async,
+  isStatic: method.isStatic ?? method.signature?.keywords?.includes('static'),
+  returnType: !initializer && method.signature?.returnType && method.signature.returnType !== 'Void' ? method.signature.returnType : undefined,
+  description: (method.description?.abstract || method.description?.discussion)?.trim() || undefined,
+  parameters: (method.signature?.parameters ?? []).map((parameter) => ({
+    name: parameter.name, type: parameter.type,
+    // docc2json's isOptional describes a nullable Swift type, not an omittable argument.
+    optional: parameter.defaultValue !== undefined || undefined,
+    description: parameter.description?.trim() || undefined,
+  })),
+});
 
 const loadIOSShape = (source: string, meta: Omit<SDKDoc, 'itemCount' | 'categories'>): SDKDoc => {
   const data = readJson<IOSData>(source);
@@ -236,22 +260,10 @@ const loadIOSShape = (source: string, meta: Omit<SDKDoc, 'itemCount' | 'categori
           description: p.description?.abstract?.trim() || undefined,
         })),
         methods: [
-          ...(t.initializers ?? []).map((m) => ({
-            name: m.name,
-            isAsync: m.isAsync,
-            isStatic: m.isStatic,
-            returnType: undefined,
-            description: m.description?.abstract?.trim() || undefined,
-            parameters: (m.signature?.parameters ?? []).map((p) => ({ name: p.name, type: p.type })),
-          })),
-          ...(t.methods ?? []).map((m) => ({
-            name: m.name,
-            isAsync: m.isAsync,
-            isStatic: m.isStatic,
-            returnType: m.signature?.returnType && m.signature.returnType !== 'Void' ? m.signature.returnType : undefined,
-            description: m.description?.abstract?.trim() || undefined,
-            parameters: (m.signature?.parameters ?? []).map((p) => ({ name: p.name, type: p.type })),
-          })),
+          ...(t.initializers ?? []).map((method) => normalizeSwiftMethod(method, true)),
+          ...(t.methods ?? []).map((method) => normalizeSwiftMethod(method)),
+          ...(t.requirements ?? []).filter((requirement) => ['func', 'method', 'init', 'initializer'].includes(requirement.kind))
+            .map((requirement) => normalizeSwiftMethod(requirement, ['init', 'initializer'].includes(requirement.kind))),
         ],
         values: t.cases?.map((c) => c.name),
         example: t.description?.examples?.[0]?.code?.trim() || undefined,
@@ -286,19 +298,7 @@ const FLUTTER_KIND_LABEL: Record<number, string> = {
   17: 'property',
 };
 
-const FLUTTER_CATEGORY_KEYWORDS: Array<[string, RegExp]> = [
-  ['Provider', /Provider|AppgramProvider/],
-  ['Wishes', /Wish|Vote|Comment/],
-  ['Roadmap', /Roadmap/],
-  ['Releases', /Release|Changelog/],
-  ['Help Center', /Help/],
-  ['Support', /Support|Ticket/],
-  ['Surveys', /Survey/],
-  ['Status', /Status|Incident/],
-  ['Blog', /Blog|Post/],
-  ['Theme', /Theme|Color|Typography/],
-  ['Hooks', /^use[A-Z]/],
-];
+const DART_CATEGORIES: Record<number, string> = { 3: 'Classes', 5: 'Enums', 8: 'Extensions' };
 
 const loadFlutterShape = (source: string, meta: Omit<SDKDoc, 'itemCount' | 'categories'>): SDKDoc => {
   const items = readJson<FlutterItem[]>(source) ?? [];
@@ -319,11 +319,10 @@ const loadFlutterShape = (source: string, meta: Omit<SDKDoc, 'itemCount' | 'cate
       summary: (it.desc || '').trim() || undefined,
       language: 'dart',
     };
-    const match = FLUTTER_CATEGORY_KEYWORDS.find(([, re]) => re.test(it.name));
-    put(match ? match[0] : 'Other', item);
+    put(DART_CATEGORIES[it.kind], item);
   }
 
-  const order = FLUTTER_CATEGORY_KEYWORDS.map(([t]) => t).concat(['Other']);
+  const order = ['Classes', 'Enums', 'Extensions'];
   const categories: NormalizedCategory[] = order
     .filter((title) => buckets.has(title))
     .map((title) => ({
@@ -335,79 +334,22 @@ const loadFlutterShape = (source: string, meta: Omit<SDKDoc, 'itemCount' | 'cate
 };
 
 // ---------------------------------------------------------------------------
-// Embed — TypeDoc project with { children[{ kind, name, children[] }] }
-// TypeDoc kinds: 128=class, 256=interface, 2097152=type, 8=enum, 64=function
-// ---------------------------------------------------------------------------
-type EmbedChild = { id: number; name: string; kind: number; children?: EmbedChild[]; comment?: { summary?: { text: string }[] } };
-type EmbedData = { children?: EmbedChild[] };
-
-const TYPEDOC_KIND_LABEL: Record<number, string> = {
-  8: 'enum',
-  32: 'variable',
-  64: 'function',
-  128: 'class',
-  256: 'interface',
-  1024: 'property',
-  2048: 'method',
-  4194304: 'type',
-  2097152: 'type',
-};
-
-const loadEmbedShape = (source: string, meta: Omit<SDKDoc, 'itemCount' | 'categories'>): SDKDoc => {
-  const data = readJson<EmbedData>(source);
-  if (!data?.children) return { ...meta, itemCount: 0, categories: [] };
-
-  const buckets = new Map<string, NormalizedItem[]>();
-  const put = (title: string, item: NormalizedItem) => {
-    if (!buckets.has(title)) buckets.set(title, []);
-    buckets.get(title)!.push(item);
-  };
-
-  for (const child of data.children) {
-    const kind = TYPEDOC_KIND_LABEL[child.kind] || 'symbol';
-    const summary = child.comment?.summary?.map((s) => s.text).join('').trim() || undefined;
-    const item: NormalizedItem = {
-      id: slug(child.name),
-      name: child.name,
-      kind,
-      summary,
-      language: 'typescript',
-    };
-    const cat = kind === 'class' ? 'Classes'
-      : kind === 'interface' ? 'Interfaces'
-      : kind === 'function' ? 'Functions'
-      : kind === 'enum' ? 'Enums'
-      : 'Types';
-    put(cat, item);
-  }
-
-  const order = ['Classes', 'Interfaces', 'Functions', 'Enums', 'Types'];
-  const categories: NormalizedCategory[] = order
-    .filter((title) => buckets.has(title))
-    .map((title) => ({
-      title,
-      items: buckets.get(title)!.sort((a, b) => a.name.localeCompare(b.name)),
-    }));
-
-  return { ...meta, itemCount: data.children.length, categories };
-};
-
-// ---------------------------------------------------------------------------
-// Adapter registry. Each adapter converts an existing generator's JSON shape
-// into the stable SDKDoc model consumed by pages, search, and markdown export.
+// Native generator artifacts and legacy compact converters share SDKDoc.
 // ---------------------------------------------------------------------------
 type SdkAdapter = (source: string, meta: Omit<SDKDoc, 'itemCount' | 'categories'>) => SDKDoc;
 
 export const SDK_ADAPTERS: Record<SdkSourceConfig['adapter'], SdkAdapter> = {
+  ...Object.fromEntries(SDK_FORMATS.map((format) => [format, (source: string, meta: Omit<SDKDoc, 'itemCount' | 'categories'>) => loadNativeSdk({ source, adapter: format, maxFiles: 10000, maxFileBytes: 10 * 1024 * 1024, maxTotalBytes: 100 * 1024 * 1024 } as SdkSourceConfig, meta)])) as Record<SdkSourceConfig['adapter'], SdkAdapter>,
   'typedoc-lite': loadReactShape,
   'swift-symbols': loadIOSShape,
-  dartdoc: loadFlutterShape,
-  typedoc: loadEmbedShape,
+  dartdoc: (source, meta) => statSync(resolveSource(source)).isDirectory() ? loadNativeSdk({ source, adapter: 'dartdoc' } as SdkSourceConfig, meta) : loadFlutterShape(source, meta),
 };
 
 export const loadSdk = (config: SdkSourceConfig): SDKDoc => {
   const adapter = SDK_ADAPTERS[config.adapter];
   if (!adapter) throw new Error(`Unknown SDK ingestion adapter: ${config.adapter}`);
+  const meta = { name: config.name, language: config.language, install: config.install, installLanguage: config.installLanguage ?? (config.adapter === 'swift-symbols' ? 'swift' : 'bash'), overview: config.overview, quickstart: config.quickstart ? { code: config.quickstart.code, language: config.quickstart.language ?? config.language } : undefined };
+  if (!['typedoc-lite', 'swift-symbols'].includes(config.adapter) && !(config.adapter === 'dartdoc' && !statSync(resolveSource(config.source)).isDirectory())) return loadNativeSdk({ ...config, source: resolveSource(config.source) }, meta);
   const data = readJson<any>(config.source);
   const valid = config.adapter === 'dartdoc' ? Array.isArray(data) : config.adapter === 'typedoc' ? Array.isArray(data?.children) : Array.isArray(data?.modules);
   if (!valid) throw new Error(`SDK source ${config.source} does not match the ${config.adapter} adapter shape.`);
@@ -415,7 +357,9 @@ export const loadSdk = (config: SdkSourceConfig): SDKDoc => {
     name: config.name,
     language: config.language,
     install: config.install,
+    installLanguage: config.installLanguage ?? (config.adapter === 'swift-symbols' ? 'swift' : 'bash'),
     overview: config.overview,
+    quickstart: config.quickstart ? { code: config.quickstart.code, language: config.quickstart.language ?? config.language } : undefined,
   });
 };
 

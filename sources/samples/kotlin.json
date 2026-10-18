@@ -1,0 +1,100 @@
+{
+  "modules": [
+    {
+      "name": "AtlasSDK",
+      "types": [
+        {
+          "kind": "class",
+          "name": "AtlasClient",
+          "description": {
+            "summary": "A coroutine-based client for the fictional Atlas API.",
+            "example": "val client = AtlasClient(baseUrl = \"https://api.example.com\")\nval document = client.getDocument(\"intro\")\nprintln(document.title)"
+          },
+          "declaration": "class AtlasClient(baseUrl: String) {\n    suspend fun getDocument(id: String): Document\n}",
+          "methods": [
+            {
+              "name": "getDocument",
+              "isAsync": true,
+              "returnType": "Document",
+              "description": {
+                "summary": "Suspend until the document is available or an API error occurs."
+              },
+              "parameters": [
+                {
+                  "name": "id",
+                  "type": "String"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "data-class",
+          "name": "Document",
+          "description": {
+            "summary": "An immutable Kotlin document record."
+          },
+          "declaration": "data class Document(\n    val id: String,\n    val title: String,\n    val state: DocumentState,\n)",
+          "properties": [
+            {
+              "name": "id",
+              "type": "String",
+              "description": {
+                "summary": "Stable identifier."
+              }
+            },
+            {
+              "name": "title",
+              "type": "String",
+              "description": {
+                "summary": "Human-readable title."
+              }
+            },
+            {
+              "name": "state",
+              "type": "DocumentState",
+              "description": {
+                "summary": "Publication state."
+              }
+            }
+          ]
+        },
+        {
+          "kind": "enum",
+          "name": "DocumentState",
+          "description": {
+            "summary": "The publication state of a document."
+          },
+          "declaration": "enum class DocumentState { DRAFT, PUBLISHED, ARCHIVED }",
+          "values": [
+            "DRAFT",
+            "PUBLISHED",
+            "ARCHIVED"
+          ]
+        }
+      ]
+    }
+  ],
+  "navigation": {
+    "categories": [
+      {
+        "title": "Clients",
+        "items": [
+          "AtlasClient"
+        ]
+      },
+      {
+        "title": "Models",
+        "items": [
+          "Document"
+        ]
+      },
+      {
+        "title": "Enums",
+        "items": [
+          "DocumentState"
+        ]
+      }
+    ]
+  }
+}

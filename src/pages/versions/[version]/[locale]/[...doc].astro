@@ -28,8 +28,9 @@ const section = path.startsWith('/api/') ? API_SECTIONS.find((item) => item.sect
 const sdk = getSdkSources().find((item) => `/${item.slug}` === path);
 if (path !== '/' && !article && !section && !sdk) return new Response('Not found', { status: 404 });
 const spec = section ? await loadSwagger(context.version) : null;
+const home = { ...docsyConfig.home, ...docsyConfig.home.translations[context.locale] };
 ---
-{path === '/' && <DocsLayout context={context} title={docsyConfig.site.title} description={docsyConfig.site.description} eyebrow={docsyConfig.home.eyebrow}><Overview context={context} /></DocsLayout>}
+{path === '/' && <DocsLayout context={context} title={`${home.title} — ${docsyConfig.site.name}`} description={home.description} eyebrow={home.eyebrow}><Overview context={context} /></DocsLayout>}
 {article && <DocsLayout context={context} title={`${article.config.title} — ${docsyConfig.site.name}`} description={article.config.description} eyebrow={article.config.eyebrow} type="article" wide={article.headings.some((heading) => heading.depth === 2 || heading.depth === 3)}>
   <ArticlePage article={article} context={context} />
   {article.headings.some((heading) => heading.depth === 2 || heading.depth === 3) && <ArticleToc slot="toc" headings={article.headings} context={context} />}

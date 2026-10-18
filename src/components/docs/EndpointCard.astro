@@ -1,5 +1,6 @@
 ---
 import CodeBlock from './CodeBlock.astro';
+import RequestExamples from './RequestExamples.astro';
 import { defaultContext, type DocsContext } from '../../config';
 import { message } from '../../lib/messages';
 import { API_BASE_URL, type NormalizedEndpoint, type SwaggerParam } from '../../lib/swagger-loader';
@@ -197,7 +198,7 @@ const copyId = `ep-copy-${endpoint.id}`;
     </div>
 
     <div class="ep-code">
-      <CodeBlock language="bash" title={`${method} ${endpoint.path}`} code={endpoint.curl} />
+      <RequestExamples id={endpoint.id} title={`${method} ${endpoint.path}`} examples={endpoint.requestExamples} />
       {endpoint.responseExample && (
         <CodeBlock
           language="json"
@@ -405,11 +406,13 @@ const copyId = `ep-copy-${endpoint.id}`;
   }
 
   .ep-code {
+    min-width: 0;
+    max-width: 100%;
     position: sticky;
     top: 72px;
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 12px;
-    min-width: 0;
   }
 
   .ep-code .cb {
@@ -511,7 +514,7 @@ const copyId = `ep-copy-${endpoint.id}`;
 
   @media (max-width: 1100px) {
     .ep-grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
     }
 
     .ep-code {

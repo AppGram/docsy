@@ -1,0 +1,238 @@
+# Docsy-authored teaching subset, not an official JSONPlaceholder specification.
+# Routes and behavior: https://jsonplaceholder.typicode.com/guide/
+# Response examples are illustrative; live GET text can differ.
+openapi: 3.0.3
+info:
+  title: JSONPlaceholder · Docsy OpenAPI sample
+  version: 1.0.0
+  description: Public test requests demonstrating Docsy OpenAPI ingestion. No API key is needed. POST, PUT, PATCH, and DELETE simulate changes without persisting them.
+servers:
+  - url: https://jsonplaceholder.typicode.com
+tags:
+  - name: Posts
+    description: Read and simulate changes to posts.
+  - name: Comments
+    description: Read comments with a query filter.
+paths:
+  /posts:
+    get:
+      operationId: listPosts
+      tags: [Posts]
+      summary: List posts
+      description: Read posts, optionally filtering by user. The sample query uses `userId=1`; no authentication is required.
+      parameters:
+        - name: userId
+          in: query
+          description: Return posts belonging to this user. Omit the parameter to list all posts.
+          schema:
+            type: integer
+            minimum: 1
+          example: 1
+      responses:
+        '200':
+          description: An array of posts. This shortened response is illustrative.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+              example:
+                - id: 1
+                  userId: 1
+                  title: An example post
+                  body: Example response content. Live post text can differ.
+    post:
+      operationId: createPost
+      tags: [Posts]
+      summary: Create a post
+      description: Send a JSON request body. JSONPlaceholder returns a simulated creation response; a later GET will not retrieve this new post.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostInput'
+            example:
+              title: Hello from Docsy
+              body: This request example comes from OpenAPI, not hardcoded UI.
+              userId: 1
+      responses:
+        '201':
+          description: Simulated creation; the new post is not stored.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+              example:
+                id: 101
+                title: Hello from Docsy
+                body: This request example comes from OpenAPI, not hardcoded UI.
+                userId: 1
+  /posts/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Existing post identifier. The request example uses post 1.
+        schema:
+          type: integer
+          minimum: 1
+        example: 1
+    get:
+      operationId: getPost
+      tags: [Posts]
+      summary: Get a post
+      description: Fetch one post by its ID. The generated curl command substitutes the path parameter example from this specification.
+      responses:
+        '200':
+          description: One post. Response text below is illustrative.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+              example:
+                id: 1
+                userId: 1
+                title: An example post
+                body: Example response content. Live post text can differ.
+    put:
+      operationId: replacePost
+      tags: [Posts]
+      summary: Replace a post
+      description: Send all writable fields in a JSON body. The replacement is simulated and is not persisted.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostInput'
+            example:
+              title: A replacement post
+              body: Replace the complete writable post content.
+              userId: 1
+      responses:
+        '200':
+          description: The simulated replacement.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+              example:
+                id: 1
+                title: A replacement post
+                body: Replace the complete writable post content.
+                userId: 1
+    patch:
+      operationId: updatePost
+      tags: [Posts]
+      summary: Update a post title
+      description: Send only the fields to change. This request demonstrates a partial JSON body; changes are not persisted.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Replacement title; other post fields remain unchanged.
+              required: [title]
+            example:
+              title: An updated title from Docsy
+      responses:
+        '200':
+          description: The simulated update. Unchanged body text below is illustrative.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+              example:
+                id: 1
+                userId: 1
+                title: An updated title from Docsy
+                body: Original post body, unchanged by this PATCH.
+    delete:
+      operationId: deletePost
+      tags: [Posts]
+      summary: Delete a post
+      description: Simulate deletion of a post. JSONPlaceholder leaves the original post available; this request does not delete persistent data.
+      responses:
+        '200':
+          description: Empty object indicating simulated success.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+              example: {}
+  /comments:
+    get:
+      operationId: listComments
+      tags: [Comments]
+      summary: List comments for a post
+      description: Filter comments using a query parameter. Omit `postId` to list all comments. No API key is needed.
+      parameters:
+        - name: postId
+          in: query
+          description: Return only comments belonging to this post.
+          schema:
+            type: integer
+            minimum: 1
+          example: 1
+      responses:
+        '200':
+          description: An array of comments. This shortened response is illustrative.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+              example:
+                - id: 1
+                  postId: 1
+                  name: Example comment
+                  email: reader@example.com
+                  body: Example response content. Live comment text can differ.
+components:
+  schemas:
+    PostInput:
+      type: object
+      required: [title, body, userId]
+      properties:
+        title:
+          type: string
+          description: The post title.
+        body:
+          type: string
+          description: Plain-text content of the post.
+        userId:
+          type: integer
+          minimum: 1
+          description: User associated with the post.
+    Post:
+      allOf:
+        - $ref: '#/components/schemas/PostInput'
+        - type: object
+          required: [id]
+          properties:
+            id:
+              type: integer
+              description: Post identifier assigned by the service.
+    Comment:
+      type: object
+      required: [id, postId, name, email, body]
+      properties:
+        id:
+          type: integer
+        postId:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        body:
+          type: string

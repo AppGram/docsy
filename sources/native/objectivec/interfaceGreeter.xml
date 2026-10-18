@@ -1,0 +1,117 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.4" xml:lang="en-US">
+  <compounddef id="interfaceGreeter" kind="class" language="Objective-C" prot="public">
+    <compoundname>Greeter</compoundname>
+    <includes refid="Greeter_8h" local="no">Greeter.h</includes>
+      <sectiondef kind="property">
+      <memberdef kind="property" id="interfaceGreeter_1a56433b6bd2cf81e17797bc05ca67467c" prot="public" static="no" readable="yes" writable="yes" gettable="no" privategettable="no" protectedgettable="no" settable="no" privatesettable="no" protectedsettable="no">
+        <type>const char *</type>
+        <definition>const char* Greeter::prefix</definition>
+        <argsstring></argsstring>
+        <name>prefix</name>
+        <qualifiedname>Greeter::prefix</qualifiedname>
+        <read></read>
+        <write></write>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Greeting prefix used for future calls. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="tests/generators/input/objectivec/Greeter.h" line="9" column="13" bodyfile="tests/generators/input/objectivec/Greeter.h" bodystart="9" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="interfaceGreeter_1a72db40cc66763fb5624d5ada8f622d04" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>const char *</type>
+        <definition>const char * Greeter::greet:</definition>
+        <argsstring>(const char *name)</argsstring>
+        <name>greet:</name>
+        <qualifiedname>-[Greeter greet:]</qualifiedname>
+        <param>
+          <type>const char *</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Greet a reader. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Reader name. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A friendly greeting. <programlisting filename=".m"><codeline><highlight class="normal">[greeter<sp/>greet:&quot;Ada&quot;];</highlight></codeline>
+</programlisting> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="tests/generators/input/objectivec/Greeter.h" line="9" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="interfaceGreeter_1aa5d957df010479c12eb888d0f30b467d" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>unsigned int</type>
+        <definition>unsigned int Greeter::greetMany:count:</definition>
+        <argsstring>(const char **names,[count] unsigned int count)</argsstring>
+        <name>greetMany:count:</name>
+        <qualifiedname>-[Greeter greetMany:count:]</qualifiedname>
+        <param>
+          <type>const char **</type>
+          <declname>names</declname>
+        </param>
+        <param>
+          <attributes>[count]</attributes>
+          <type>unsigned int</type>
+          <declname>count</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Greet a batch of readers. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>names</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Reader names. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>count</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of names. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Number of greetings produced. <programlisting filename=".m"><codeline><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*names[]<sp/>=<sp/>{</highlight><highlight class="stringliteral">&quot;Ada&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;Linus&quot;</highlight><highlight class="normal">};</highlight></codeline>
+<codeline><highlight class="normal">[greeter<sp/>greetMany:names<sp/>count:2];</highlight></codeline>
+</programlisting> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="tests/generators/input/objectivec/Greeter.h" line="9" column="13"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Build personalized greetings without network access. <programlisting filename=".m"><codeline><highlight class="normal"><ref refid="interfaceGreeter" kindref="compound">Greeter</ref><sp/>*greeter<sp/>=<sp/>[<ref refid="interfaceGreeter" kindref="compound">Greeter</ref><sp/>new];</highlight></codeline>
+<codeline><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*message<sp/>=<sp/>[greeter<sp/><ref refid="interfaceGreeter_1a72db40cc66763fb5624d5ada8f622d04" kindref="member">greet</ref>:&quot;Docsy&quot;];</highlight></codeline>
+</programlisting> </para>
+    </detaileddescription>
+    <location file="tests/generators/input/objectivec/Greeter.h" line="7" column="12" bodyfile="tests/generators/input/objectivec/Greeter.h" bodystart="8" bodyend="-1"/>
+    <listofallmembers>
+      <member refid="interfaceGreeter_1a72db40cc66763fb5624d5ada8f622d04" prot="public" virt="virtual"><scope>Greeter</scope><name>greet:</name></member>
+      <member refid="interfaceGreeter_1aa5d957df010479c12eb888d0f30b467d" prot="public" virt="virtual"><scope>Greeter</scope><name>greetMany:count:</name></member>
+      <member refid="interfaceGreeter_1a56433b6bd2cf81e17797bc05ca67467c" prot="public" virt="non-virtual"><scope>Greeter</scope><name>prefix</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

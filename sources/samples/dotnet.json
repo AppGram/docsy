@@ -1,0 +1,105 @@
+{
+  "modules": [
+    {
+      "name": "AtlasSDK",
+      "types": [
+        {
+          "kind": "class",
+          "name": "AtlasClient",
+          "description": {
+            "summary": "A disposable asynchronous client for the fictional Atlas API.",
+            "example": "using var client = new AtlasClient(new Uri(\"https://api.example.com\"));\nDocument document = await client.GetDocumentAsync(\"intro\");\nConsole.WriteLine(document.Title);"
+          },
+          "declaration": "public sealed class AtlasClient : IDisposable {\n    public AtlasClient(Uri baseUri);\n    public Task<Document> GetDocumentAsync(string id, CancellationToken cancellationToken = default);\n}",
+          "methods": [
+            {
+              "name": "GetDocumentAsync",
+              "isAsync": true,
+              "returnType": "Task<Document>",
+              "description": {
+                "summary": "Fetch a document, supporting caller cancellation."
+              },
+              "parameters": [
+                {
+                  "name": "id",
+                  "type": "string"
+                },
+                {
+                  "name": "cancellationToken",
+                  "type": "CancellationToken",
+                  "optional": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "record",
+          "name": "Document",
+          "description": {
+            "summary": "An immutable record returned by the API."
+          },
+          "declaration": "public sealed record Document(string Id, string Title, DocumentState State);",
+          "properties": [
+            {
+              "name": "Id",
+              "type": "string",
+              "description": {
+                "summary": "Stable identifier."
+              }
+            },
+            {
+              "name": "Title",
+              "type": "string",
+              "description": {
+                "summary": "Human-readable title."
+              }
+            },
+            {
+              "name": "State",
+              "type": "DocumentState",
+              "description": {
+                "summary": "Publication state."
+              }
+            }
+          ]
+        },
+        {
+          "kind": "enum",
+          "name": "DocumentState",
+          "description": {
+            "summary": "The publication state of a document."
+          },
+          "declaration": "public enum DocumentState { Draft, Published, Archived }",
+          "values": [
+            "Draft",
+            "Published",
+            "Archived"
+          ]
+        }
+      ]
+    }
+  ],
+  "navigation": {
+    "categories": [
+      {
+        "title": "Clients",
+        "items": [
+          "AtlasClient"
+        ]
+      },
+      {
+        "title": "Models",
+        "items": [
+          "Document"
+        ]
+      },
+      {
+        "title": "Enums",
+        "items": [
+          "DocumentState"
+        ]
+      }
+    ]
+  }
+}

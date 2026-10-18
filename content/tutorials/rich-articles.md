@@ -3,8 +3,22 @@ Docsy articles support declarative Markdown components. Product configuration st
 ## Callouts
 
 :::note[Configuration belongs in YAML]
-Use a callout to explain a constraint without interrupting the guide. The `note`, `tip`, `warning`, and `danger` components share the active theme's colors.
+Keep product identity, navigation, sources, and permissions in `docsy.config.yaml`. Write the explanation here, in Markdown.
 :::
+
+:::tip[Validate before you publish]
+Run `npm run validate` to catch broken links, invalid components, and ingestion errors before they reach your readers.
+:::
+
+:::warning[Keep secrets out of source]
+Read API credentials from the server environment. Never commit private tokens to YAML or publish them in an example.
+:::
+
+:::danger[Static files cannot enforce permissions]
+Use the Node server for locked documentation. A public static host cannot protect private article content with a browser-only gate.
+:::
+
+Each kind has its own icon and restrained accent, with readable surfaces in both themes. The title explains the situation; the body tells the reader what to do. Color is not the only way to distinguish them.
 
 Write a callout like this:
 
@@ -65,6 +79,8 @@ pnpm build
 ## Code groups
 
 Use `:::code-group` around fenced code blocks to create language tabs. The fence's metadata, or language when metadata is absent, supplies each tab label.
+
+Fenced code is highlighted at build time, including inside groups, tabs, callouts, and snippets. Code cards show the language's local logo, retain an accessible language label, and copy plain source code. The portal's light/dark toggle changes token colors automatically; configure palettes with `theme.code.lightTheme` and `theme.code.darkTheme`. The **Default UI** guide documents code appearance and logo overrides.
 
 :::code-group
 ```javascript JavaScript
