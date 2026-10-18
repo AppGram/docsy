@@ -4,12 +4,13 @@ import { articleUrl } from '../../lib/article-loader';
 
 interface Props {
   article: ArticleConfig;
+  layout?: 'grid' | 'list';
 }
 
-const { article } = Astro.props;
+const { article, layout = 'grid' } = Astro.props;
 ---
 
-<a class="article-card" href={articleUrl(article)}>
+<a class:list={['article-card', { 'is-list': layout === 'list', 'has-category': Boolean(article.eyebrow) }]} href={articleUrl(article)}>
   {article.eyebrow && <span class="article-card-category">{article.eyebrow}</span>}
   <div class="article-card-heading">
     <h3>{article.title}</h3>
@@ -86,5 +87,39 @@ const { article } = Astro.props;
     color: var(--muted);
     font-size: 14px;
     line-height: 1.6;
+  }
+
+  .article-card.is-list {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+    padding: 18px 20px;
+  }
+
+  .article-card.is-list .article-card-category {
+    margin-bottom: 4px;
+  }
+
+  .article-card.is-list p {
+    margin: 0;
+  }
+
+  @media (min-width: 721px) {
+    .article-card.is-list.has-category {
+      grid-template-columns: 120px minmax(0, 1fr);
+      column-gap: 24px;
+    }
+
+    .article-card.is-list .article-card-category {
+      grid-column: 1;
+      grid-row: 1 / span 2;
+      align-self: center;
+      margin: 0;
+    }
+
+    .article-card.is-list.has-category .article-card-heading,
+    .article-card.is-list.has-category p {
+      grid-column: 2;
+    }
   }
 </style>

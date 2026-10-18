@@ -176,6 +176,7 @@ const configSchema = z.object({
   }).default({}),
   home: z.object({
     eyebrow: z.string().default('DOCUMENTATION'),
+    articleLayout: z.enum(['grid', 'list']).default('grid'),
     title: z.string().min(1),
     description: z.string().min(1),
     primaryAction: actionSchema,

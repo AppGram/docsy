@@ -47,9 +47,9 @@ const articles = getArticleSources();
     <>
       <h2>Guides</h2>
       <p class="docs-section-description">Authored Markdown registered under <code>content.articles</code> in <code>docsy.config.yaml</code>.</p>
-      <div class="docs-article-grid">
+      <div class:list={['docs-article-grid', { 'is-list': docsyConfig.home.articleLayout === 'list' }]}>
         {articles.map((article) => (
-          <ArticleCard article={article} />
+          <ArticleCard article={article} layout={docsyConfig.home.articleLayout} />
         ))}
       </div>
     </>
@@ -120,6 +120,11 @@ const articles = getArticleSources();
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
     margin: 24px 0;
+  }
+
+  .docs-article-grid.is-list {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
   }
 
   .docs-sdk-card {

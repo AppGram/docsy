@@ -48,6 +48,17 @@ Put local icons under `public/`; Docsy adds `site.basePath` automatically. Icons
 
 Set `icon: triangle` for the original triangle, or `icon: none` to hide the marker. This global setting applies to every page; `home.eyebrow` and each article's `eyebrow` still control the text.
 
+## Choose grid or list for articles
+
+Set the overview's authored-article layout in `docsy.config.yaml`:
+
+```yaml
+home:
+  articleLayout: list # grid or list; defaults to grid
+```
+
+`grid` shows two columns of article cards on wide screens and one on narrow screens. `list` shows compact full-width rows, with category labels alongside the title and description on wide screens and above them on narrow screens. Both layouts use each article's YAML title, description, and eyebrow, and follow the active theme colors. This setting does not change the article reading page or API reference cards. Invalid layout values stop the build.
+
 ## Add an optional overview image
 
 The overview has no image by default. To display your own, put it under `public/` and add `home.image` in YAML:

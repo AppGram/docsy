@@ -31,6 +31,7 @@ theme:
   mode: light
 home:
   eyebrow: DOCSY DOCUMENTATION
+  articleLayout: grid
   title: Documentation built for humans and coding agents.
   description: Give readers a polished documentation portal and coding agents Markdown exports, structured YAML, and editable source. Write guides, ingest API and SDK reference, and host it yourself.
   primaryAction:

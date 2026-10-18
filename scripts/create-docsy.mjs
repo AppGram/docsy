@@ -375,6 +375,7 @@ const makeConfig = ({ projectName, description, basePath, accessMode, apiBase, c
     },
     home: {
       eyebrow: 'DOCUMENTATION',
+      articleLayout: 'grid',
       title: `Build with ${projectName}.`,
       description,
       primaryAction: { label: 'Explore the API →', href: firstApiPath },

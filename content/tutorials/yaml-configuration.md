@@ -24,7 +24,7 @@ npm run validate
 | `header` | Search copy, Markdown label, and an optional call to action |
 | `eyebrow` | Page marker: custom SVG/image, original triangle, or none, plus icon size |
 | `theme` | Light or dark mode, colors, and system font stacks |
-| `home` | Landing-page copy and actions |
+| `home` | Landing-page copy, actions, optional image, and `articleLayout` (`grid` or `list`) |
 | `content.articles` | Authored Markdown pages rendered under `/guides/` |
 | `navigation` | Sidebar groups and links |
 | `ingestion` | OpenAPI and SDK metadata sources |
