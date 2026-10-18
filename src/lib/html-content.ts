@@ -10,8 +10,10 @@ export function extractHtml(html: string) {
   const ids = new Set<string>(); const links: string[] = [];
   walkHtml(root, (node) => {
     const id = attribute(node, 'id'); if (id) ids.add(id);
-    const href = attribute(node, ['img', 'script', 'source', 'video', 'audio'].includes(node.tagName ?? '') ? 'src' : 'href');
+    const href = attribute(node, ['img', 'script', 'source', 'track', 'video', 'audio'].includes(node.tagName ?? '') ? 'src' : 'href');
     if (href) links.push(href);
+    const poster = node.tagName === 'video' && attribute(node, 'poster');
+    if (poster) links.push(poster);
   });
   return { text: textContent(root).replace(/\s+/g, ' ').trim(), ids, links };
 }

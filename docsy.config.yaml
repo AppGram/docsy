@@ -25,6 +25,7 @@ footer:
   label: AppGram
   href: https://github.com/AppGram
 reader:
+  headingLinks: true
   editUrl: https://github.com/AppGram/docsy/edit/main/{source}
   reportUrl: https://github.com/AppGram/docsy/issues/new
 eyebrow:
@@ -55,6 +56,22 @@ localization:
       label: Español
   messages:
     es:
+      copySectionLink: Copiar enlace a la sección
+      sectionLinkCopied: Enlace copiado
+      sectionLinkFailed: No se pudo copiar el enlace
+      mediaViewer: Visor multimedia
+      mediaOpenImage: Ampliar imagen
+      mediaOpenVideo: Ampliar vídeo
+      mediaClose: Cerrar visor
+      mediaPrevious: Archivo anterior
+      mediaNext: Archivo siguiente
+      mediaZoomIn: Ampliar
+      mediaZoomOut: Reducir
+      mediaZoomActual: Tamaño real
+      mediaZoomFit: Ajustar a la pantalla
+      mediaZoomLevel: Zoom de la imagen
+      mediaOriginal: Abrir original
+      mediaError: No se pudo cargar el archivo. Intenta abrir el original.
       editPage: Editar esta página
       reportProblem: Informar de un problema
       documentationFeedback: Comentarios sobre la documentación
@@ -92,6 +109,22 @@ localization:
       sdkDescription: Veinte lenguajes importados desde resultados reales de sus generadores de documentación. Se incluyen fuentes, versiones, comandos y hashes. Son bibliotecas de prueba, no paquetes publicados.
       symbols: símbolos
     fr:
+      copySectionLink: Copier le lien de la section
+      sectionLinkCopied: Lien copié
+      sectionLinkFailed: Impossible de copier le lien
+      mediaViewer: Visionneuse multimédia
+      mediaOpenImage: Agrandir l’image
+      mediaOpenVideo: Agrandir la vidéo
+      mediaClose: Fermer la visionneuse
+      mediaPrevious: Média précédent
+      mediaNext: Média suivant
+      mediaZoomIn: Agrandir
+      mediaZoomOut: Réduire
+      mediaZoomActual: Taille réelle
+      mediaZoomFit: Ajuster à l’écran
+      mediaZoomLevel: Zoom de l’image
+      mediaOriginal: Ouvrir l’original
+      mediaError: Ce média n’a pas pu être chargé. Essayez d’ouvrir l’original.
       editPage: Modifier cette page
       reportProblem: Signaler un problème
       documentationFeedback: Commentaires sur la documentation
@@ -166,6 +199,10 @@ home:
       primaryActionLabel: Bien démarrer →
       secondaryActionLabel: Travailler avec des agents
 content:
+  media:
+    enabled: true
+    images: true
+    videos: true
   mdx:
     enabled: true
     allowJavaScript: false

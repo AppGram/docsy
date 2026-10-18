@@ -155,7 +155,7 @@ export const migrateMintlify = (source, target, { base = '/docs', repo = '', ci 
     const path = bare.startsWith('/') ? bare.slice(1) : posix.normalize(posix.join(posix.dirname(from), bare));
     const file = localFile(source, path);
     if (!assets.has(path)) {
-      if (!/\.(?:png|jpe?g|svg|gif|webp|avif|ico|pdf)$/i.test(path)) throw new Error(`Unsupported asset format: ${path}`);
+      if (!/\.(?:png|jpe?g|svg|gif|webp|avif|ico|pdf|mp4|webm|ogv|mov|vtt)$/i.test(path)) throw new Error(`Unsupported asset format: ${path}`);
       const bytes = boundedRead(file); totalAssets += bytes.length;
       if (assets.size >= 2000 || totalAssets > 100 * 1024 * 1024) throw new Error('Asset import limit exceeded.');
       assets.set(path, bytes);
@@ -164,7 +164,7 @@ export const migrateMintlify = (source, target, { base = '/docs', repo = '', ci 
   };
   const rewrite = (href, from, image = false) => {
     if (/^(?:https?:|mailto:|tel:|data:|#)/i.test(href)) return href;
-    if (image || /\.(?:png|jpe?g|svg|gif|webp|avif|ico|pdf)(?:[?#]|$)/i.test(href)) return asset(href, from);
+    if (image || /\.(?:png|jpe?g|svg|gif|webp|avif|ico|pdf|mp4|webm|ogv|mov|vtt)(?:[?#]|$)/i.test(href)) return asset(href, from);
     const marker = href.search(/[?#]/); const bare = marker < 0 ? href : href.slice(0, marker); const suffix = marker < 0 ? '' : href.slice(marker);
     const route = cleanRoute(bare.startsWith('/') ? bare : posix.normalize(posix.join(posix.dirname(from), bare)));
     if (!byRoute.has(route)) throw new Error(`${from}: internal link ${href} is not in the selected navigation. Register it before migrating, rather than shipping a broken link.`);
@@ -198,8 +198,8 @@ export const migrateMintlify = (source, target, { base = '/docs', repo = '', ci 
       }
       if (node.type.startsWith('mdxJsx')) {
         for (const attribute of node.attributes || []) {
-          if (['href', 'src'].includes(attribute.name) && typeof attribute.value === 'string') {
-            const next = rewrite(attribute.value, page.file, attribute.name === 'src');
+          if (['href', 'src', 'poster'].includes(attribute.name) && typeof attribute.value === 'string') {
+            const next = rewrite(attribute.value, page.file, ['src', 'poster'].includes(attribute.name));
             if (next !== attribute.value) edits.push({ start: attribute.position.start.offset, end: attribute.position.end.offset, text: `${attribute.name}=${JSON.stringify(next)}` });
           }
         }

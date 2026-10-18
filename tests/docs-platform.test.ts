@@ -39,6 +39,24 @@ test('full-text search finds body-only terms, normalizes accents, and requires a
   assert.equal(searchRecords([record({ body: 'Content is nested.' })], 'ten nested').length, 0);
   assert.equal(searchRecords([record({ body: 'No more than ten nested includes.' })], 'ten nested').length, 1);
 });
+test('YAML heading copy controls default on and can be disabled', () => {
+  const { root, config } = fixture();
+  const read = `import {docsyConfig} from ${moduleUrl('src/config.ts')}; console.log(JSON.stringify(docsyConfig.reader.headingLinks));`;
+  assert.equal(JSON.parse(run(root, read)), true);
+  config.reader = { headingLinks: false }; write(root, 'docsy.config.yaml', dump(config));
+  assert.equal(JSON.parse(run(root, read)), false);
+});
+test('YAML media viewer defaults and individual switches are validated', () => {
+  const { root, config } = fixture();
+  const read = `import {docsyConfig} from ${moduleUrl('src/config.ts')}; console.log(JSON.stringify(docsyConfig.content.media));`;
+  assert.deepEqual(JSON.parse(run(root, read)), { enabled: true, images: true, videos: true });
+  config.content.media = { enabled: true, images: false, videos: true }; write(root, 'docsy.config.yaml', dump(config));
+  assert.deepEqual(JSON.parse(run(root, read)), config.content.media);
+  config.content.media = { enabled: false }; write(root, 'docsy.config.yaml', dump(config));
+  assert.equal(JSON.parse(run(root, read)).enabled, false);
+  config.content.media = { images: 'yes' }; write(root, 'docsy.config.yaml', dump(config));
+  assert.throws(() => run(root, read), /boolean/);
+});
 test('search prioritizes exact titles, filters version/locale/type, and bounds output', () => {
   const records = [record(), record({ id: 'two', title: 'Platypus', type: 'api' }), record({ id: 'three', locale: 'fr' }), record({ id: 'four', version: 'v1' })];
   assert.equal(searchRecords(records, 'platypus')[0].id, 'two');

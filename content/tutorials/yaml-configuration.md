@@ -27,6 +27,7 @@ npm run validate
 | `home` | Landing-page copy, actions, optional image, and `articleLayout` (`grid` or `list`) |
 | `content.articles` | Authored Markdown pages rendered under `/guides/` |
 | `content.components` / `content.snippets` | Enabled rich components and named reusable Markdown |
+| `content.media` | Enable the fullscreen image/video viewer, or switch images/videos off independently |
 | `versions` / `localization` | Documentation contexts, locale routing, fallbacks, and UI messages |
 | `search` | Full-text reader search and result limits |
 | `agent` | JSON/Markdown discovery and an optional runtime query API |

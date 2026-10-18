@@ -2,6 +2,7 @@ import { createReadStream, existsSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { extname, join, normalize, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { byteRange } from './lib/http-range.mjs';
 
 const root = process.cwd();
 const serverEntry = resolve(root, 'dist/server/entry.mjs');
@@ -14,6 +15,7 @@ if (existsSync(serverEntry)) {
   const host = process.env.HOST || '0.0.0.0';
   const contentTypes = {
     '.css': 'text/css; charset=utf-8',
+    '.avif': 'image/avif',
     '.gif': 'image/gif',
     '.html': 'text/html; charset=utf-8',
     '.ico': 'image/x-icon',
@@ -24,6 +26,11 @@ if (existsSync(serverEntry)) {
     '.map': 'application/json; charset=utf-8',
     '.mjs': 'text/javascript; charset=utf-8',
     '.png': 'image/png',
+    '.mp4': 'video/mp4',
+    '.webm': 'video/webm',
+    '.ogv': 'video/ogg',
+    '.mov': 'video/quicktime',
+    '.vtt': 'text/vtt; charset=utf-8',
     '.svg': 'image/svg+xml',
     '.txt': 'text/plain; charset=utf-8',
     '.webp': 'image/webp',
@@ -55,14 +62,29 @@ if (existsSync(serverEntry)) {
 
     const extension = extname(file).toLowerCase();
     const isMarkdownExport = pathname.includes('/format-md/');
+    const size = statSync(file).size;
     const headers = {
       'Content-Type': isMarkdownExport
         ? 'text/markdown; charset=utf-8'
         : contentTypes[extension] || 'application/octet-stream',
       'X-Content-Type-Options': 'nosniff',
+      'Accept-Ranges': 'bytes',
+      'Content-Length': size,
     };
     if (pathname.includes('/_astro/')) headers['Cache-Control'] = 'public, max-age=31536000, immutable';
-    createReadStream(file).on('error', () => response.destroy()).pipe(response.writeHead(200, headers));
+    // HEAD describes the full resource; Range is defined for GET requests.
+    if (request.method === 'HEAD') { response.writeHead(200, headers).end(); return; }
+    const range = request.method === 'GET' ? byteRange(request.headers.range, size) : null;
+    if (range === 'unsatisfiable') {
+      response.writeHead(416, { 'Content-Range': `bytes */${size}`, 'Accept-Ranges': 'bytes', 'Content-Length': 0 }).end(); return;
+    }
+    if (range) {
+      headers['Content-Length'] = range.end - range.start + 1;
+      headers['Content-Range'] = `bytes ${range.start}-${range.end}/${size}`;
+    }
+    const stream = createReadStream(file, range || undefined);
+    response.once('close', () => stream.destroy());
+    stream.on('error', () => response.destroy()).pipe(response.writeHead(range ? 206 : 200, headers));
   }).listen(port, host, () => {
     console.log(`Docsy listening on http://${host}:${port}`);
   });

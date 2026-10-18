@@ -1,0 +1,54 @@
+---
+import { defaultContext, docsyConfig, type DocsContext } from '../../config';
+import { message } from '../../lib/messages';
+interface Props { context?: DocsContext }
+const { context = defaultContext } = Astro.props;
+---
+<dialog
+  class="docs-media-viewer"
+  aria-label={message(context, 'mediaViewer')}
+  data-images={String(docsyConfig.content.media.images)}
+  data-videos={String(docsyConfig.content.media.videos)}
+  data-open-image={message(context, 'mediaOpenImage')}
+  data-open-video={message(context, 'mediaOpenVideo')}
+  data-zoom-in={message(context, 'mediaZoomIn')}
+  data-zoom-out={message(context, 'mediaZoomOut')}
+  data-zoom-actual={message(context, 'mediaZoomActual')}
+  data-zoom-fit={message(context, 'mediaZoomFit')}
+  data-count={message(context, 'mediaCount')}
+>
+  <div class="docs-media-toolbar">
+    <span class="docs-media-count" data-media-count aria-live="polite" aria-atomic="true"></span>
+    <div class="docs-media-actions">
+      <div class="docs-media-zoom-controls" data-media-zoom-controls>
+        <button type="button" data-media-zoom-out aria-label={message(context, 'mediaZoomOut')} title={message(context, 'mediaZoomOut')}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg>
+        </button>
+        <span class="docs-media-scale" data-media-scale aria-label={message(context, 'mediaZoomLevel')}>—</span>
+        <button type="button" data-media-zoom-in aria-label={message(context, 'mediaZoomIn')} title={message(context, 'mediaZoomIn')}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"/></svg>
+        </button>
+        <button type="button" data-media-zoom aria-label={message(context, 'mediaZoomActual')} title={message(context, 'mediaZoomActual')} aria-pressed="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg>
+        </button>
+      </div>
+      <a data-media-original target="_blank" rel="noopener noreferrer" aria-label={message(context, 'mediaOriginal')} title={message(context, 'mediaOriginal')}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h7v7m0-7L10 14M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"/></svg>
+      </a>
+      <button type="button" data-media-close aria-label={message(context, 'mediaClose')} title={message(context, 'mediaClose')} autofocus>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="docs-media-stage" data-media-stage></div>
+  <p class="docs-media-error" data-media-error role="status" hidden>{message(context, 'mediaError')}</p>
+  <div class="docs-media-footer">
+    <button type="button" data-media-previous aria-label={message(context, 'mediaPrevious')} title={message(context, 'mediaPrevious')}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg>
+    </button>
+    <p class="docs-media-caption" data-media-caption></p>
+    <button type="button" data-media-next aria-label={message(context, 'mediaNext')} title={message(context, 'mediaNext')}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+    </button>
+  </div>
+</dialog>

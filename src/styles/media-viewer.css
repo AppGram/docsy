@@ -1,0 +1,37 @@
+/* Local fonts and the portal's existing palette, including the alternate theme. */
+.docs-media-trigger, .docs-media-inline { position: relative; display: inline-block; max-width: 100%; vertical-align: middle; }
+.docs-media-trigger { padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--ink); cursor: zoom-in; font: inherit; line-height: 0; text-align: inherit; }
+.docs-media-trigger > img, .docs-media-trigger > picture > img { display: block; max-width: 100%; height: auto; border-radius: inherit; }
+.docs-media-expand-mark, .docs-media-expand-video { position: absolute; inset-inline-end: 12px; bottom: 12px; display: flex; align-items: center; gap: 7px; padding: 9px; border: 1px solid var(--line); border-radius: 7px; background: var(--paper); color: var(--ink); box-shadow: 0 2px 8px #0001; }
+.docs-media-expand-mark { opacity: 0; transition: opacity 120ms ease; pointer-events: none; }
+.docs-media-trigger:hover .docs-media-expand-mark, .docs-media-trigger:focus-visible .docs-media-expand-mark { opacity: 1; }
+.docs-media-inline > video { display: block; max-width: 100%; height: auto; }
+.docs-media-expand-video { position: static; margin-top: 8px; margin-inline-start: auto; padding: 8px 10px; font: inherit; font-size: 12px; cursor: pointer; }
+.docs-media-expand-mark svg, .docs-media-expand-video svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.docs-media-viewer { position: fixed; inset: 0; width: 100%; max-width: none; height: 100%; height: 100dvh; max-height: none; margin: 0; padding: 0; border: 0; background: var(--paper); color: var(--ink); font-family: var(--font-body); overscroll-behavior: contain; }
+.docs-media-viewer:not([open]) { display: none; }
+.docs-media-viewer[open] { display: flex; flex-direction: column; }
+.docs-media-viewer::backdrop { background: #000b; }
+.docs-media-toolbar { display: flex; flex: 0 0 auto; align-items: center; justify-content: space-between; gap: 20px; min-height: 72px; padding: max(12px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right)) 12px max(24px, env(safe-area-inset-left)); }
+.docs-media-count { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+.docs-media-actions { display: flex; align-items: center; gap: 8px; }
+.docs-media-zoom-controls { display: flex; align-items: center; gap: 4px; }
+.docs-media-scale { width: 46px; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; text-align: center; }
+.docs-media-viewer button, .docs-media-viewer a { display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--ink); cursor: pointer; }
+.docs-media-viewer button:hover:not(:disabled), .docs-media-viewer a:hover { background: color-mix(in srgb, var(--ink) 8%, var(--paper)); color: var(--ink); }
+.docs-media-viewer button:disabled { opacity: .3; cursor: default; }
+.docs-media-viewer :is(button, a, [data-media-zoom-controls])[hidden] { display: none; }
+.docs-media-viewer svg { display: block; width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.docs-media-trigger:focus-visible, .docs-media-expand-video:focus-visible, .docs-media-viewer :is(button, a):focus-visible { outline: 2px solid var(--violet); outline-offset: 3px; }
+.docs-media-stage { position: relative; display: flex; flex: 1 1 auto; min-height: 0; min-width: 0; align-items: center; justify-content: center; padding: 12px 32px; overflow: hidden; overscroll-behavior: contain; }
+.docs-media-stage > :is(img, video) { display: block; flex: 0 1 auto; width: auto; height: auto; min-width: 0; max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 4px; }
+.docs-media-canvas { position: absolute; inset: 12px 32px; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; cursor: zoom-in; }
+.docs-media-canvas[data-zoomed] { cursor: grab; }
+.docs-media-canvas[data-dragging] { cursor: grabbing; }
+.docs-media-canvas > img { position: absolute; left: 50%; top: 50%; max-width: none; max-height: none; border-radius: 4px; transform-origin: 0 0; pointer-events: none; user-select: none; -webkit-user-select: none; will-change: transform; }
+.docs-media-footer { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; align-items: center; gap: 24px; flex: 0 0 auto; padding: 16px max(24px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left)); }
+.docs-media-caption { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; text-align: center; max-height: 4.5em; overflow: auto; }
+.docs-media-error { margin: 0; padding: 12px 24px; color: var(--ink); font-size: 14px; text-align: center; }
+@media (max-width: 600px) { .docs-media-toolbar { padding-inline: 12px; gap: 8px; } .docs-media-actions { gap: 4px; } .docs-media-zoom-controls { gap: 2px; } .docs-media-viewer :is(button, a) { width: 36px; height: 36px; padding: 8px; } .docs-media-scale { width: 38px; } .docs-media-stage { padding: 8px 12px; } .docs-media-canvas { inset: 8px 12px; } .docs-media-footer { padding-inline: 16px; gap: 12px; } }
+@media (hover: none) { .docs-media-expand-mark { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .docs-media-expand-mark { transition: none; } }

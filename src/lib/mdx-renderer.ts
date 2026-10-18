@@ -107,7 +107,7 @@ export async function renderMdx(source: string, file: string) {
   const collectHeadings = () => (tree: any) => {
     const text = (node: any): string => node.type === 'text' ? node.value : (node.children || []).map(text).join('');
     const visit = (node: any) => {
-      if (node.properties) for (const key of ['href', 'src']) if (typeof node.properties[key] === 'string') node.properties[key] = mdxHref(node.properties[key]);
+      if (node.properties) for (const key of ['href', 'src', 'poster']) if (typeof node.properties[key] === 'string') node.properties[key] = mdxHref(node.properties[key]);
       if (/^h[1-6]$/.test(node.tagName)) headings.push({ depth: Number(node.tagName[1]), slug: String(node.properties.id), text: text(node) });
       node.children?.forEach(visit);
     };

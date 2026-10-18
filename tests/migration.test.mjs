@@ -89,6 +89,18 @@ test('linked images rewrite asset and destination together without overlapping e
   migrateMintlify(source, output);
   assert.equal(readFileSync(join(output, 'content/migrated/intro.mdx'), 'utf8'), '[![Chart](/assets/migrated/images/chart.svg)](/guides/guides/install)\n\nKeep this sentence.');
 });
+test('native media migration preserves video sources, posters, caption tracks and opt-outs', () => {
+  const { source, output } = fixture();
+  write(source, 'media/demo.webm', 'fixture-video'); write(source, 'media/demo.vtt', 'WEBVTT\n');
+  write(source, 'intro.mdx', '<figure data-docsy-media="off">\n<video controls poster="/images/chart.svg">\n<source src="/media/demo.webm" type="video/webm" />\n<track src="/media/demo.vtt" kind="captions" srcLang="en" label="English" />\n</video>\n</figure>');
+  const result = migrateMintlify(source, output);
+  const body = readFileSync(join(output, 'content/migrated/intro.mdx'), 'utf8');
+  assert.match(body, /poster="\/assets\/migrated\/images\/chart.svg"/);
+  assert.match(body, /src="\/assets\/migrated\/media\/demo.webm"/);
+  assert.match(body, /src="\/assets\/migrated\/media\/demo.vtt"/);
+  assert.match(body, /data-docsy-media="off"/); assert.equal(result.assets.length, 3);
+  assert.equal(readFileSync(join(output, 'public/assets/migrated/media/demo.vtt'), 'utf8'), 'WEBVTT\n');
+});
 test('native MDX migration retains tabs and cards, rewrites JSX links/assets and reference definitions', () => {
   const { source, output } = fixture();
   const code = '```mdx\n<Card href="/not-a-page" />\n```';

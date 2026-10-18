@@ -12,8 +12,8 @@ export const mdxComponents = {
   Accordion: 'accordion', AccordionGroup: 'accordion', CodeGroup: 'code-group',
   Card: 'card', CardGroup: 'card', Frame: 'frame',
 };
-const htmlTags = new Set('a p div span strong em b i u s del br hr ul ol li blockquote pre code h1 h2 h3 h4 h5 h6 table thead tbody tr th td img figure figcaption details summary kbd sub sup'.split(' '));
-const attributes = new Set('title href src alt width height id className target rel open start colSpan rowSpan align loading decoding role aria-label aria-hidden'.split(' '));
+const htmlTags = new Set('a p div span strong em b i u s del br hr ul ol li blockquote pre code h1 h2 h3 h4 h5 h6 table thead tbody tr th td img figure figcaption details summary kbd sub sup video source track'.split(' '));
+const attributes = new Set('title href src alt width height id className target rel open start colSpan rowSpan align loading decoding role aria-label aria-hidden controls poster preload playsInline muted loop type srcLang kind label default data-docsy-media'.split(' '));
 const componentAttributes = new Set('title label name sync group cols href icon horizontal defaultOpen children'.split(' '));
 const fail = (label, node, reason) => { throw new Error(`${label}:${node.position?.start?.line ?? 1}: ${reason}`); };
 const staticValue = (node) => {
@@ -66,9 +66,9 @@ export function validateMdx(source, { label = 'MDX', allowJavaScript = false, co
           if (typeof attribute.value === 'object' && attribute.value) {
             if (!literalExpression(attribute.value)) fail(label, node, `Attribute ${attribute.name} requires a literal value or trusted JavaScript mode.`);
             // URLs must remain plain strings so they can also be audited/rebased by migration.
-            if (['href', 'src'].includes(attribute.name)) fail(label, node, `${attribute.name} must be a quoted string in declarative mode.`);
+            if (['href', 'src', 'poster'].includes(attribute.name)) fail(label, node, `${attribute.name} must be a quoted string in declarative mode.`);
           }
-          if (['href', 'src'].includes(attribute.name) && !safeMdxUrl(attribute.value)) fail(label, node, `Unsafe ${attribute.name} URL.`);
+          if (['href', 'src', 'poster'].includes(attribute.name) && !safeMdxUrl(attribute.value)) fail(label, node, `Unsafe ${attribute.name} URL.`);
         }
       }
       if (['link', 'image', 'definition'].includes(node.type) && !safeMdxUrl(node.url)) fail(label, node, 'Unsafe Markdown URL.');

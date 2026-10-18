@@ -173,6 +173,7 @@ const configSchema = z.object({
     href: z.string().url(),
   }).optional(),
   reader: z.object({
+    headingLinks: z.boolean().default(true),
     editUrl: z.string().url().refine((value) => /^https?:\/\//i.test(value), 'Use an HTTP(S) source-edit URL').optional(),
     reportUrl: z.string().url().refine((value) => /^https?:\/\//i.test(value), 'Use an HTTP(S) issue URL').optional(),
     editLabel: z.string().default('Edit this page'),
@@ -221,6 +222,11 @@ const configSchema = z.object({
   }),
   content: z.object({
     articles: z.array(articleSchema).default([]),
+    media: z.object({
+      enabled: z.boolean().default(true),
+      images: z.boolean().default(true),
+      videos: z.boolean().default(true),
+    }).default({}),
     mdx: z.object({
       enabled: z.boolean().default(true),
       allowJavaScript: z.boolean().default(false),

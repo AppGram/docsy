@@ -42,6 +42,7 @@ export function initSearch() {
   trigger.addEventListener('click', open); scrim.addEventListener('click', close);
   field.addEventListener('input', render);
   document.addEventListener('keydown', (event) => {
+    if (document.querySelector('.docs-media-viewer[open]')) return;
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); modal.hidden ? void open() : close(); return; }
     if (modal.hidden) return;
     if (event.key === 'Escape') { event.preventDefault(); close(); }

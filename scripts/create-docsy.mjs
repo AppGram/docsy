@@ -392,7 +392,9 @@ const makeConfig = ({ projectName, description, basePath, accessMode, apiBase, c
       sdkHeading: 'API reference',
       sdkDescription: 'Generated directly from the configured OpenAPI source.',
     },
+    reader: { headingLinks: true },
     content: {
+      media: { enabled: true, images: true, videos: true },
       mdx: { enabled: true, allowJavaScript: false, components: {} },
       components: ['note', 'tip', 'warning', 'danger', 'steps', 'tabs', 'accordion', 'code-group', 'include', 'card', 'frame'],
       snippets: {},
@@ -670,7 +672,7 @@ try {
   }));
   if (options.repo) {
     config.site.githubUrl = options.repo.replace(/\/$/, '');
-    config.reader = { editUrl: `${config.site.githubUrl}/edit/main/{source}`, reportUrl: `${config.site.githubUrl}/issues/new` };
+    config.reader = { ...config.reader, editUrl: `${config.site.githubUrl}/edit/main/{source}`, reportUrl: `${config.site.githubUrl}/issues/new` };
   }
   if (options.deployment === 'github-pages') config.site.origin = `https://${repository[0]}.github.io`;
   writeFileSync(resolve(target, 'docsy.config.yaml'), dump(config, { lineWidth: 120, noRefs: true }));

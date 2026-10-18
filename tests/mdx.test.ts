@@ -41,6 +41,14 @@ test('code groups preserve code titles, duplicate headings get unique anchors, l
   assert.match(doc.html, /data-label="Node"/); assert.match(doc.html, /data-label="Bun"/);
   assert.ok(!doc.html.includes('author comment')); assert.match(doc.markdown, /bun run build/);
 });
+test('declarative MDX supports native media, captions, opt-outs and mount-aware media URLs', async () => {
+  const doc = await renderMdx('<figure data-docsy-media="off">\n<img src="/assets/diagram.svg" alt="Architecture" />\n<video controls playsInline preload="metadata" poster="/assets/poster.png" aria-label="Walkthrough">\n<source src="/assets/demo.webm" type="video/webm" />\n<track src="/assets/demo.vtt" kind="captions" srcLang="en" label="English" default />\n</video>\n<figcaption>Architecture walkthrough.</figcaption>\n</figure>', '/tmp/media.mdx');
+  for (const path of ['diagram.svg', 'poster.png', 'demo.webm', 'demo.vtt']) assert.ok(doc.html.includes(`/docsy/assets/${path}`), path);
+  assert.match(doc.html, /<video[^>]*controls[^>]*playsinline/);
+  assert.match(doc.html, /data-docsy-media="off"/); assert.match(doc.html, /<track[^>]*srclang="en"/);
+  assert.match(doc.markdown, /Architecture walkthrough/);
+  for (const source of ['<video poster="javascript:alert(1)" />', '<video poster={"/safe.png"} />', '<source src="data:text/html,bad" />', '<video onPlay="bad()" />', '<track src="javascript:bad()" />']) assert.throws(() => validateMdx(source));
+});
 test('declarative MDX rejects executable expressions, imports, spreads and unsafe markup without running them', () => {
   for (const source of [
     'export const x = globalThis.__docsyPwned = true',

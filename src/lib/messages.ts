@@ -13,6 +13,11 @@ export const english = {
   articlesDescription: 'Guides and tutorials written in Markdown and configured in YAML.',
   searchError: 'Search could not be loaded. Close and retry.',
   editPage: 'Edit this page', reportProblem: 'Report a problem', documentationFeedback: 'Documentation feedback',
+  copySectionLink: 'Copy link to section', sectionLinkCopied: 'Link copied', sectionLinkFailed: 'Could not copy link',
+  mediaViewer: 'Media viewer', mediaOpenImage: 'Expand image', mediaOpenVideo: 'Expand video',
+  mediaClose: 'Close viewer', mediaPrevious: 'Previous media', mediaNext: 'Next media',
+  mediaZoomIn: 'Zoom in', mediaZoomOut: 'Zoom out', mediaZoomActual: 'Actual size', mediaZoomFit: 'Fit to screen', mediaZoomLevel: 'Image zoom', mediaOriginal: 'Open original',
+  mediaError: 'This media could not be loaded. Try opening the original.', mediaCount: '{current} / {total}',
 };
 export function message(context: DocsContext, key: string, fallback?: string): string {
   return docsyConfig.localization?.messages[context.locale]?.[key] ?? fallback ?? english[key as keyof typeof english] ?? key;

@@ -113,6 +113,42 @@ Then insert `::include{src="publishing"}` on its own line. The result below is s
 
 Includes are expanded in rendered articles, search, JSON documents, and Markdown exports. Unknown names, includes outside the project, circular references, and more than ten nested includes stop validation. Include directives inside fenced examples are not expanded.
 
+## Images and videos
+
+Article images open in a fullscreen viewer when clicked. Videos keep their native inline controls and get an **Expand video** button. The viewer follows the portal's light/dark theme and offers image zoom, captions, previous/next controls, and an original-file link. Escape closes it and returns focus to the trigger. Opening a video pauses the inline player and preserves its time position without starting audio automatically.
+
+Scroll or pinch to zoom around the pointer, then drag to pan. The toolbar shows the actual zoom percentage and provides minus, plus, and fit/actual-size controls. Double-click (or double-tap) toggles fit and actual size; zoom is bounded between fit and 800%. Keyboard shortcuts: `+`/`-` zoom, `0` or `f` fits the image, and `1` selects actual size. Arrow keys pan while zoomed, and navigate media while fitted. Video controls retain their native seeking keys. Zoom resets when moving to another item; resizing keeps a fitted image fitted.
+
+Configure this independently of the article component list:
+
+```yaml
+content:
+  media:
+    enabled: true
+    images: true
+    videos: true
+```
+
+Set `enabled: false` to disable the viewer, or turn off only `images` or `videos`. These settings default to `true`, including in generated projects. Without JavaScript, images and video controls remain ordinary page content.
+
+Markdown images work normally. For native video and captions, use HTML in Markdown or the same elements in declarative MDX:
+
+```mdx
+<figure>
+  <video controls playsInline preload="metadata" poster="/assets/demo-poster.png" aria-label="Product walkthrough">
+    <source src="/assets/demo.webm" type="video/webm" />
+    <track src="/assets/demo.en.vtt" kind="captions" srcLang="en" label="English" default />
+  </video>
+  <figcaption>A short product walkthrough.</figcaption>
+</figure>
+```
+
+Add these files to `public/assets/` for public media; MDX rebases the root-relative paths above to `site.basePath`. In raw Markdown HTML, write URLs relative to the served page or include your configured base path yourself. Raw HTML uses lowercase attributes such as `playsinline` and `srclang`, rather than MDX's `playsInline` and `srcLang`. Do not put confidential media in `public/`: those files bypass access gates.
+
+`figcaption` supplies the viewer caption, falling back to the image's title or alt text, or the video's accessible label. Add `data-docsy-media="off"` to a media element or its surrounding figure to leave it inline only. Linked images retain their original link behavior; decorative icons and code-language logos are excluded. Source-owned layouts can opt an image or video inside `.docs-content` into the viewer with `data-docsy-media="true"`.
+
+This is a native HTML video player, not a YouTube/Vimeo iframe integration. No external player scripts, fonts or analytics are loaded.
+
 ## Choose supported components
 
 The default is all supported components. Restrict the set for a project in YAML:

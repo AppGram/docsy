@@ -419,6 +419,20 @@ content:
 
 Declarative mode permits literal props such as `cols={2}` but rejects executable expressions, imports, unknown components and unsafe markup. For reviewed code only, set `allowJavaScript: true` and optionally map `components: { ApiStatus: content/components/ApiStatus.tsx }`. These default-export React modules and local MDX imports run during validation/build/server rendering with process permissions; they are **not sandboxed or automatically hydrated**. The maintenance agent remains restricted to Markdown/guarded YAML, not executable MDX. [Full authoring and compatibility guide](content/tutorials/native-mdx.mdx).
 
+### Image and video viewer
+
+Article images can open fullscreen; videos retain inline controls and offer an expand button. The theme-aware viewer includes image zoom, captions, previous/next controls, native video playback and captions, and Escape-to-close with focus restoration. It uses no third-party player or tracking scripts.
+
+```yaml
+content:
+  media:
+    enabled: true
+    images: true
+    videos: true
+```
+
+All three default to `true`. Set `enabled: false` to disable the viewer or disable either media type independently. Use `data-docsy-media="off"` on individual HTML/MDX media or figures to opt out. Linked images and decorative UI icons retain their original behavior. [Authoring examples and public/protected-media boundaries](content/tutorials/rich-articles.md#images-and-videos).
+
 ## OpenAPI ingestion
 
 `ingestion.openapi.source` accepts:

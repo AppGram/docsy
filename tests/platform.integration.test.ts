@@ -46,6 +46,8 @@ function site() {
   write(root, 'content/private.mdx', '## Restricted\n\n<Warning>classifiedsecretword must never leak to public retrieval.</Warning>\n');
   write(root, 'content/native.mdx', '## Native components\n\n<Tabs>\n<Tab title="Node">mdxquokkaneedle stays searchable.</Tab>\n<Tab title="Bun">Bun works too.</Tab>\n</Tabs>\n\n```ts\nconst native = true;\n```');
   write(root, 'content/shared.md', 'Shared reusable instructions.\n');
+  write(root, 'public/assets/sample.mp4', '0123456789');
+  write(root, 'public/assets/sample.vtt', 'WEBVTT\n');
   write(root, 'sources/upstream-code.ts', 'import { UnavailableUpstreamType } from "./not-shipped.js";\n// Ingested source snapshot, not executable portal code.\n');
   const spec = { openapi: '3.1.0', info: { title: 'Widgets', version: '2' }, paths: { '/widgets': { get: { responses: { 200: { description: 'OK' } } } } } };
   write(root, 'sources/api.yaml', dump(spec)); write(root, 'sources/v1.yaml', dump({ ...spec, info: { title: 'Widgets', version: '1' } }));
@@ -82,6 +84,14 @@ test(`generated template serves static variants and permission-aware APIs on ${r
       const response = await fetch(`${staticServer.base}/guides/guide`);
       assert.equal(response.status, 200);
       const body = await response.text();
+      assert.match(body, /<dialog[^>]*class="docs-media-viewer"[^>]*data-images="true"[^>]*data-videos="true"/);
+      const media = await fetch(`${staticServer.base}/assets/sample.mp4`, { headers: { Range: 'bytes=2-5' } });
+      assert.equal(media.status, 206); assert.equal(media.headers.get('content-type'), 'video/mp4');
+      assert.equal(media.headers.get('content-range'), 'bytes 2-5/10'); assert.equal(await media.text(), '2345');
+      assert.equal((await fetch(`${staticServer.base}/assets/sample.mp4`, { headers: { Range: 'bytes=10-' } })).status, 416);
+      const head = await fetch(`${staticServer.base}/assets/sample.mp4`, { method: 'HEAD' });
+      assert.equal(head.headers.get('content-length'), '10'); assert.equal(await head.text(), '');
+      assert.match((await fetch(`${staticServer.base}/assets/sample.vtt`)).headers.get('content-type')!, /text\/vtt/);
       assert.match(body, /platypusword/);
       assert.match(body, /https:\/\/github.com\/example\/docs\/edit\/current\/en\/content\/guide.md/);
       assert.match(body, /Report a problem/);
@@ -118,10 +128,13 @@ test(`generated template serves static variants and permission-aware APIs on ${r
     assert.match(read(root, 'release/docs/llms.txt'), /agent\/index.json/);
     assert.equal(JSON.parse(read(root, 'release/docs/agent/query.json')).queryAvailable, false);
 
+    config.content.media = { enabled: false };
     config.localization.fallback = false; save(); command(root, 'scripts/docsy.mjs', 'build');
+    assert.ok(!read(root, 'release/docs/guides/guide/index.html').includes('<dialog class="docs-media-viewer"'));
     assert.ok(!existsSync(join(root, 'release/docs/versions/current/ar/guides/guide/index.html')));
     assert.ok(!existsSync(join(root, 'release/docs/versions/v1/fr/guides/guide/index.html')));
     assert.ok(existsSync(join(root, 'release/docs/versions/current/ar/index.html')));
+    config.content.media = { enabled: true, images: false, videos: true };
     config.localization.fallback = true; save();
 
     // A malformed source and broken links must stop the exact generated CLI.
@@ -146,6 +159,8 @@ test(`generated template serves static variants and permission-aware APIs on ${r
     let server = await serve(root);
     try {
       const auth = { 'x-docsy-tiers': 'pro' };
+      const mediaPage = await fetch(`${server.base}/guides/guide`);
+      assert.match(await mediaPage.text(), /<dialog[^>]*data-images="false"[^>]*data-videos="true"/);
       for (const path of ['/search-index.json', '/agent/index.json', '/llms.txt', '/llms-full.txt']) {
         const response = await fetch(`${server.base}${path}`);
         assert.match(response.headers.get('cache-control') ?? '', /private.*no-store/);

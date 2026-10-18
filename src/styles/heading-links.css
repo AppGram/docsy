@@ -1,0 +1,28 @@
+.docs-heading-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-inline-start: 8px;
+  padding: 5px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted);
+  vertical-align: middle;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+}
+.docs-heading-link svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.docs-linked-heading:hover > .docs-heading-link,
+.docs-linked-heading:focus-within > .docs-heading-link,
+.docs-heading-link[data-copied] { opacity: 1; pointer-events: auto; }
+.docs-heading-link:hover { background: color-mix(in srgb, var(--ink) 7%, var(--paper)); color: var(--ink); }
+.docs-heading-link:focus-visible { outline: 2px solid var(--violet); outline-offset: 2px; }
+.docs-heading-link[data-copied] { color: var(--ink); }
+.docs-heading-copy-status { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (hover: none) { .docs-heading-link { opacity: 1; pointer-events: auto; } }
+@media (prefers-reduced-motion: reduce) { .docs-heading-link { transition: none; } }

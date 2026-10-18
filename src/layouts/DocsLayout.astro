@@ -3,6 +3,9 @@ import '../styles/docsy.css';
 import '../styles/docsy-dark.css';
 import '../styles/article-components.css';
 import '../styles/code-blocks.css';
+import '../styles/media-viewer.css';
+import '../styles/heading-links.css';
+import MediaViewer from '../components/docs/MediaViewer.astro';
 import { getDocsNav, isNavItemActive } from '../data/docs-nav';
 import ContextSwitcher from '../components/docs/ContextSwitcher.astro';
 import SEO from '../components/SEO.astro';
@@ -102,9 +105,13 @@ const themeStyle = [
       import { initRichComponents } from '../lib/rich-components-client';
       import { initSearch } from '../lib/search-client';
       import { initTocTracking } from '../lib/toc-client';
+      import { initMediaViewer } from '../lib/media-viewer-client';
+      import { initHeadingLinks } from '../lib/heading-links-client';
       initRichComponents();
       initSearch();
       initTocTracking();
+      initMediaViewer();
+      initHeadingLinks();
     </script>
     <script is:inline>
       try {
@@ -130,6 +137,10 @@ const themeStyle = [
   </head>
   <body
     data-docs-version={context.version}
+    data-heading-links={String(docsyConfig.reader.headingLinks)}
+    data-copy-section-label={message(context, 'copySectionLink')}
+    data-section-copied-label={message(context, 'sectionLinkCopied')}
+    data-section-failed-label={message(context, 'sectionLinkFailed')}
     data-docs-locale={context.locale}
     data-search-enabled={String(docsyConfig.search.enabled)}
     data-search-limit={docsyConfig.search.maxResults}
@@ -316,6 +327,8 @@ const themeStyle = [
         </p>
       </footer>
     )}
+
+    {docsyConfig.content.media.enabled && <MediaViewer context={context} />}
 
     <div class="docs-search-modal" id="docs-search-modal" hidden role="dialog" aria-modal="true" aria-label={message(context, 'searchLabel', docsyConfig.header.searchLabel)}>
       <div class="docs-search-scrim" id="docs-search-scrim"></div>

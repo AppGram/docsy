@@ -144,6 +144,19 @@ theme:
 
 Docsy uses system font stacks by default. It does not require a hosted font service or typographic tracking.
 
+## Copy links to sections
+
+Section headings reveal a small `#` button on hover or keyboard focus. Click it to copy the current page's full URL with that section's existing fragment, including the documentation version and language path. A checkmark confirms the copy without moving the reader or changing browser history. Touch devices keep the buttons visible.
+
+This works for anchored Markdown/MDX headings, API endpoint titles, SDK categories and SDK symbols. It does not rename existing anchors or add button labels to exported Markdown/search content. Disable the controls in YAML if you prefer:
+
+```yaml
+reader:
+  headingLinks: false
+```
+
+The default is `true`. Clipboard restrictions fall back to the browser's copy command; if both are denied, the control reports failure instead of claiming success.
+
 ## Edit the source-owned interface
 
 YAML is not a page-builder language. When the layout or interaction should change, edit the source directly:
