@@ -349,6 +349,10 @@ const makeConfig = ({ projectName, description, basePath, accessMode, apiBase, c
       searchPlaceholder: 'Search docs and API endpoints',
       llmLabel: 'LLM Docs',
     },
+    eyebrow: {
+      icon: 'assets/docsy-logo.svg',
+      size: 14,
+    },
     theme: {
       mode: 'light',
       colors: {

@@ -158,6 +158,10 @@ const configSchema = z.object({
     label: z.string().min(1),
     href: z.string().url(),
   }).optional(),
+  eyebrow: z.object({
+    icon: z.string().min(1).default('assets/docsy-logo.svg'),
+    size: z.number().int().min(8).max(32).default(14),
+  }).default({}),
   theme: z.object({
     mode: z.enum(['light', 'dark']).default('light'),
     colors: themeColorsSchema(LIGHT_THEME_COLORS),

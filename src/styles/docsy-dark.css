@@ -47,24 +47,17 @@ html[data-theme="dark"] .docs-topbar-cta:hover {
   background: var(--muted) !important;
 }
 
-html[data-theme="dark"] .docs-search-trigger,
-html[data-theme="dark"] .docs-search-trigger:hover,
-html[data-theme="dark"] .docs-search-trigger kbd,
 html[data-theme="dark"] .docs-llm-trigger,
 html[data-theme="dark"] .docs-llm-panel,
 html[data-theme="dark"] .docs-llm-btn,
 html[data-theme="dark"] .docs-llm-url,
-html[data-theme="dark"] .docs-llm-desc code,
-html[data-theme="dark"] .docs-search-dialog,
-html[data-theme="dark"] .docs-search-input-wrap,
-html[data-theme="dark"] .docs-search-footer kbd {
+html[data-theme="dark"] .docs-llm-desc code {
   color: var(--muted) !important;
   background: color-mix(in srgb, var(--paper) 96%, var(--ink)) !important;
   border-color: var(--line) !important;
   box-shadow: none !important;
 }
 
-html[data-theme="dark"] .docs-search-trigger:hover,
 html[data-theme="dark"] .docs-llm-trigger:hover,
 html[data-theme="dark"] .docs-llm-btn:hover {
   color: var(--ink) !important;
@@ -139,8 +132,7 @@ html[data-theme="dark"] .ep-hero-version,
 html[data-theme="dark"] .ep-param-type,
 html[data-theme="dark"] .docs-rail-method,
 html[data-theme="dark"] .ep-toc-method,
-html[data-theme="dark"] .ep-method,
-html[data-theme="dark"] .docs-search-method {
+html[data-theme="dark"] .ep-method {
   color: var(--paper) !important;
   background: var(--ink) !important;
 }

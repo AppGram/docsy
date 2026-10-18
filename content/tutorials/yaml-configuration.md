@@ -22,6 +22,7 @@ npm run validate
 | --- | --- |
 | `site` | Product identity, canonical origin, mount path, logo, and metadata |
 | `header` | Search copy, Markdown label, and an optional call to action |
+| `eyebrow` | Page marker: custom SVG/image, original triangle, or none, plus icon size |
 | `theme` | Light or dark mode, colors, and system font stacks |
 | `home` | Landing-page copy and actions |
 | `content.articles` | Authored Markdown pages rendered under `/guides/` |

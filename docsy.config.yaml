@@ -24,6 +24,9 @@ footer:
   prefix: Built by
   label: AppGram
   href: https://github.com/AppGram
+eyebrow:
+  icon: assets/docsy-logo.svg
+  size: 14
 theme:
   mode: light
 home:

@@ -34,6 +34,20 @@ Paths under `public/` are referenced without the `public` segment. Docsy adds `s
 
 The footer is optional. Remove the entire `footer` block to render no attribution footer. ELv2 does not require visible Docsy or AppGram branding on your published documentation; its notice requirement applies to the license and copyright notices distributed with the software.
 
+## Choose the eyebrow icon
+
+The small marker beside each page's eyebrow uses the Docsy SVG by default. Choose your own SVG or transparent image in YAML:
+
+```yaml
+eyebrow:
+  icon: assets/acme-mark.svg
+  size: 14
+```
+
+Put local icons under `public/`; Docsy adds `site.basePath` automatically. Icons render as monochrome masks in the eyebrow's text color, so they follow both light and dark palettes. `size` is in pixels, from 8 to 32.
+
+Set `icon: triangle` for the original triangle, or `icon: none` to hide the marker. This global setting applies to every page; `home.eyebrow` and each article's `eyebrow` still control the text.
+
 ## Add an optional overview image
 
 The overview has no image by default. To display your own, put it under `public/` and add `home.image` in YAML:
@@ -60,6 +74,8 @@ theme:
 ```
 
 The header includes a light/dark toggle. `theme.mode` is the first-visit default, and the visitor's selection is saved locally for later pages and sessions.
+
+Search uses the same palette: its surface, text, result badges, selection highlight, borders, and keyboard hints follow the active theme and your YAML overrides.
 
 Override individual tokens when the product needs them:
 

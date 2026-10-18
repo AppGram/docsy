@@ -82,17 +82,26 @@ a.button {
   align-items: center;
   gap: 9px;
   margin: 0 0 21px;
-  color: #333542;
+  color: var(--muted);
   font-family: var(--font-display);
   font-size: 12.5px;
   line-height: 1;
   font-weight: 500;
 }
 
-.eyebrow span {
+.eyebrow-triangle {
   width: 0;
   height: 0;
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
   border-bottom: 9px solid var(--violet);
+}
+
+.eyebrow-icon {
+  width: var(--eyebrow-icon-size);
+  height: var(--eyebrow-icon-size);
+  flex-shrink: 0;
+  background: currentColor;
+  -webkit-mask: var(--eyebrow-icon) center / contain no-repeat;
+  mask: var(--eyebrow-icon) center / contain no-repeat;
 }
