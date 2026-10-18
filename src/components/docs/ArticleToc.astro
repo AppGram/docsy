@@ -5,7 +5,7 @@ import { message } from '../../lib/messages';
 interface Props { headings: MarkdownHeading[]; context?: DocsContext }
 const { headings, context = defaultContext } = Astro.props;
 ---
-<nav class="article-toc" aria-label={message(context, 'onThisPage')}>
+<nav class="article-toc" data-docs-toc aria-label={message(context, 'onThisPage')}>
   <p>{message(context, 'onThisPage')}</p>
   <ul>{headings.filter((heading) => heading.depth === 2 || heading.depth === 3).map((heading) => <li class:list={[heading.depth === 3 && 'is-nested']}><a href={`#${heading.slug}`}>{heading.text}</a></li>)}</ul>
 </nav>

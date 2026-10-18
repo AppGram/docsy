@@ -9,7 +9,7 @@ const { endpoints } = Astro.props;
 ---
 
 {endpoints.length > 0 && (
-  <nav class="docs-rail docs-rail-endpoints" aria-label="On this page">
+  <nav class="docs-rail docs-rail-endpoints" data-docs-toc aria-label="On this page">
     <p class="docs-rail-label">Endpoints</p>
     <ul>
       {endpoints.map((e) => (

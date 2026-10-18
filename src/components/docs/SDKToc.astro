@@ -9,7 +9,7 @@ const { doc } = Astro.props;
 ---
 
 {doc.categories.length > 0 && (
-  <nav class="docs-rail" aria-label="On this page">
+  <nav class="docs-rail" data-docs-toc aria-label="On this page">
     <p class="docs-rail-label">On this page</p>
     <ul>
       {doc.categories.map((c) => {

@@ -113,6 +113,12 @@ html[dir="rtl"] .article-body .docsy-steps > ol > li { padding: 0 46px 24px 0; }
 .article-reader-nav { display: flex; justify-content: space-between; gap: 20px; margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); }
 .article-reader-nav a { max-width: 48%; }
 .article-body pre, .cb pre { direction: ltr; text-align: left; }
+[data-docs-toc] a[aria-current="location"] {
+  color: var(--ink) !important;
+  font-weight: 600;
+  border-inline-start-color: var(--violet);
+}
+[data-docs-toc] a[aria-current="location"] .docs-rail-path { color: var(--ink); }
 .article-body .docsy-card-group { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 24px 0; }
 .article-body .docsy-card-group[data-cols="1"] { grid-template-columns: 1fr; }
 .article-body .docsy-card-group[data-cols="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
