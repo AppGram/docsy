@@ -7,7 +7,7 @@ import { dirname, join } from 'node:path';
 import { dump, load } from 'js-yaml';
 import { maintenanceSchema, matchesGlob } from '../scripts/maintenance/config.mjs';
 import { compareOpenApi, findDocImpact } from '../scripts/maintenance/impact.mjs';
-import { guardChanges, maintenancePrompt, planMaintenance, runMaintenance, verifyMaintenance } from '../scripts/maintenance.mjs';
+import { guardChanges, maintenancePrompt, planMaintenance, runExampleChecks, runMaintenance, verifyMaintenance } from '../scripts/maintenance.mjs';
 import { publishPullRequest } from '../scripts/maintenance/publish.mjs';
 
 const temporary = [];
@@ -79,6 +79,23 @@ test('YAML defaults and glob matching cover root and nested Markdown', () => {
   assert.throws(() => maintenanceSchema.parse({ docs: ['../**'] }));
   assert.throws(() => maintenanceSchema.parse({ breakingChangesFile: '/tmp/change.md' }));
   assert.throws(() => maintenanceSchema.parse({ model: 'model\nhead=injected' }));
+});
+
+test('trusted example checks execute explicitly and stop on a failing example', () => {
+  const root = temp();
+  const settings = maintenanceSchema.parse({ exampleChecks: [{ name: 'Actual assertion', command: [process.execPath, '-e', 'require("node:assert/strict").equal(2 + 2, 4)'] }] });
+  assert.deepEqual(runExampleChecks(root, settings), ['Actual assertion']);
+  settings.exampleChecks[0].command = [process.execPath, '-e', 'process.exit(2)'];
+  assert.throws(() => runExampleChecks(root, settings), /failed \(2\)/);
+  assert.throws(() => maintenanceSchema.parse({ exampleChecks: [{ name: 'bad', command: ['node\nother'] }] }));
+});
+
+test('example check commands are protected from changes proposed by the agent', () => {
+  const { root, plan } = fixture();
+  const config = load(read(root, 'docsy.config.yaml'));
+  config.maintenance.exampleChecks = [{ name: 'injected', command: ['node', '-e', 'process.exit(0)'] }];
+  write(root, 'docsy.config.yaml', dump(config));
+  assert.throws(() => guardChanges(root, plan), /protected YAML/);
 });
 
 test('OpenAPI comparison follows component refs and inherited required parameters', () => {
@@ -279,6 +296,23 @@ test('no-op agent output creates no validation run or PR patch', () => {
   const result = withExecutables(root, { npm: 'throw new Error("must not run");' }, () => verifyMaintenance(root, plan));
   assert.equal(result.changed, false);
   assert.equal(read(root, '.docsy/maintenance/validated.patch'), '');
+});
+test('rendered preview metadata excludes server builds and reports the exact example-validation boundary', () => {
+  for (const server of [true, false]) {
+    const { root, base } = fixture();
+    const config = load(read(root, 'docsy.config.yaml'));
+    config.access.mode = server ? 'locked' : 'open';
+    config.agent = { query: false };
+    write(root, 'docsy.config.yaml', dump(config));
+    const head = commit(root); const plan = planMaintenance(root, { base, head });
+    write(root, 'content/widgets.md', '# Updated widgets');
+    write(root, 'dist/index.html', '<html>Rendered preview</html>');
+    withExecutables(root, { npm: 'process.exit(0);' }, () => verifyMaintenance(root, plan));
+    const preview = JSON.parse(read(root, '.docsy/maintenance/preview.json'));
+    assert.equal(preview.available, !server); assert.equal(preview.published, false);
+    assert.match(read(root, '.docsy/maintenance/pr-body.md'), /No executable example checks configured/);
+    assert.match(read(root, '.docsy/maintenance/pr-body.md'), server ? /intentionally unavailable/ : /npm run preview/);
+  }
 });
 
 test('local run invokes Codex, validates outside the agent, and retains changes for review', () => {

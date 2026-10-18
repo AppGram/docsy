@@ -3,8 +3,8 @@
 site:
   name: Docsy
   docsLabel: docs
-  title: Docsy — Documentation built for humans and coding agents
-  description: Self-host documentation for humans and coding agents. Write Markdown, ingest API and SDK metadata, and customize your site through YAML and editable Astro source.
+  title: Docsy by AppGram — Documentation you own
+  description: Own your documentation. Self-host Markdown, OpenAPI, and native SDK reference with YAML configuration, editable source, and tools for humans and coding agents.
   origin: ${DOCSY_ORIGIN:-https://appgram.github.io}
   basePath: /docsy
   language: en
@@ -24,6 +24,9 @@ footer:
   prefix: Docsy provided by
   label: AppGram
   href: https://github.com/AppGram
+reader:
+  editUrl: https://github.com/AppGram/docsy/edit/main/{source}
+  reportUrl: https://github.com/AppGram/docsy/issues/new
 eyebrow:
   icon: assets/docsy-logo.svg
   size: 14
@@ -52,6 +55,9 @@ localization:
       label: Español
   messages:
     es:
+      editPage: Editar esta página
+      reportProblem: Informar de un problema
+      documentationFeedback: Comentarios sobre la documentación
       guides: Guías
       apiReference: Referencia de la API
       onThisPage: En esta página
@@ -86,6 +92,9 @@ localization:
       sdkDescription: Veinte lenguajes importados desde resultados reales de sus generadores de documentación. Se incluyen fuentes, versiones, comandos y hashes. Son bibliotecas de prueba, no paquetes publicados.
       symbols: símbolos
     fr:
+      editPage: Modifier cette page
+      reportProblem: Signaler un problème
+      documentationFeedback: Commentaires sur la documentation
       guides: Guides
       apiReference: Référence API
       onThisPage: Sur cette page
@@ -124,17 +133,17 @@ search:
   maxResults: 30
 agent:
   enabled: true
-  query: false # Enable only when deploying the standalone Node server, not GitHub Pages.
+  query: false # Enable only with the standalone Node/Bun server, not GitHub Pages.
   maxResults: 10
   maxQueryLength: 500
 validation:
   links: true
   api: true
 home:
-  eyebrow: DOCSY DOCUMENTATION
+  eyebrow: DOCSY BY APPGRAM
   articleLayout: grid
-  title: Documentation built for humans and coding agents.
-  description: Give readers a polished documentation portal and coding agents Markdown exports, structured YAML, and editable source. Write guides, ingest API and SDK reference, and host it yourself.
+  title: Your documentation. Your source. Your infrastructure.
+  description: Documentation built for humans and coding agents. Write Markdown, ingest OpenAPI and native SDK reference, and configure it in YAML. Own the editable source and host it wherever you choose.
   primaryAction:
     label: Get started →
     href: /guides/getting-started
@@ -145,18 +154,22 @@ home:
   sdkDescription: Twenty languages imported from actual native documentation-generator output. Fixture sources, generator versions, commands, and SHA-256 hashes are checked in. These teaching libraries are not published SDK packages.
   translations:
     es:
-      eyebrow: DOCUMENTACIÓN DE DOCSY
-      title: Documentación para personas y agentes de programación.
+      eyebrow: DOCSY BY APPGRAM
+      title: Tu documentación. Tu código. Tu infraestructura.
       description: Un portal cuidado para tus lectores, exportaciones Markdown para tus agentes y código que tú controlas. Escribe guías, importa referencias de API y SDK y alójalo todo en tu propia infraestructura.
       primaryActionLabel: Primeros pasos →
       secondaryActionLabel: Trabajar con agentes
     fr:
-      eyebrow: DOCUMENTATION DOCSY
-      title: La documentation pour les humains et les agents de code.
+      eyebrow: DOCSY BY APPGRAM
+      title: Votre documentation. Votre code. Votre infrastructure.
       description: Un portail soigné pour vos lecteurs, des exports Markdown pour vos agents, et du code que vous contrôlez. Rédigez des guides, importez vos références API et SDK, puis hébergez le tout vous-même.
       primaryActionLabel: Bien démarrer →
       secondaryActionLabel: Travailler avec des agents
 content:
+  mdx:
+    enabled: true
+    allowJavaScript: false
+    components: {}
   snippets:
     publishing: content/snippets/publishing-checklist.md
     publicationFr: content/snippets/publishing-checklist.fr.md
@@ -196,6 +209,11 @@ content:
       source: content/tutorials/rich-articles.md
       title: Rich article components
       description: Write callouts, steps, synchronized tabs, accordions, code groups, and reusable snippets in Markdown.
+      eyebrow: AUTHORING
+    - slug: tutorials/native-mdx
+      source: content/tutorials/native-mdx.mdx
+      title: Write native MDX articles
+      description: Mix Markdown with themed JSX components, keep Mintlify MDX sources, and explicitly opt into trusted custom components.
       eyebrow: AUTHORING
     - slug: tutorials/search-and-agents
       source: content/tutorials/search-and-agents.md
@@ -240,12 +258,27 @@ content:
     - slug: deployment/self-hosting
       source: content/deployment/self-hosting.md
       title: Self-host Docsy
-      description: Deploy static documentation or run locked mode with the standalone Node server and Docker.
+      description: Deploy static documentation or run locked mode on Node, Bun, or Docker.
       eyebrow: DEPLOYMENT
     - slug: reference/cli
       source: content/reference/cli.md
       title: CLI reference
       description: Generate projects, validate configuration, build releases, and run production previews.
+      eyebrow: REFERENCE
+    - slug: reference/upgrading
+      source: content/reference/upgrading.md
+      title: Upgrade a customized site
+      description: Record template provenance and compare upstream fixes without overwriting your source or content.
+      eyebrow: REFERENCE
+    - slug: tutorials/migrate-mintlify
+      source: content/tutorials/migrate-mintlify.md
+      title: Migrate from Mintlify
+      description: Preserve native MDX and supported components from a local Mintlify export, with navigation, assets, and redirects.
+      eyebrow: MIGRATION
+    - slug: reference/compatibility
+      source: content/reference/compatibility.md
+      title: Compatibility evidence
+      description: Reproduce real-library imports and understand exactly what the tests do and do not establish.
       eyebrow: REFERENCE
     - slug: reference/license
       source: content/reference/license.md
@@ -343,6 +376,9 @@ navigation:
       - title: Rich article components
         titles: { fr: Articles enrichis, es: Artículos enriquecidos }
         href: /guides/tutorials/rich-articles
+      - title: Native MDX articles
+        titles: { fr: Articles MDX natifs, es: Artículos MDX nativos }
+        href: /guides/tutorials/native-mdx
       - title: Versions and localization
         titles: { fr: Versions et langues, es: Versiones e idiomas }
         href: /guides/tutorials/versions-and-locales
@@ -439,6 +475,12 @@ navigation:
   - title: Reference
     titles: { fr: Référence, es: Referencia }
     items:
+      - title: Upgrade a customized site
+        href: /guides/reference/upgrading
+      - title: Migrate from Mintlify
+        href: /guides/tutorials/migrate-mintlify
+      - title: Compatibility evidence
+        href: /guides/reference/compatibility
       - title: CLI
         titles: { fr: Ligne de commande, es: Línea de comandos }
         href: /guides/reference/cli

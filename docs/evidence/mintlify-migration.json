@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "platform": "mintlify",
+  "sourceConfig": "docs.json",
+  "configSha256": "c4aac31b1feb69914eb85d4c4165634187493e9e8ca37313352b4a1894e11a20",
+  "pages": [
+    {
+      "route": "/index",
+      "slug": "index",
+      "file": "index.mdx",
+      "sha256": "32746e5769d4bcd7edb79127029dc0dc4b833df324e35960c638590c327f43ec"
+    },
+    {
+      "route": "/quickstart",
+      "slug": "quickstart",
+      "file": "quickstart.mdx",
+      "sha256": "a81a8bd1527c6b8eb45b75404e58c3f6c69deca99c7ba47dbace3f2112dea652"
+    }
+  ],
+  "assets": [
+    {
+      "path": "logo/light.svg",
+      "sha256": "e82887039bc01b60cc2c0fc837dfe7001817d1bb19d29808743b01f5b39cc58e"
+    },
+    {
+      "path": "logo/dark.svg",
+      "sha256": "b31f4505180ac8d50c475806d855f319bbef9d5afd1fb0f39e20bc809038c138"
+    }
+  ],
+  "redirects": {
+    "/index": "/guides/index",
+    "/quickstart": "/guides/quickstart"
+  },
+  "warnings": [
+    "Global navigation/anchors/topbar links require manual mapping to Docsy header links.",
+    "Simple Cards become linked headings (icons/layout are not retained); Steps become native numbered steps. Review their presentation.",
+    "Review custom HTML/JSX behavior, tab switching semantics, SEO settings and URL base paths. Only navigation-selected articles and referenced local assets were imported."
+  ],
+  "published": false,
+  "notices": [
+    {
+      "path": "migration/upstream/LICENSE",
+      "sha256": "61adbc1e91a6904474b392500c16d9bfb0ea30744fba8627b0258906b654b9de"
+    }
+  ]
+}

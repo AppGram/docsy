@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "published": false,
+  "templateVersion": "0.4.0-internal.0",
+  "imports": [
+    {
+      "name": "zod",
+      "version": "3.25.76",
+      "generator": "typedoc@0.28.20",
+      "inputFiles": 596,
+      "inputTreeSha256": "8967a5bf133ceb1049e5dfc12f086cba396b7ad02ad5543b7a7c8318d0ab3c2f",
+      "artifactSha256": "08d03a4bbf45c7b521480bda645002059b9aa9c306a41f5d9c6bfc8fbb07e8ad",
+      "symbols": 2497,
+      "examples": 0
+    },
+    {
+      "name": "yaml",
+      "version": "2.9.1",
+      "generator": "typedoc@0.28.20",
+      "inputFiles": 233,
+      "inputTreeSha256": "77d349c30345b60eb8e8d9c7ba2b25871cefc7f36a9e2c8495fca427baf8bbf5",
+      "artifactSha256": "e13038a1df138c0d61434faa8062b497ae6beeb7326f85429b607a8b774e96f8",
+      "symbols": 617,
+      "examples": 0
+    },
+    {
+      "name": "lodash",
+      "version": "4.18.1",
+      "generator": "jsdoc@4.0.5",
+      "inputFiles": 1051,
+      "inputTreeSha256": "a85fd336e17c6e7e32b3c3e1575f969d3667b6e8ead6150f65d251506a1cb306",
+      "artifactSha256": "7576b630fdd75440644f1735ac08912d5a1c9e9cb9a926fe08e2293a1b424777",
+      "symbols": 393,
+      "examples": 303
+    }
+  ],
+  "render": {
+    "checkedLinksAndAnchors": true,
+    "pages": [
+      {
+        "name": "zod-sdk",
+        "bytes": 6890605,
+        "sha256": "79864a9f0d73a9cd5a299b26e1fa61a7d34bd5fd1c9bc2a81bfdd80a914fb8c4"
+      },
+      {
+        "name": "yaml-sdk",
+        "bytes": 1645172,
+        "sha256": "4304e5029a1f7de6fc0abc85f7626707e987980ec5cf7ba6e3c5ec273e861beb"
+      },
+      {
+        "name": "lodash-sdk",
+        "bytes": 2270485,
+        "sha256": "1472a2943f4c6db8b8452ee71b6fbd2b290b29dd788f812a2d8ceead9c70a0b8"
+      }
+    ]
+  },
+  "migration": {
+    "repository": "https://github.com/mintlify/starter",
+    "commit": "8dc589095a85335165d18ed0aa5d273360dffd04",
+    "report": "mintlify-migration.json",
+    "renderedBuildPassed": true
+  },
+  "maintenance": {
+    "package": "zod@3.25.76",
+    "change": "v3 API → bundled v4 compatibility export; error.errors removed, error.issues retained",
+    "base": "c659a45dfac38cbc74391b32a465ae5c12121a34",
+    "head": "37509bab2b80f28a48947bde2be0cab919198c26",
+    "agentUpdatedDocs": true,
+    "actualRuntimeExamplePassed": true,
+    "independentValidationAndBuildPassed": true,
+    "validatedPatchSha256": "4be55b48d9f6df3b4396ff55152c13d9db8a2b99732d7b8be26d297ed3ef7349",
+    "remotePrCreated": false,
+    "renderedPreviewPublished": false
+  },
+  "limitations": [
+    "Only three substantial JS/TS projects tested; other language fixtures remain small.",
+    "Runtime assertion covers one reviewed Zod example, not every imported example.",
+    "Native reference pages are currently monolithic; large libraries produce large HTML.",
+    "A local review bundle is not an actual GitHub PR or public deployment."
+  ]
+}

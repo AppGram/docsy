@@ -15,7 +15,7 @@ Read API credentials from the server environment. Never commit private tokens to
 :::
 
 :::danger[Static files cannot enforce permissions]
-Use the Node server for locked documentation. A public static host cannot protect private article content with a browser-only gate.
+Use the Node or Bun server for locked documentation. A public static host cannot protect private article content with a browser-only gate.
 :::
 
 Each kind has its own icon and restrained accent, with readable surfaces in both themes. The title explains the situation; the body tells the reader what to do. Color is not the only way to distinguish them.

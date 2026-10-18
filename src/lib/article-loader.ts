@@ -34,7 +34,8 @@ export const findArticle = (slug: string, context: DocsContext = defaultContext)
 
 export const readArticleMarkdown = (article: ArticleConfig): string => {
   try {
-    return expandSnippets(readFileSync(resolveSource(article.source), 'utf8').trim());
+    const source = readFileSync(resolveSource(article.source), 'utf8').trim();
+    return /\.mdx$/i.test(article.source) ? source : expandSnippets(source);
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error);
     throw new Error(`Could not load Docsy article "${article.slug}" from ${article.source}: ${reason}`);
@@ -43,6 +44,14 @@ export const readArticleMarkdown = (article: ArticleConfig): string => {
 
 export const loadArticle = async (article: ArticleConfig): Promise<ArticleDoc> => {
   const markdown = readArticleMarkdown(article);
+  if (/\.mdx$/i.test(article.source)) {
+    try {
+      const { renderMdx } = await import('./mdx-renderer');
+      return { config: article, ...await renderMdx(markdown, resolveSource(article.source)) };
+    } catch (error) {
+      throw new Error(`Could not render MDX article "${article.slug}" (${article.source}): ${error instanceof Error ? error.message : error}`);
+    }
+  }
   const rendered = await (await processor).render(markdown);
   return {
     config: article,
@@ -52,8 +61,8 @@ export const loadArticle = async (article: ArticleConfig): Promise<ArticleDoc> =
   };
 };
 
-export const articleMarkdownExport = (article: ArticleConfig): string => {
-  const body = plainMarkdown(readArticleMarkdown(article));
+export const articleMarkdownExport = async (article: ArticleConfig): Promise<string> => {
+  const body = /\.mdx$/i.test(article.source) ? (await loadArticle(article)).markdown : plainMarkdown(readArticleMarkdown(article));
   const description = article.description ? `\n\n${article.description}` : '';
   return `# ${article.title}${description}\n\n${body}\n`;
 };

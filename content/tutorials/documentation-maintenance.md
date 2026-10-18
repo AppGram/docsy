@@ -61,6 +61,27 @@ Only a successful update reaches the publishing job. That job opens a draft on a
 
 Review the actual behavior, examples, and rendered pages before merging. Validation checks configuration, types, and the site build; it does not prove that every example works against a running API.
 
+## Execute selected examples and inspect the preview
+
+Add trusted, local assertion commands to YAML when specific examples must actually run:
+
+```yaml
+maintenance:
+  enabled: true
+  exampleChecks:
+    - name: API examples against a local fixture server
+      command: [node, tests/documented-requests.mjs]
+      timeoutMs: 30000
+```
+
+Commands are explicit argument arrays, not shell strings. They run after scope/configuration validation and before the production build, with a timeout; a failed check stops the update. Use offline assertions or local mock servers. Do not put production credentials in these commands. The agent cannot edit this configuration, executable test files, or dependency scripts in a maintenance update. Running a configured check is executing trusted project code, so review it like any CI test.
+
+The PR body lists exactly which checks ran. With no checks configured, it explicitly says runtime correctness is unproven. Even a passing test suite covers only the assertions you wrote, not every language/client or example.
+
+For open static sites, CI attaches **docsy-static-preview**, a seven-day Actions artifact containing the validated rendered `dist/` site. The PR body links to its workflow run. It is a download for review, not a public preview deployment; serve it at the configured base path locally. Protected/server builds do **not** upload their bundle as a static preview. Review those behind your actual trusted authentication integration using Node/Bun.
+
+Local runs write `.docsy/maintenance/preview.json`, the validated patch, and `pr-body.md`. Run `npm run preview` in that checkout to inspect the result. Draft creation still requires `--pr` locally, and no workflow auto-approves or merges changes.
+
 ## Inspect impact locally
 
 Run a report without invoking a model or opening a PR:

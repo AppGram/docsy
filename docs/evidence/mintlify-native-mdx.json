@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "platform": "mintlify",
+  "format": "mdx",
+  "upstream": {
+    "repository": "https://github.com/mintlify/starter",
+    "commit": "8dc589095a85335165d18ed0aa5d273360dffd04"
+  },
+  "sourceConfig": "docs.json",
+  "configSha256": "c4aac31b1feb69914eb85d4c4165634187493e9e8ca37313352b4a1894e11a20",
+  "pages": [
+    {
+      "route": "/index",
+      "file": "index.mdx",
+      "output": "content/migrated/index.mdx",
+      "sha256": "32746e5769d4bcd7edb79127029dc0dc4b833df324e35960c638590c327f43ec"
+    },
+    {
+      "route": "/quickstart",
+      "file": "quickstart.mdx",
+      "output": "content/migrated/quickstart.mdx",
+      "sha256": "a81a8bd1527c6b8eb45b75404e58c3f6c69deca99c7ba47dbace3f2112dea652"
+    }
+  ],
+  "assets": ["logo/light.svg", "logo/dark.svg"],
+  "redirects": { "/index": "/guides/index", "/quickstart": "/guides/quickstart" },
+  "checks": {
+    "build": "passed",
+    "htmlPages": 6,
+    "nativeMdx": true,
+    "cards": true,
+    "steps": true,
+    "callout": true,
+    "highlighting": true,
+    "markdownCode": true,
+    "exportHasNoJsx": true
+  },
+  "allowJavaScript": false,
+  "published": false,
+  "scope": "Two real starter pages, not a universal Mintlify compatibility certification. Legacy Markdown-conversion evidence is retained separately."
+}

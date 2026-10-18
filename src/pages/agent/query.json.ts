@@ -7,7 +7,7 @@ export const prerender = !docsyConfig.agent.query && docsyConfig.access.mode !==
 const windows = new Map<string, { time: number; count: number }>();
 export const GET: APIRoute = async (context) => {
   if (!docsyConfig.agent.enabled) return jsonResponse({ error: 'agent_disabled' }, 404);
-  if (!docsyConfig.agent.query) return jsonResponse({ schemaVersion: 1, mode: 'static', queryAvailable: false, indexUrl: docsPath('/agent/index.json'), message: 'Static hosting cannot execute queries. Fetch the index or enable agent.query with the Node server.' });
+  if (!docsyConfig.agent.query) return jsonResponse({ schemaVersion: 1, mode: 'static', queryAvailable: false, indexUrl: docsPath('/agent/index.json'), message: 'Static hosting cannot execute queries. Fetch the index or enable agent.query with the Node/Bun server.' });
   const { url, locals } = context;
   const query = url.searchParams.get('q')?.trim() ?? '';
   const version = url.searchParams.get('version') ?? defaultContext.version;

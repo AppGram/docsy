@@ -50,7 +50,7 @@ agent:
   maxQueryLength: 500
 ```
 
-`agent.query: true` switches the build to the standalone Node server, even when documentation access is open. Deploy with Node or Docker, not GitHub Pages. Use Node 22.22 or newer.
+`agent.query: true` switches the build to the standalone server, even when documentation access is open. Deploy on Node, Bun, or Docker, not GitHub Pages. Build with Node 22.22 or newer; the production process can use Node or Bun 1.3.5 or newer (`npm run start:bun`).
 
 ```bash
 curl 'https://docs.example.com/docs/agent/query.json?q=authentication&version=current&locale=en&type=page&limit=5'
@@ -87,4 +87,4 @@ This is retrieval, not an LLM answer: it does not need a provider key, make exte
 
 Locked sites apply the existing documentation rules to JSON documents, Markdown exports, search results, and combined discovery files. Private responses are not shared-cacheable. Variant URLs inherit canonical page rules, so `/guides/private` remains protected in every version and locale.
 
-When running the Node server, a known documentation URL also supports `Accept: text/markdown`. Static deployments use the explicit export paths instead. Credentials and tier identities still come from your trusted proxy or configured authorization webhook.
+When running the Node or Bun server, a known documentation URL also supports `Accept: text/markdown`. Static deployments use the explicit export paths instead. Credentials and tier identities still come from your trusted proxy or configured authorization webhook.

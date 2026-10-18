@@ -1028,7 +1028,7 @@ const themeStyle = [
 
       .docs-content p {
         margin: 0 0 16px;
-        color: #23252d;
+        color: var(--ink);
         font-size: 16px;
         line-height: 1.65;
       }
@@ -1074,7 +1074,7 @@ const themeStyle = [
       .docs-content ol {
         margin: 0 0 18px;
         padding-left: 22px;
-        color: #23252d;
+        color: var(--ink);
         font-size: 15.5px;
         line-height: 1.6;
       }
@@ -1086,8 +1086,8 @@ const themeStyle = [
       .docs-content code {
         padding: 1px 6px;
         border-radius: 5px;
-        background: #f2f3f8;
-        color: #333542;
+        background: color-mix(in srgb, var(--paper) 94%, var(--ink));
+        color: var(--ink);
         font-family: var(--font-mono);
         font-size: 13.5px;
       }
@@ -1095,7 +1095,7 @@ const themeStyle = [
       .docs-content hr {
         margin: 40px 0;
         border: 0;
-        border-top: 1px solid #ebebf1;
+        border-top: 1px solid var(--line);
       }
 
       .docs-callout {

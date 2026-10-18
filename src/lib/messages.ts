@@ -12,6 +12,7 @@ export const english = {
   articleNavigation: 'Article navigation', lightTheme: 'Switch to light theme', darkTheme: 'Switch to dark theme', switchTheme: 'Switch theme',
   articlesDescription: 'Guides and tutorials written in Markdown and configured in YAML.',
   searchError: 'Search could not be loaded. Close and retry.',
+  editPage: 'Edit this page', reportProblem: 'Report a problem', documentationFeedback: 'Documentation feedback',
 };
 export function message(context: DocsContext, key: string, fallback?: string): string {
   return docsyConfig.localization?.messages[context.locale]?.[key] ?? fallback ?? english[key as keyof typeof english] ?? key;

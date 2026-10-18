@@ -4,3 +4,6 @@ dist
 release
 .git
 .env
+.env.*
+.docsy
+tests

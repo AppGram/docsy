@@ -1,0 +1,11 @@
+---
+import { docsyConfig, docsPath, isServer } from '../config';
+export const prerender = !isServer;
+export function getStaticPaths() {
+  return Object.keys(docsyConfig.redirects).map((from) => ({ params: { redirect: from.replace(/^\/+|\/+$/g, '') } }));
+}
+const from = `/${(Astro.params.redirect ?? '').replace(/^\/+|\/+$/g, '')}`;
+const target = docsyConfig.redirects[from] ?? docsyConfig.redirects[`${from}/`];
+if (!target) return new Response('Not found', { status: 404 });
+return Astro.redirect(docsPath(target), 301);
+---

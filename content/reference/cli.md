@@ -10,13 +10,20 @@ The generated `package.json` exposes these scripts:
 | `npm run validate` | Validate YAML and type-check the site |
 | `npm run build` | Validate, build, and stage production output |
 | `npm run preview` | Serve the staged static site or standalone locked server |
-| `npm run create -- <directory>` | Generate another editable Docsy project |
+| `npm run docsy -- doctor` | Check local prerequisites and deployment compatibility |
+| `npm run docsy -- --version` | Show recorded template version |
+| `npm run docsy -- upgrade --from <fresh-project>` | Write an upgrade comparison report; never apply changes |
+| `npm run docsy -- migrate mintlify --source <export> --out <new-project>` | Import a supported local Mintlify export without changing its source |
 | `npm run maintain -- plan --base <ref>` | Inspect source changes and likely documentation impact |
 | `npm run maintain -- run --base <ref>` | Run the agent and validate a local documentation update |
 
 Arguments after the command are passed through to Astro where applicable.
 
+Mintlify migration preserves native `.mdx` sources by default. Add `--format markdown` for the more limited plain-Markdown conversion. Imported MDX keeps JavaScript execution disabled; custom executable components require separate review and an explicit YAML opt-in.
+
 ## Generate a project
+
+This is a private internal preview, not a published npm release. In the private template checkout, run `npm run release:pack` and use the copyable local-tarball creation command it prints. `npm run create -- <directory>` is also available **in the template checkout**; generated sites use `npm run docsy -- create <directory>` when another project is needed.
 
 ```text
 docsy create <directory> [options]
@@ -33,10 +40,15 @@ create-docsy <directory> [options]
 | `--locked` | Generate a server-rendered permission-gated site |
 | `--yes`, `-y` | Accept defaults without interactive prompts |
 | `--no-install` | Leave dependency installation to the caller |
+| `--ci` | Include validation and static-preview artifact workflow |
+| `--deploy none\|github-pages` | Optional gated deployment workflow; default `none` |
+| `--repo <https://github.com/OWNER/REPO>` | Configure source links; required for Pages scaffolding |
 | `--force` | Replace an existing target directory |
 | `--help`, `-h` | Show command help |
 
 Without `--yes`, the generator asks for the missing product, source, mount path, and access choices.
+
+Pages scaffolding derives `site.origin`, `site.basePath`, and the home URL from the repository. It rejects locked mode. It never creates repositories or deploys; the owner must explicitly enable Pages and set `DOCSY_ENABLE_PAGES=true` when ready. Generated sites remain private packages and record template provenance under `.docsy/template.json`.
 
 ## Validate configuration
 
@@ -59,7 +71,7 @@ docsy build
 The build clears previous `dist/` and `release/` output, validates the project, runs the Astro build, and stages a production release.
 
 - Open mode with `agent.query: false` creates a static `dist/` build and a mount-aware `release/` directory.
-- Locked mode or `agent.query: true` creates a standalone Node server in `dist/`; static staging is skipped.
+- Locked mode or `agent.query: true` creates the standalone Astro server in `dist/`; static staging is skipped. Run it on Node with `npm start` or on Bun with `npm run start:bun`.
 
 ## Run production output
 

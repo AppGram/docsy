@@ -29,6 +29,11 @@ for (const context of allContexts) {
   }
 }
 pages.set(docsPath('/locked'), { ids: new Set(), links: [] });
+for (const [from, to] of Object.entries(docsyConfig.redirects)) {
+  const path = docsPath(from);
+  if (pages.has(path)) errors.push(`redirects: ${from} collides with a generated page`);
+  else pages.set(path, { ids: new Set(), links: [docsPath(to)] });
+}
 const checkLink = (href: string, from: string) => {
   if (!href || href === '#' || /^(?:mailto:|tel:|data:)/i.test(href)) return;
   let url: URL;

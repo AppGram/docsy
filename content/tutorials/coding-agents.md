@@ -2,7 +2,7 @@ Docsy is documentation built for humans and coding agents. Your team gets a sear
 
 ## Give an agent documentation to read
 
-For structured retrieval, use the JSON corpus, per-page JSON exports, and optional runtime query endpoint described in the [search and agent API guide](../search-and-agents). `/llms.txt` and `/llms-full.txt` provide discovery and combined Markdown. Static hosts support exports; live queries require the Node server.
+For structured retrieval, use the JSON corpus, per-page JSON exports, and optional runtime query endpoint described in the [search and agent API guide](../search-and-agents). `/llms.txt` and `/llms-full.txt` provide discovery and combined Markdown. Static hosts support exports; live queries require the Node or Bun server.
 
 Open an authored article, API section, or SDK page and use the header's **Markdown** menu to view its export. Adding `?format=md` to that page's URL opens a Markdown view in the browser.
 

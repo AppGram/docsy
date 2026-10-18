@@ -1,5 +1,13 @@
 GitHub Pages is a good fit for a public Docsy project running in open mode. Pages serves static files, so it cannot enforce lock-mode permissions.
 
+:::warning[No public release yet]
+This repository remains private and deployment stays disabled. The steps below describe a future explicit publishing decision. A configured URL is not an existing deployment.
+:::
+
+## Generate the workflow
+
+Create a site with `--ci --deploy github-pages --repo https://github.com/OWNER/REPOSITORY`. The CLI writes validation and Pages workflows, derives the origin and repository base path, and prints the expected URL. It does not push, enable Pages, or publish anything. Run `npm run docsy -- doctor` inside the generated site to check the setup.
+
 ## Configure the public URL
 
 For a project site at `https://ORGANIZATION.github.io/REPOSITORY/`, configure the host and repository path separately:
@@ -38,6 +46,7 @@ concurrency:
 
 jobs:
   build:
+    if: vars.DOCSY_ENABLE_PAGES == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -74,7 +83,7 @@ The deployed artifact must be `dist`, not `release/REPOSITORY`. GitHub Pages alr
 
 ## Enable the Pages source
 
-In the repository settings, open **Pages** and choose **GitHub Actions** as the build source. Push to `main` or run the workflow manually.
+Only when publication is explicitly intended: in repository settings, open **Pages** and choose **GitHub Actions** as the build source, then add the Actions repository variable `DOCSY_ENABLE_PAGES` with value `true`. Push to `main` or run the workflow manually. Leave the variable unset during private development; the build/deploy jobs are skipped.
 
 The workflow requires `pages: write` and `id-token: write`, and deploys through the `github-pages` environment.
 
@@ -92,5 +101,5 @@ Confirm that `dist/index.html` exists and that generated links begin with the co
 
 ## Do not publish protected sources
 
-GitHub Pages sites are public even when the repository itself is private. Do not use Pages for protected documentation or publish sensitive Markdown, OpenAPI, or SDK inputs through the static artifact. Use locked mode on a Node host instead.
+GitHub Pages sites are public even when the repository itself is private. Do not use Pages for protected documentation or publish sensitive Markdown, OpenAPI, or SDK inputs through the static artifact. Use locked mode on a Node or Bun server instead.
 

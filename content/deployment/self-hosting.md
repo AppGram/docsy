@@ -1,4 +1,4 @@
-Docsy supports two deployment shapes. Use Node 22.22 or newer. Choose open mode with `agent.query: false` for public static documentation. Locked mode or `agent.query: true` uses the standalone Node server.
+Docsy supports public static hosting and a standalone server running on Node or Bun. Use Node 22.22 or newer to develop and build. Bun 1.3.5 or newer is an optional production runtime. Choose open mode with `agent.query: false` for public static documentation; locked mode or `agent.query: true` uses the server build.
 
 ## Deploy an open static build
 
@@ -28,7 +28,7 @@ Upload `dist/` when the hosting platform already mounts the project at the confi
 
 ## Run locked mode
 
-Locked mode needs the standalone Node server. Public sites can also use this runtime by setting `agent.query: true` to enable live JSON retrieval:
+Locked mode needs the standalone server. Public sites can also use this runtime by setting `agent.query: true` to enable live JSON retrieval:
 
 ```yaml
 access:
@@ -48,6 +48,28 @@ HOST=0.0.0.0 PORT=8080 npm run preview
 ```
 
 Put the process behind the trusted authentication proxy described in the lock-mode guide. Do not expose a header-provider deployment directly to the internet.
+
+## Run the production build on Bun
+
+Install and build with Node as above, then choose Bun for the production process:
+
+```bash
+HOST=0.0.0.0 PORT=8080 npm run start:bun
+# Or: HOST=0.0.0.0 PORT=8080 bun scripts/start.mjs
+```
+
+No YAML runtime switch is required. `access.mode` and `agent.query` still select static versus server output; the command selects the runtime. `start:bun` also serves staged static output, so public sites can use the same entry point.
+
+This is production-runtime support tested with Bun 1.3.5. Node remains required for the documented installation, generation, validation, and build commands. It does not imply that Bun's package manager, build toolchain, or test runner replaces those tools. The `npm run test:runtime:bun` integration check starts real Bun processes against generated static and server builds and checks page, Markdown, search, version/locale, permission-gate, and JSON query behavior.
+
+For a Bun runtime container:
+
+```bash
+docker build -f Dockerfile.bun -t docsy-bun .
+docker run --rm -p 8080:8080 docsy-bun
+```
+
+`Dockerfile.bun` builds on Node and runs on a pinned Bun image. The default Dockerfile and Compose service remain Node-based.
 
 ## Use Docker Compose
 

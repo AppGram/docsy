@@ -155,6 +155,19 @@ test('disabled locale fallback omits missing pages and duplicate variants are re
   config.content.articles.push(config.content.articles[0]); write(root, 'docsy.config.yaml', dump(config));
   assert.throws(() => run(root, `await import(${moduleUrl('src/config.ts')});`), /Duplicate article/);
 });
+test('redirect cycles, duplicate aliases, reserved routes and unsafe reader URLs are rejected', () => {
+  const invalid = [
+    { redirects: { '/old': '/other/', '/other': '/old' } },
+    { redirects: { '/old': '/guides/guide', '/old/': '/guides/guide' } },
+    { redirects: { '/agent/index.json': '/guides/guide' } },
+    { reader: { editUrl: 'javascript:alert(1)' } },
+    { reader: { reportUrl: 'data:text/html,unsafe' } },
+  ];
+  for (const patch of invalid) {
+    const { root } = fixture(patch);
+    assert.throws(() => run(root, `await import(${moduleUrl('src/config.ts')});`), /Invalid Docsy configuration/);
+  }
+});
 test('JSON query and corpus are permission-filtered, bounded and version aware', () => {
   const { root } = fixture({ agent: { query: true }, access: { mode: 'locked', tiers: { pro: { label: 'Pro' } }, rules: [{ pattern: '/guides/guide', tiers: ['pro'] }] } });
   const code = `import {GET} from ${moduleUrl('src/pages/agent/query.json.ts')}; const call=async(q,tiers=[])=>{const r=await GET({url:new URL('http://localhost/docs/agent/query.json?'+q),locals:{docsyAccess:{authenticated:!!tiers.length,tiers}},clientAddress:'127.0.0.1'});return {status:r.status,body:await r.json()}}; console.log(JSON.stringify([await call('q=platypus'),await call('q=platypus',['pro']),await call('q=platypus&limit=500'),await call('q=platypus&locale=zz')]));`;

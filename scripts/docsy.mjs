@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { existsSync, rmSync } from 'node:fs';
+import { existsSync, readFileSync, rmSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -37,6 +37,9 @@ Usage:
   docsy validate
   docsy build
   docsy preview
+  docsy doctor
+  docsy upgrade --from <fresh-generated-project>
+  docsy migrate mintlify --source <local-export> --out <new-directory>
   docsy maintain <plan|run|verify> --base <git-ref>
 
 Commands:
@@ -46,13 +49,29 @@ Commands:
   build     Validate, build, and stage production output
   preview   Serve the staged static build or locked Node build
   maintain  Detect documentation impact, run the coding agent, and validate a draft PR
+  doctor    Check local prerequisites and explain the path to a live URL
+  upgrade   Report upstream changes/conflicts; never overwrite customized files
+  migrate   Import supported local Mintlify content, navigation, assets and redirects
 `);
 };
 
 const loader = pathToFileURL(resolve(ownRoot, 'node_modules/tsx/dist/loader.mjs')).href;
 const validateContent = () => run(process.execPath, ['--import', loader, resolve(projectRoot, 'scripts/validate-content.ts')]);
 
-if (command === 'maintain') {
+if (command === '--version' || command === '-v' || command === 'version') {
+  const manifest = resolve(projectRoot, '.docsy/template.json');
+  console.log(existsSync(manifest) ? JSON.parse(readFileSync(manifest, 'utf8')).templateVersion : JSON.parse(readFileSync(resolve(ownRoot, 'package.json'), 'utf8')).version);
+} else if (command === 'doctor') {
+  const { doctor } = await import('./project-tools.mjs');
+  if (!doctor(projectRoot)) process.exitCode = 1;
+} else if (command === 'upgrade') {
+  if (args.length !== 2 || args[0] !== '--from') throw new Error('Usage: docsy upgrade --from <fresh-generated-project>. This is a read-only comparison, not an automatic updater.');
+  const { inspectUpgrade } = await import('./project-tools.mjs');
+  inspectUpgrade(projectRoot, resolve(projectRoot, args[1]));
+} else if (command === 'migrate') {
+  const { main } = await import('./migrate-mintlify.mjs');
+  main(args);
+} else if (command === 'maintain') {
   const { main } = await import('./maintenance.mjs');
   await main(args).catch((error) => { console.error(error.message); process.exitCode = 1; });
 } else if (command === 'create') {

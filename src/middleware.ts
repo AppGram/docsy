@@ -38,7 +38,10 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const relativePath = relativeDocsPath(context.url.pathname);
   if (relativePath === null || isPublicAsset(relativePath) || relativePath === '/locked') return next();
 
-  const accessPath = accessPathForRequest(relativePath);
+  // Resolve explicit aliases before broad SDK/article routes claim the request.
+  // Authorization follows the destination, so aliases cannot bypass its gate.
+  const redirectTarget = docsyConfig.redirects[relativePath.replace(/\/+$/, '')] ?? docsyConfig.redirects[relativePath];
+  const accessPath = accessPathForRequest(redirectTarget ?? relativePath);
   const identity = docsyConfig.access.mode === 'locked' ? await resolveAccessIdentity(context.request, accessPath) : { authenticated: false, tiers: [] };
   context.locals.docsyAccess = identity;
 
@@ -52,6 +55,10 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
   const decision = evaluateAccess(accessPath, identity);
   if (docsyConfig.access.mode === 'open' || decision.allowed) {
+    if (redirectTarget) {
+      const response = context.redirect(docsPath(redirectTarget), 301);
+      return docsyConfig.access.mode === 'locked' ? privateResponse(response) : response;
+    }
     const document = getDocuments().find((doc) => doc.path === context.url.pathname.replace(/\/+$/, '') || doc.path === context.url.pathname);
     if (document && context.request.headers.get('accept')?.includes('text/markdown')) {
       const markdown = await generateMarkdown(document.path, docsyConfig.site.origin, identity.tiers);

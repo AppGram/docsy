@@ -191,14 +191,26 @@ const readAgentResult = (root) => {
   return result;
 };
 
-const reviewBody = (plan, paths, result) => {
+const reviewBody = (plan, paths, result, preview, checks) => {
   const bullets = (items) => items.length ? items.map((item) => `- ${item}`).join('\n') : '- None reported.';
-  return `## Documentation maintenance\n\n${result.summary || 'Updates documentation after source changes.'}\n\nCompared \`${plan.base}\` to \`${plan.head}\`.\n\n## Updated documentation\n\n${bullets(paths.map((path) => `\`${path}\``))}\n\n## Breaking changes and contract review\n\n${bullets(plan.apiChanges.filter((change) => ['breaking', 'review'].includes(change.severity)).map((change) => `${change.endpoint}: ${change.detail}`))}\n\n${bullets(result.breakingChanges)}\n\n## Stale examples\n\n${bullets(result.staleExamples)}\n\n## Questions for the reviewer\n\n${bullets(result.unresolved)}\n\n## Validation\n\n- Passed: documentation change scope and protected YAML settings.\n- Passed: npm run validate.\n- Passed: npm run build.\n\nReview source accuracy and migration instructions before merging this draft.\n`;
+  const previewText = preview.available ? (process.env.GITHUB_RUN_ID && process.env.GITHUB_REPOSITORY ? `Download the **docsy-static-preview** artifact from [this workflow run](${process.env.GITHUB_SERVER_URL || 'https://github.com'}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}). It is not a public deployment.` : 'Run `npm run preview` in the validated checkout to inspect the rendered site. Static output is in `dist/`.') : 'A downloadable static preview is intentionally unavailable: server-side authorization/query features require the Node/Bun runtime. Preview behind your trusted authentication integration; never publish the server bundle as a static site.';
+  return `## Documentation maintenance\n\n${result.summary || 'Updates documentation after source changes.'}\n\nCompared \`${plan.base}\` to \`${plan.head}\`.\n\n## Updated documentation\n\n${bullets(paths.map((path) => `\`${path}\``))}\n\n## Breaking changes and contract review\n\n${bullets(plan.apiChanges.filter((change) => ['breaking', 'review'].includes(change.severity)).map((change) => `${change.endpoint}: ${change.detail}`))}\n\n${bullets(result.breakingChanges)}\n\n## Stale examples\n\n${bullets(result.staleExamples)}\n\n## Questions for the reviewer\n\n${bullets(result.unresolved)}\n\n## Validation\n\n- Passed: documentation change scope and protected YAML settings.\n- Passed: npm run validate.\n- Passed: npm run build.\n${checks.length ? bullets(checks.map((name) => `Passed user-defined example check: ${name}`)) : '- No executable example checks configured; build success does not prove runtime behavior.'}\n\n## Rendered preview\n\n${previewText}\n\nReview source accuracy and migration instructions before merging this draft.\n`;
+};
+
+export const runExampleChecks = (root, settings) => {
+  const completed = [];
+  for (const check of settings.exampleChecks ?? []) {
+    console.log(`Trusted example check: ${check.name}`);
+    execute(root, check.command[0], check.command.slice(1), { stdio: 'inherit', timeout: check.timeoutMs, shell: false });
+    completed.push(check.name);
+  }
+  return completed;
 };
 
 export const verifyMaintenance = (root, plan, { patch } = {}) => {
   const output = outputDirectory(root);
   writeFileSync(resolve(output, 'validated.patch'), '');
+  writeFileSync(resolve(output, 'preview.json'), `${JSON.stringify({ available: false, published: false, reason: 'Not yet validated' }, null, 2)}\n`);
   if (plan.status !== 'ready') throw new Error(`Maintenance plan is ${plan.status}; no update can be validated.`);
   if (revision(root, 'HEAD') !== plan.head) throw new Error('Check out the original source commit before validating a maintenance patch.');
   if (patch) {
@@ -214,13 +226,17 @@ export const verifyMaintenance = (root, plan, { patch } = {}) => {
   const agentResult = readAgentResult(root);
   const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
   execute(root, npm, ['run', 'validate'], { stdio: 'inherit' });
+  const checks = runExampleChecks(root, plan.maintenance);
   execute(root, npm, ['run', 'build'], { stdio: 'inherit' });
   guardChanges(root, plan);
+  const config = readConfig(readFileSync(resolve(root, plan.configFile), 'utf8'));
+  const preview = { available: config.access?.mode !== 'locked' && config.agent?.query !== true && existsSync(resolve(root, 'dist')), output: 'dist', published: false };
+  writeFileSync(resolve(output, 'preview.json'), `${JSON.stringify(preview, null, 2)}\n`);
   git(root, 'add', '-N', '--', ...paths.filter((path) => existsSync(resolve(root, path))));
   const validatedPatch = git(root, 'diff', '--binary', plan.head, '--', ...paths);
   writeFileSync(resolve(output, 'validated.patch'), validatedPatch);
-  writeFileSync(resolve(output, 'pr-body.md'), reviewBody(plan, paths, agentResult));
-  if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `changed=true\n`);
+  writeFileSync(resolve(output, 'pr-body.md'), reviewBody(plan, paths, agentResult, preview, checks));
+  if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `changed=true\nstatic_preview=${preview.available}\n`);
   console.log(`Validated ${paths.length} documentation files. Draft PR patch: .docsy/maintenance/validated.patch`);
   return { changed: true, paths };
 };

@@ -186,3 +186,9 @@ html[data-theme="dark"] .sdk-detail-tag.is-static,
 html[data-theme="dark"] .sdk-values code {
   background: color-mix(in srgb, var(--paper) 92%, var(--ink)) !important;
 }
+
+/* Status copy must remain readable; the light-mode amber is too dark here. */
+html[data-theme="dark"] .sdk-deprecated,
+html[data-theme="dark"] .sdk-deprecated strong {
+  color: var(--ink);
+}

@@ -1,4 +1,8 @@
-Docsy is documentation built for humans and coding agents. People read searchable guides and API or SDK reference pages in the documentation portal. Coding agents can read the same content as Markdown and help maintain the YAML, articles, and editable Astro interface in your repository.
+Docsy by AppGram is documentation you own: YAML configuration, native SDK and OpenAPI imports, editable source, and self-hosting. People read searchable guides and reference pages; coding agents read Markdown/JSON and help maintain the same repository.
+
+:::note[Private preview — not publicly released]
+Use an authorized checkout or the local versioned CLI tarball. No public npm package or hosted service is required. Generation and local preview do not deploy anything.
+:::
 
 ## Run this documentation portal
 
@@ -14,6 +18,8 @@ npm run dev
 Open `http://localhost:4321/docsy/`. Changes to `docsy.config.yaml`, Markdown articles, components, and styles are reflected locally.
 
 ## Generate a new project
+
+Run `npm run release:pack` in the private checkout. Copy the `npm exec --package ... -- create-docsy my-docs --yes --ci` command it prints. That is the distribution-level test path: it uses the internal tarball rather than assuming an npm release exists.
 
 Use the included generator when you want a separate documentation site:
 
@@ -34,6 +40,14 @@ npm run create -- ../acme-docs \
 ```
 
 The generated directory is an independent Astro project. It includes a starter guide, the default interface, validated YAML configuration, deployment files, and an AI customization brief.
+
+Add `--ci` for validation and a downloadable static preview artifact. Add `--deploy github-pages --repo https://github.com/OWNER/REPOSITORY` for a gated Pages workflow and correctly derived origin/base path. Nothing goes live until you explicitly enable Pages and set the repository variable `DOCSY_ENABLE_PAGES=true`. Keep that switch off during private development. For runtime permissions or live queries, use Node/Bun self-hosting instead.
+
+After creation, run `npm run docsy -- doctor`, add your content, then `npm run build` and `npm run preview`. The CLI prints the local path and, when selected, the expected future Pages URL. The **GitHub Pages** guide explains the final opt-in steps; generation itself never pushes or publishes.
+
+Every generated project includes `DEPLOYING.md`: content setup, local preview, source storage, explicit publication, and verification of the actual live URL. Use it as the handoff checklist, keeping the publishing step disabled while the project is private.
+
+Keep `.docsy/template.json` in Git. It records the template version and original file hashes so future fixes can be compared safely. See **Upgrade a customized site**; the comparison command does not overwrite your changes.
 
 ## Bring your coding agent
 
@@ -64,7 +78,7 @@ npm run validate
 npm run build
 ```
 
-Use Node 22.22 or newer. Open mode with `agent.query: false` produces a static Astro build. Locked mode or `agent.query: true` produces a standalone Node server so authorization or live queries can run for every request.
+Use Node 22.22 or newer to develop and build. Open mode with `agent.query: false` produces a static Astro build. Locked mode or `agent.query: true` produces a standalone server so authorization or live queries can run for every request. Start the build with Node using `npm start`, or use the tested Bun production runtime with `npm run start:bun` (Bun 1.3.5 or newer).
 
 ## Choose the next guide
 

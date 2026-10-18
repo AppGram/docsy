@@ -1,0 +1,13 @@
+node_modules/
+.astro/
+dist/
+release/
+.env
+.env.*
+!.env.example
+.docsy/maintenance/
+.docsy/generators/
+.docsy/packages/
+.docsy/cache/
+.docsy/upgrades/
+.docsy/real-projects/

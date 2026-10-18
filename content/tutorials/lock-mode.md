@@ -84,11 +84,13 @@ Timeouts, errors, invalid payloads, and non-2xx responses fail closed for protec
 
 ## Build and deploy locked mode
 
-Locked mode changes Astro from a static build to a Node server because authorization runs for every request:
+Locked mode changes Astro from a static build to a standalone server because authorization runs for every request. It can run on Node or on the tested Bun production runtime:
 
 ```bash
 npm run build
 HOST=0.0.0.0 PORT=8080 npm run preview
 ```
 
-Rebuild after changing access mode, rules, article sources, or ingestion configuration. Put the Node process behind the trusted proxy or connect it to the webhook provider before exposing it publicly.
+To use Bun after the same Node build, start with `npm run start:bun` instead of `npm run preview`. Bun 1.3.5 or newer is supported as the production runtime; Node remains the build toolchain.
+
+Rebuild after changing access mode, rules, article sources, or ingestion configuration. Put the server process behind the trusted proxy or connect it to the webhook provider before exposing it publicly.

@@ -113,3 +113,15 @@ html[dir="rtl"] .article-body .docsy-steps > ol > li { padding: 0 46px 24px 0; }
 .article-reader-nav { display: flex; justify-content: space-between; gap: 20px; margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); }
 .article-reader-nav a { max-width: 48%; }
 .article-body pre, .cb pre { direction: ltr; text-align: left; }
+.article-body .docsy-card-group { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 24px 0; }
+.article-body .docsy-card-group[data-cols="1"] { grid-template-columns: 1fr; }
+.article-body .docsy-card-group[data-cols="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.article-body .docsy-mdx-card { padding: 20px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); min-width: 0; }
+.article-body .docsy-mdx-card > :first-child { margin-top: 0; }
+.article-body .docsy-mdx-card > :last-child { margin-bottom: 0; }
+.article-body .docsy-mdx-card .docsy-component-title a { color: var(--ink); text-decoration: none; }
+.article-body .docsy-mdx-card .docsy-component-title a:hover { text-decoration: underline; }
+.article-body .docsy-mdx-card .docsy-component-title a:focus-visible { outline: 2px solid var(--violet); outline-offset: 4px; }
+.article-body .docsy-mdx-card p { font-size: 14px; }
+.article-body .docsy-frame { margin: 24px 0; padding: 16px; border: 1px solid var(--line); border-radius: 10px; }
+@media (max-width: 640px) { .article-body .docsy-card-group[data-cols] { grid-template-columns: 1fr; } }

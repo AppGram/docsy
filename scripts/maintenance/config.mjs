@@ -17,6 +17,11 @@ export const maintenanceSchema = z.object({
     'Use a relative Markdown file path.').default('content/maintenance/breaking-changes.md'),
   maxDiffChars: z.number().int().min(1000).max(200_000).default(60_000),
   model: z.string().regex(/^[a-zA-Z0-9._:/-]+$/).optional(),
+  exampleChecks: z.array(z.object({
+    name: z.string().min(1).max(100),
+    command: z.array(z.string().min(1).refine((value) => !/[\x00\r\n]/.test(value), 'Command arguments must not contain control characters.')).min(1).max(30),
+    timeoutMs: z.number().int().min(100).max(120_000).default(30_000),
+  })).max(20).default([]),
 }).default({});
 
 export const matchesGlob = (path, pattern) => {

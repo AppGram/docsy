@@ -9,6 +9,9 @@ import { dump } from 'js-yaml';
 import { setTimeout as delay } from 'node:timers/promises';
 
 const repo = process.cwd();
+const runtime = process.env.DOCSY_TEST_RUNTIME || 'node';
+assert.ok(['node', 'bun'].includes(runtime), 'DOCSY_TEST_RUNTIME must be node or bun');
+const runtimeExecutable = runtime === 'bun' ? 'bun' : process.execPath;
 const write = (root: string, path: string, value: string) => { mkdirSync(dirname(join(root, path)), { recursive: true }); writeFileSync(join(root, path), value); };
 const read = (root: string, path: string) => readFileSync(join(root, path), 'utf8');
 const command = (root: string, ...args: string[]) => execFileSync(process.execPath, args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, DOCSY_CONFIG: 'docsy.config.yaml' }, timeout: 90_000 });
@@ -27,18 +30,23 @@ function site() {
       { slug: 'guide', title: 'Guide', source: 'content/guide.md' },
       { slug: 'guide', title: 'Guide français', locale: 'fr', source: 'content/fr.md' },
       { slug: 'guide', title: 'Old guide', version: 'v1', source: 'content/v1.md' },
-      { slug: 'private', title: 'Restricted guide', source: 'content/private.md' },
+      { slug: 'private', title: 'Restricted guide', source: 'content/private.mdx' },
+      { slug: 'native', title: 'Native MDX', source: 'content/native.mdx' },
     ] },
     navigation: [{ title: 'Guides', items: [{ title: 'Guide', titles: { fr: 'Guide français' }, href: '/guides/guide' }, { title: 'Restricted guide', href: '/guides/private' }, { title: 'API', href: '/api/widgets' }, { title: 'SDK', href: '/widget-sdk' }] }],
     ingestion: { openapi: { source: 'sources/api.yaml', apiBaseUrl: 'https://api.example.test', versions: { v1: 'sources/v1.yaml' }, sections: [{ section: 'widgets', title: 'Widgets', description: 'Widgets API', paths: ['/widgets'] }] }, sdks: [{ id: 'widget', slug: 'widget-sdk', adapter: 'typedoc-lite', source: 'sources/sdk.json', versions: { v1: 'sources/sdk-v1.json' }, name: 'Widget SDK', language: 'typescript', install: 'npm install widget', overview: 'Widget API client', quickstart: { code: 'client.get("quickstartneedle");', language: 'typescript' } }] },
     access: { mode: 'open', tiers: { pro: { label: 'Pro' } }, rules: [{ pattern: '/guides/private', tiers: ['pro'] }] },
     agent: { enabled: true, query: false },
+    reader: { editUrl: 'https://github.com/example/docs/edit/{version}/{locale}/{source}', reportUrl: 'https://github.com/example/docs/issues/new' },
+    redirects: { '/old-guide': '/guides/guide', '/old-private': '/guides/private' },
   };
   write(root, 'content/guide.md', '# Guide body\n\nThe elusive platypusword only appears inside a paragraph.\n\n## Details\n\n:::note[Read carefully]\n::include{src="shared"}\n:::\n\n::::tabs{sync="runtime"}\n:::tab[Node]\nNode instructions.\n:::\n:::tab[Python]\nPython instructions.\n:::\n::::\n');
   write(root, 'content/fr.md', '# Bonjour\n\nInstructions françaises.\n');
   write(root, 'content/v1.md', '# Old behavior\n\nUse legacyfirefly for version one.\n');
-  write(root, 'content/private.md', '# Restricted\n\nclassifiedsecretword must never leak to public retrieval.\n');
+  write(root, 'content/private.mdx', '## Restricted\n\n<Warning>classifiedsecretword must never leak to public retrieval.</Warning>\n');
+  write(root, 'content/native.mdx', '## Native components\n\n<Tabs>\n<Tab title="Node">mdxquokkaneedle stays searchable.</Tab>\n<Tab title="Bun">Bun works too.</Tab>\n</Tabs>\n\n```ts\nconst native = true;\n```');
   write(root, 'content/shared.md', 'Shared reusable instructions.\n');
+  write(root, 'sources/upstream-code.ts', 'import { UnavailableUpstreamType } from "./not-shipped.js";\n// Ingested source snapshot, not executable portal code.\n');
   const spec = { openapi: '3.1.0', info: { title: 'Widgets', version: '2' }, paths: { '/widgets': { get: { responses: { 200: { description: 'OK' } } } } } };
   write(root, 'sources/api.yaml', dump(spec)); write(root, 'sources/v1.yaml', dump({ ...spec, info: { title: 'Widgets', version: '1' } }));
   const sdk = (summary: string) => ({ modules: [{ types: [{ kind: 'class', name: 'WidgetClient', description: { summary } }] }], navigation: { categories: [{ title: 'Classes', items: ['WidgetClient'] }] } });
@@ -50,7 +58,7 @@ function site() {
 const freePort = () => new Promise<number>((resolve, reject) => { const server = createServer(); server.once('error', reject); server.listen(0, '127.0.0.1', () => { const port = (server.address() as { port: number }).port; server.close(() => resolve(port)); }); });
 async function serve(root: string) {
   const port = await freePort();
-  const child = spawn(process.execPath, ['scripts/start.mjs'], { cwd: root, env: { ...process.env, DOCSY_CONFIG: 'docsy.config.yaml', HOST: '127.0.0.1', PORT: String(port) }, stdio: ['ignore', 'pipe', 'pipe'] });
+  const child = spawn(runtimeExecutable, ['scripts/start.mjs'], { cwd: root, env: { ...process.env, DOCSY_CONFIG: 'docsy.config.yaml', HOST: '127.0.0.1', PORT: String(port) }, stdio: ['ignore', 'pipe', 'pipe'] });
   let logs = ''; child.stdout.on('data', (chunk) => { logs = (logs + chunk).slice(-12000); }); child.stderr.on('data', (chunk) => { logs = (logs + chunk).slice(-12000); });
   const base = `http://127.0.0.1:${port}/docs`;
   for (let i = 0; i < 100; i++) {
@@ -61,10 +69,32 @@ async function serve(root: string) {
   child.kill('SIGTERM'); throw new Error(`Server did not start: ${logs}`);
 }
 
-test('generated template builds static variants/exports and Node APIs without permission leaks', { timeout: 180_000 }, async () => {
+test(`generated template serves static variants and permission-aware APIs on ${runtime}`, { timeout: 180_000 }, async () => {
   const fixture = site(); const { root, config, save } = fixture;
   try {
     command(root, 'scripts/docsy.mjs', 'build');
+    const generated = JSON.parse(read(root, 'package.json'));
+    assert.equal(generated.scripts.start, 'node scripts/start.mjs');
+    assert.equal(generated.scripts['start:bun'], 'bun scripts/start.mjs');
+    assert.ok(existsSync(join(root, 'Dockerfile.bun')));
+    const staticServer = await serve(root);
+    try {
+      const response = await fetch(`${staticServer.base}/guides/guide`);
+      assert.equal(response.status, 200);
+      const body = await response.text();
+      assert.match(body, /platypusword/);
+      assert.match(body, /https:\/\/github.com\/example\/docs\/edit\/current\/en\/content\/guide.md/);
+      assert.match(body, /Report a problem/);
+      const redirect = await fetch(`${staticServer.base}/old-guide`);
+      assert.equal(redirect.status, 200);
+      assert.match(await redirect.text(), /\/docs\/guides\/guide/);
+      const markdown = await fetch(`${staticServer.base}/format-md/guides/guide`);
+      assert.match(markdown.headers.get('content-type')!, /text\/markdown/);
+      assert.match(await markdown.text(), /platypusword/);
+      assert.equal((await fetch(`${staticServer.base}/not-a-document`)).status, 404);
+      const mdx = await fetch(`${staticServer.base}/guides/native`);
+      assert.equal(mdx.status, 200); assert.match(await mdx.text(), /docsy-tabs/);
+    } finally { await staticServer.stop(); }
     const fr = read(root, 'release/docs/versions/current/fr/guides/guide/index.html');
     assert.match(fr, /lang="fr"/); assert.match(fr, /Guide français/); assert.match(fr, /Rechercher/); assert.match(fr, /hreflang="fr"/);
     const old = read(root, 'release/docs/versions/v1/fr/guides/guide/index.html');
@@ -77,6 +107,9 @@ test('generated template builds static variants/exports and Node APIs without pe
     assert.match(read(root, 'release/docs/versions/v1/en/api/widgets/index.html'), /v1/);
     const index = JSON.parse(read(root, 'release/docs/search-index.json'));
     assert.ok(index.entries.some((entry: any) => entry.body.includes('platypusword')));
+    assert.ok(index.entries.some((entry: any) => entry.body.includes('mdxquokkaneedle')));
+    assert.match(read(root, 'release/docs/format-md/guides/native'), /mdxquokkaneedle/);
+    assert.ok(!read(root, 'release/docs/format-md/guides/native').includes('<Tab'));
     assert.ok(index.entries.some((entry: any) => entry.id === 'current:fr:home' && entry.title === 'Documentation française'));
     assert.equal(JSON.parse(read(root, 'release/docs/agent/pages/versions/current/fr/index.json')).title, 'Documentation française');
     const page = JSON.parse(read(root, 'release/docs/agent/pages/versions/v1/fr/guides/guide.json'));
@@ -102,6 +135,11 @@ test('generated template builds static variants/exports and Node APIs without pe
     write(root, 'sources/api.yaml', dump({ openapi: '3.1.0', info: { title: 'Widgets', version: '2' }, paths: { '/widgets': { get: { responses: { 200: { description: 'OK' } } } } } }));
 
     config.access.mode = 'locked'; config.agent.query = true; save();
+    config.content.mdx = { allowJavaScript: true, components: { Status: 'content/Status.tsx' } };
+    write(root, 'content/Status.tsx', 'export default function Status() { return <strong>Trusted component output</strong>; }');
+    write(root, 'content/secret.ts', 'export const label = "classifiedsecretword";');
+    write(root, 'content/private.mdx', 'import { label } from "./secret.ts"\n\n## Restricted\n\n<Status />\n\n<Warning>{label} must never leak to public retrieval.</Warning>');
+    save();
     command(root, 'scripts/docsy.mjs', 'build');
     assert.ok(existsSync(join(root, 'dist/server/entry.mjs')));
     assert.ok(!existsSync(join(root, 'release/docs/agent/index.json')));
@@ -125,11 +163,15 @@ test('generated template builds static variants/exports and Node APIs without pe
         response = await fetch(`${server.base}/agent/pages/${key}.json`); assert.equal(response.status, 404);
         response = await fetch(`${server.base}/agent/pages/${key}.json`, { headers: auth }); assert.equal(response.status, 200); assert.ok((await response.json()).markdown.includes('classifiedsecretword'));
         response = await fetch(`${server.base}/format-md/${key}`); assert.equal(response.status, 401);
+        response = await fetch(`${server.base}/${key}`, { headers: auth }); assert.equal(response.status, 200); assert.match(await response.text(), /Trusted component output/);
       }
       response = await fetch(`${server.base}/guides/private`, { redirect: 'manual' }); assert.equal(response.status, 302);
       response = await fetch(`${server.base}/guides/private`, { headers: { accept: 'text/markdown' } }); assert.equal(response.status, 401);
       response = await fetch(`${server.base}/guides/guide`, { headers: { accept: 'text/markdown' } }); assert.match(response.headers.get('content-type')!, /text\/markdown/); assert.match(await response.text(), /platypusword/);
       response = await fetch(`${server.base}/agent/query.json?q=test&limit=999`); assert.equal(response.status, 400);
+      response = await fetch(`${server.base}/old-guide/`, { redirect: 'manual' }); assert.equal(response.status, 301, `Redirect response: ${response.status} ${response.headers.get('location')}`); assert.equal(response.headers.get('location'), '/docs/guides/guide');
+      response = await fetch(`${server.base}/old-private/`, { redirect: 'manual' }); assert.equal(response.status, 302); assert.match(response.headers.get('location')!, /\/docs\/locked/);
+      response = await fetch(`${server.base}/old-private/`, { redirect: 'manual', headers: auth }); assert.equal(response.status, 301); assert.equal(response.headers.get('location'), '/docs/guides/private');
       response = await fetch(`${server.base}/agent/pages/not-a-document.json`); assert.equal(response.status, 404);
     } finally { await server.stop(); }
 

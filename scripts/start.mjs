@@ -1,12 +1,13 @@
 import { createReadStream, existsSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { extname, join, normalize, resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 const root = process.cwd();
 const serverEntry = resolve(root, 'dist/server/entry.mjs');
 
 if (existsSync(serverEntry)) {
-  await import(serverEntry);
+  await import(pathToFileURL(serverEntry).href);
 } else {
   const staticRoot = resolve(root, 'release');
   const port = Number(process.env.PORT) || 8080;

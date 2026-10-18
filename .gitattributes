@@ -1,0 +1,3 @@
+# Recorded unified diffs require a single-space prefix on blank context lines.
+# Preserve the evidence bytes instead of treating those prefixes as prose errors.
+docs/evidence/*.patch -whitespace

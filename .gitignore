@@ -5,6 +5,10 @@ release/
 .env
 .docsy/maintenance/
 .docsy/generators/
+.docsy/packages/
+.docsy/cache/
+.docsy/upgrades/
+.docsy/real-projects/
 tests/generators/input/**/bin/
 tests/generators/input/**/obj/
 tests/generators/input/**/_build/

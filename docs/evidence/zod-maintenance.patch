@@ -1,0 +1,137 @@
+diff --git a/content/errors.md b/content/errors.md
+index 93a4d4d..26b5388 100644
+--- a/content/errors.md
++++ b/content/errors.md
+@@ -1,6 +1,20 @@
+-The ZodError contract is recorded in sources/zod-error.ts. Read validation failures with result.error.errors.
++The ZodError contract is recorded in sources/zod-error.ts. Read validation failures with result.error.issues.
+ 
+ ```javascript
+ const result = z.string().safeParse(42);
+-if (!result.success) console.log(result.error.errors);
++if (!result.success) console.log(result.error.issues);
+ ```
++
++## API compatibility
++
++This example assumes `z` comes from `zod/v4`. The upstream record still identifies `zod@3.25.76`: it changes from the v3 API to the v4 compatibility export, not to a newly recorded package release. This package exports v3 through `zod` and `zod/v3`, and classic v4 through `zod/v4`.
++
++In v3, `.errors` was a getter alias for `.issues`. The v4 snapshot exposes `.issues` without that alias. Check `result.success` before accessing the error. See [Getting started](/guides/getting-started) and [Breaking changes](/guides/breaking-changes).
++
++## Error reference
++
++The classic error contract is in `sources/zod-error.ts`; its core definitions are in `sources/zod-core-errors.ts`. Each issue has a `code`, `path`, and `message`, with additional fields depending on the code. Paths use `PropertyKey[]`. The error's `message` is a JSON rendering of the issues. Read `.issues` explicitly for structured output: the core initializer makes that property non-enumerable.
++
++The classic v4 error retains `.format()` and `.flatten()`, but deprecates them in favor of `z.treeifyError(error)`. The tree uses `errors`, with optional `properties` for object fields and `items` for array elements. These output `errors` arrays are distinct from the removed top-level error alias. The core `flattenError` utility returns `formErrors` and `fieldErrors`, grouping fields by their first path segment.
++
++The retained `.addIssue()`, `.addIssues()`, and `.isEmpty` members are deprecated: push to `.issues` and check `.issues.length === 0` instead. The retained `ZodIssue`, `ZodFlattenedError`, `ZodFormattedError`, `ZodErrorMap`, and `IssueData` type aliases are deprecated aliases of core types; use their `z.core` counterparts when migrating type annotations.
+diff --git a/content/getting-started.md b/content/getting-started.md
+index 8ff743b..80f4324 100644
+--- a/content/getting-started.md
++++ b/content/getting-started.md
+@@ -1,18 +1,19 @@
+-Start here, then replace this article with the onboarding path for Zod migration proof.
++# Getting started
+ 
+-## Configure the project
++## Select the API export
+ 
+-Open `docsy.config.yaml` to change product copy, navigation, authored articles, ingestion sources, theme tokens, and access rules.
++The committed upstream record identifies `zod@3.25.76`. The source comparison switches the error snapshot from v3 to the v4 compatibility export within that package. The package version alone does not identify the API selected by an import.
+ 
+-## Run locally
++In this package, `zod` exports v3, `zod/v3` explicitly selects v3, and `zod/v4` selects classic v4. For the v4 error handling documented here, import:
+ 
+-```bash
+-npm run dev
++```javascript
++import { z } from "zod/v4";
+ ```
+ 
+-## Validate before deployment
++Check imports in application code and shared validation helpers. Retaining `zod/v3` explicitly keeps the v3 API while preparing the migration.
+ 
+-```bash
+-npm run validate
+-npm run build
+-```
++## Read validation failures
++
++Use `safeParse`, check `result.success`, and read `result.error.issues` on failure. `.issues` exists in both APIs; the v3 `.errors` alias is absent from the v4 snapshot. See the [error handling example](/guides/errors).
++
++Before switching imports, follow the [migration steps](/guides/breaking-changes) for issue shapes and custom error handling as well as the property rename.
+diff --git a/content/maintenance/breaking-changes.md b/content/maintenance/breaking-changes.md
+new file mode 100644
+index 0000000..7d85f01
+--- /dev/null
++++ b/content/maintenance/breaking-changes.md
+@@ -0,0 +1,39 @@
++# Breaking changes
++
++## Scope
++
++Commits `c659a45dfac38cbc74391b32a465ae5c12121a34` and `d95b8ca1b4b80e2501a543560d031ba4ac94a3db` replace the v3 error snapshot with classic v4 errors and add v4 core error definitions. `sources/upstream.json` still identifies `zod@3.25.76`. This is an API-export change, not evidence of a new package release. This package provides v3 through `zod` and `zod/v3`, and classic v4 through `zod/v4`.
++
++## Validation issue property
++
++Previously, v3 `ZodError.errors` was a getter returning `this.issues`. In the v4 snapshot, `.issues` remains but `.errors` is absent; the upstream observation records `.errors` as undefined.
++
++Replace `error.errors` with `error.issues` in logging, iteration, serialization, and assertions, including `result.error.issues` after a failed `safeParse`. Keep the failure guard. This property also exists in v3, so handlers can adopt it before switching imports. The v4 core makes `.issues` non-enumerable: explicitly include it in structured output instead of relying on object spreading.
++
++## Issue shapes and custom maps
++
++Audit issue consumers against `sources/zod-core-errors.ts`:
++
++| Previous v3 shape | New v4 shape | Migration |
++| --- | --- | --- |
++| `invalid_union.unionErrors`: `ZodError[]` | `invalid_union.errors`: issue arrays | Iterate nested arrays directly instead of reading each nested error's `.issues`. |
++| `invalid_string.validation` | `invalid_format.format`, plus format-specific fields | Update switches and field reads. |
++| `invalid_literal` and `invalid_enum_value` | `invalid_value` with `values` | Handle the consolidated code and allowed-value array. |
++| `too_small.type` / `too_big.type` | `origin` | Rename reads; `inclusive` is now optional. |
++| `not_multiple_of.multipleOf` | `divisor` | Rename field reads. |
++| `invalid_type.received` | No `received` field in the new interface | Remove reliance on that field. |
++| Paths of `(string \| number)[]` | `PropertyKey[]` | Allow symbol segments in path consumers. |
++
++The new union includes `invalid_key` and `invalid_element`, each with nested `issues`. Old codes including `invalid_arguments`, `invalid_return_type`, `invalid_date`, `invalid_intersection_types`, `invalid_union_discriminator`, and `not_finite` are absent from the new union. Update exhaustive switches. The error snapshots alone do not establish which replacement issue every schema or parser emits.
++
++The old `ZodErrorMap` accepted an issue and a context containing `defaultError` and `data`, returning `{ message }`. The new alias points to `$ZodErrorMap`, which takes one raw issue and can return `{ message }`, a string, `undefined`, or `null`. Rewrite callbacks to the one-argument contract. The new snapshot does not export `ErrorMapCtx`. `IssueData` now aliases `$ZodRawIssue`; update annotations rather than assuming the old `fatal` contract.
++
++## Error helpers
++
++The v3 `formErrors` getter is absent from the new classic interface. Use the retained `.flatten()` method for the `formErrors` / `fieldErrors` shape, or migrate to a core utility. `.format()` and `.flatten()` remain but are deprecated; the source recommends `z.treeifyError(error)`. Its `errors` / `properties` / `items` tree has a different shape, so update consumers when adopting it.
++
++Replace deprecated `.addIssue()` and `.addIssues()` with pushes to `.issues`, and `.isEmpty` with `.issues.length === 0`. Previously the add methods replaced the array; now they mutate it in place. Review retained array references. The new core defines `.issues` without a writable flag: mutate the array rather than reassigning it.
++
++The old class explicitly extended `Error`; the new snapshot uses constructor helpers and separately defines `ZodRealError` with `Parent: Error`. The committed snapshots omit the constructor-helper and parser implementations, so they do not alone prove `instanceof Error` behavior for every parse result. Verify dependencies on this behavior with the selected runtime.
++
++After migrating imports and handlers, verify failing parses, nested union issues, custom maps, and formatted-error consumers with the selected v4 runtime. See [Error handling](/guides/errors) for the corrected minimal example.
+diff --git a/docsy.config.yaml b/docsy.config.yaml
+index 000ae1a..b3b30e5 100644
+--- a/docsy.config.yaml
++++ b/docsy.config.yaml
+@@ -56,6 +56,14 @@ content:
+     - include
+   snippets: {}
+   articles:
++    - slug: getting-started
++      title: Getting started
++      source: content/getting-started.md
++      description: Select the Zod API export and handle validation failures.
++    - slug: breaking-changes
++      title: Breaking changes
++      source: content/maintenance/breaking-changes.md
++      description: Migrate v3 error handlers to the v4 compatibility export.
+     - slug: errors
+       title: Read Zod validation errors
+       source: content/errors.md
+@@ -116,6 +124,10 @@ access:
+ navigation:
+   - title: Zod
+     items:
++      - title: Getting started
++        href: /guides/getting-started
++      - title: Breaking changes
++        href: /guides/breaking-changes
+       - title: Error handling
+         href: /guides/errors
+ ingestion:

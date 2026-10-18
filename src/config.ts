@@ -172,6 +172,13 @@ const configSchema = z.object({
     label: z.string().min(1),
     href: z.string().url(),
   }).optional(),
+  reader: z.object({
+    editUrl: z.string().url().refine((value) => /^https?:\/\//i.test(value), 'Use an HTTP(S) source-edit URL').optional(),
+    reportUrl: z.string().url().refine((value) => /^https?:\/\//i.test(value), 'Use an HTTP(S) issue URL').optional(),
+    editLabel: z.string().default('Edit this page'),
+    reportLabel: z.string().default('Report a problem'),
+  }).default({}),
+  redirects: z.record(z.string()).default({}),
   eyebrow: z.object({
     icon: z.string().min(1).default('assets/docsy-logo.svg'),
     size: z.number().int().min(8).max(32).default(14),
@@ -214,8 +221,16 @@ const configSchema = z.object({
   }),
   content: z.object({
     articles: z.array(articleSchema).default([]),
+    mdx: z.object({
+      enabled: z.boolean().default(true),
+      allowJavaScript: z.boolean().default(false),
+      components: z.record(z.string().min(1)).default({}),
+    }).default({}).superRefine((value, context) => {
+      if (!value.allowJavaScript && Object.keys(value.components).length) context.addIssue({ code: z.ZodIssueCode.custom, message: 'Custom MDX component modules execute code; explicitly enable content.mdx.allowJavaScript for trusted sources.' });
+      for (const name of Object.keys(value.components)) if (!/^[A-Z][A-Za-z0-9]*$/.test(name)) context.addIssue({ code: z.ZodIssueCode.custom, message: `Invalid MDX component name: ${name}` });
+    }),
     snippets: z.record(z.string().regex(/\.(?:md|markdown|mdown)$/i)).default({}),
-    components: z.array(z.enum(['note', 'tip', 'warning', 'danger', 'steps', 'tabs', 'accordion', 'code-group', 'include'])).default(['note', 'tip', 'warning', 'danger', 'steps', 'tabs', 'accordion', 'code-group', 'include']),
+    components: z.array(z.enum(['note', 'tip', 'warning', 'danger', 'steps', 'tabs', 'accordion', 'code-group', 'include', 'card', 'frame'])).default(['note', 'tip', 'warning', 'danger', 'steps', 'tabs', 'accordion', 'code-group', 'include', 'card', 'frame']),
   }).default({}),
   versions: z.object({
     default: z.string().default('current'),
@@ -273,6 +288,19 @@ const configSchema = z.object({
     }),
   }),
 }).superRefine((config, context) => {
+  const canonical = (path: string) => path.replace(/\/+$/, '') || '/';
+  const route = (path: string) => path.startsWith('/') && !path.includes('//') && !/[?#\\\x00-\x20]/.test(path) && !path.split('/').some((part) => part === '..' || part === '.');
+  const aliases = Object.fromEntries(Object.entries(config.redirects).map(([from, to]) => [canonical(from), canonical(to)]));
+  if (Object.keys(aliases).length !== Object.keys(config.redirects).length) context.addIssue({ code: 'custom', path: ['redirects'], message: 'Redirect aliases must be unique after trailing-slash normalization.' });
+  for (const [from, to] of Object.entries(config.redirects)) {
+    if (!route(from) || !route(to) || from === '/' || from.replace(/\/$/, '') === to.replace(/\/$/, '')) context.addIssue({ code: 'custom', path: ['redirects', from], message: 'Redirects require distinct, local canonical paths (no query, fragment or traversal).' });
+    if (/^\/(?:assets|_astro|agent|format-md)(?:\/|$)|^\/(?:search-index\.json|llms\.txt|llms-full\.txt|locked)\/?$/.test(from)) context.addIssue({ code: 'custom', path: ['redirects', from], message: 'Redirects cannot shadow asset, gate or machine-readable routes.' });
+    const visited = new Set([canonical(from)]); let next: string | undefined = canonical(to);
+    while (next && aliases[next]) {
+      if (visited.has(next)) { context.addIssue({ code: 'custom', path: ['redirects', from], message: 'Redirect cycle detected.' }); break; }
+      visited.add(next); next = aliases[next];
+    }
+  }
   const articleSlugs = new Set<string>();
   config.content.articles.forEach((article, articleIndex) => {
     const key = `${article.version ?? '*'}:${article.locale ?? config.localization?.defaultLocale ?? config.site.language}:${article.slug}`;

@@ -20,6 +20,9 @@ export default defineConfig({
   site,
   output: locked ? 'server' : 'static',
   adapter: locked ? node({ mode: 'standalone' }) : undefined,
+  // Per-project cache also keeps isolated generated-site tests from racing when
+  // they intentionally share a read-only dependency installation.
+  vite: { cacheDir: resolve(process.cwd(), '.astro/vite') },
   server: {
     port: Number(process.env.PORT) || 4321,
     host: true,

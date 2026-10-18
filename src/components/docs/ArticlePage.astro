@@ -1,8 +1,9 @@
 ---
 import type { ArticleDoc } from '../../lib/article-loader';
 import { articleUrl, getArticleSources } from '../../lib/article-loader';
-import { defaultContext, type DocsContext } from '../../config';
+import { defaultContext, docsyConfig, type DocsContext } from '../../config';
 import { message } from '../../lib/messages';
+import { readerLinks } from '../../lib/reader-links';
 
 interface Props {
   article: ArticleDoc;
@@ -13,6 +14,7 @@ const { article, context = defaultContext } = Astro.props;
 const articles = getArticleSources(context);
 const index = articles.findIndex((item) => item.slug === article.config.slug);
 const previous = articles[index - 1]; const next = articles[index + 1];
+const links = readerLinks(article, context);
 ---
 
 <article class="article-page">
@@ -22,6 +24,10 @@ const previous = articles[index - 1]; const next = articles[index + 1];
     {article.config.description && <p class="article-description">{article.config.description}</p>}
   </header>
   <div class="article-body" lang={article.config.locale ?? defaultContext.locale} set:html={article.html} />
+  {(links.edit || links.report) && <div class="article-source-actions" aria-label={message(context, 'documentationFeedback')}>
+    {links.edit && <a href={links.edit} target="_blank" rel="noopener noreferrer">{message(context, 'editPage', docsyConfig.reader.editLabel)} <span aria-hidden="true">↗</span></a>}
+    {links.report && <a href={links.report} target="_blank" rel="noopener noreferrer">{message(context, 'reportProblem', docsyConfig.reader.reportLabel)} <span aria-hidden="true">↗</span></a>}
+  </div>}
   <nav class="article-reader-nav" aria-label={message(context, 'articleNavigation')}>
     {previous ? <a href={articleUrl(previous, context)}>← {message(context, 'previous')}: {previous.title}</a> : <span />}
     {next && <a href={articleUrl(next, context)}>{message(context, 'next')}: {next.title} →</a>}
@@ -29,6 +35,10 @@ const previous = articles[index - 1]; const next = articles[index + 1];
 </article>
 
 <style>
+  .article-source-actions { display:flex; flex-wrap:wrap; gap:24px; margin:44px 0 26px; padding-top:20px; border-top:1px solid var(--line); }
+  .article-source-actions a { color:var(--muted); font-size:13px; text-decoration:none; letter-spacing:normal; }
+  .article-source-actions a:hover { color:var(--ink); text-decoration:underline; text-underline-offset:4px; }
+  .article-source-actions a:focus-visible { outline:2px solid var(--violet); outline-offset:5px; border-radius:2px; }
   .article-header {
     margin-bottom: 40px;
     padding-bottom: 28px;

@@ -1,6 +1,6 @@
 Authored articles let a Docsy site contain onboarding, concepts, tutorials, migration notes, and operational guides beside generated API and SDK reference pages.
 
-The article body is Markdown. YAML supplies route and presentation metadata.
+The article body can be Markdown (`.md`) or native MDX (`.mdx`). YAML supplies route and presentation metadata. [Native MDX articles](../native-mdx) add built-in JSX components and optional trusted React modules without changing navigation, search, exports or permissions.
 
 ## Create the Markdown source
 

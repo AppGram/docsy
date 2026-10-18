@@ -72,7 +72,7 @@ export const highlightArticles = () => async (tree: Root) => {
       if (code) {
         const classes = code.properties.className;
         const language = (Array.isArray(classes) ? classes : String(classes || '').split(' ')).find((name) => String(name).startsWith('language-'));
-        parent.children[index] = await codeCard(value(code), language ? String(language).slice(9) : 'text', String((code.data as { meta?: string } | undefined)?.meta || 'Code example'));
+        parent.children[index] = await codeCard(value(code), language ? String(language).slice(9) : 'text', String((code.data as { meta?: string } | undefined)?.meta || code.properties.dataTitle || 'Code example'));
       } else await visit(node);
     }));
   };

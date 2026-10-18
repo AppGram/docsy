@@ -16,6 +16,8 @@ import { fileURLToPath } from 'node:url';
 import { createInterface } from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import { dump, load } from 'js-yaml';
+import { writeTemplateManifest } from './project-tools.mjs';
+import { deploymentGuide, writeWorkflows } from './scaffold/workflows.mjs';
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const invocationRoot = process.cwd();
@@ -36,6 +38,9 @@ Options:
   --open                 Generate a static public site (default)
   --yes, -y              Accept defaults without prompts
   --no-install           Do not install npm dependencies
+  --ci                   Include validation and static-preview artifact workflow
+  --deploy <target>      none (default) or github-pages; deployment is opt-in/gated
+  --repo <url>           Your GitHub repository URL (required for Pages scaffold)
   --force                Replace an existing target directory
   --help, -h             Show this help
 `;
@@ -57,6 +62,9 @@ const parseArguments = (argv) => {
     install: true,
     force: false,
     help: false,
+    ci: false,
+    deployment: 'none',
+    repo: '',
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -76,6 +84,9 @@ const parseArguments = (argv) => {
     else if (argument === '--open') options.access = 'open';
     else if (argument === '--yes' || argument === '-y') options.yes = true;
     else if (argument === '--no-install') options.install = false;
+    else if (argument === '--ci') options.ci = true;
+    else if (argument === '--deploy') options.deployment = takeValue(argument);
+    else if (argument === '--repo') options.repo = takeValue(argument);
     else if (argument === '--force') options.force = true;
     else if (argument === '--help' || argument === '-h') options.help = true;
     else if (argument.startsWith('-')) fail(`unknown option ${argument}`);
@@ -83,6 +94,10 @@ const parseArguments = (argv) => {
     else fail(`unexpected argument ${argument}`);
   }
 
+  if (!['none', 'github-pages'].includes(options.deployment)) fail('--deploy must be none or github-pages');
+  if (options.repo && !/^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/?$/.test(options.repo)) fail('--repo must be an HTTPS GitHub owner/repository URL');
+  if (options.deployment === 'github-pages' && !options.repo) fail('--deploy github-pages requires --repo https://github.com/OWNER/REPOSITORY');
+  if (options.deployment === 'github-pages' && options.access === 'locked') fail('GitHub Pages cannot host permission-gated documentation. Use Node/Bun.');
   return options;
 };
 
@@ -259,6 +274,7 @@ const copyTemplate = (target) => {
     'astro.config.mjs',
     'tsconfig.json',
     'Dockerfile',
+    'Dockerfile.bun',
     'compose.yaml',
     'LICENSE',
     '.github/workflows/docsy-maintenance.yml',
@@ -266,8 +282,9 @@ const copyTemplate = (target) => {
     '.gitignore',
   ];
   for (const entry of entries) {
-    const source = resolve(packageRoot, entry);
-    if (!existsSync(source)) fail(`the published template is missing ${entry}`);
+    // npm deliberately excludes .gitignore; ship it under a neutral asset name.
+    const source = resolve(packageRoot, entry === '.gitignore' ? 'scripts/scaffold/gitignore' : entry);
+    if (!existsSync(source)) fail(`the packaged template is missing ${entry}`);
     cpSync(source, resolve(target, entry), { recursive: true });
   }
 };
@@ -289,11 +306,14 @@ const makePackageJson = (target, projectName) => {
       build: 'node scripts/docsy.mjs build',
       stage: 'node scripts/stage-deployment.mjs',
       preview: 'node scripts/docsy.mjs preview',
+      start: 'node scripts/start.mjs',
+      'start:bun': 'bun scripts/start.mjs',
       maintain: 'node scripts/docsy.mjs maintain',
     },
     dependencies: template.dependencies,
     devDependencies: template.devDependencies,
     engines: template.engines,
+    docsy: { templateVersion: template.docsy?.templateVersion ?? template.version, generator: '@appgram/docsy' },
   };
   writeFileSync(resolve(target, 'package.json'), `${JSON.stringify(generated, null, 2)}\n`);
 
@@ -330,7 +350,7 @@ const makeConfig = ({ projectName, description, basePath, accessMode, apiBase, c
       origin: '${DOCSY_ORIGIN:-http://localhost:4321}',
       basePath,
       language: 'en',
-      homeUrl: '/',
+      homeUrl: basePath === '/' ? '/' : `${basePath}/`,
       logo: 'assets/docsy-mark.svg',
       favicon: 'assets/docsy-mark.svg',
     },
@@ -373,7 +393,8 @@ const makeConfig = ({ projectName, description, basePath, accessMode, apiBase, c
       sdkDescription: 'Generated directly from the configured OpenAPI source.',
     },
     content: {
-      components: ['note', 'tip', 'warning', 'danger', 'steps', 'tabs', 'accordion', 'code-group', 'include'],
+      mdx: { enabled: true, allowJavaScript: false, components: {} },
+      components: ['note', 'tip', 'warning', 'danger', 'steps', 'tabs', 'accordion', 'code-group', 'include', 'card', 'frame'],
       snippets: {},
       articles: [
         {
@@ -459,7 +480,7 @@ This project was generated by Docsy as editable Astro source. Its interface is t
 
 ## Start
 
-Use Node 22.22 or newer.
+Use Node 22.22 or newer to install dependencies, develop, and build. The production server can run on Node or Bun 1.3.5 or newer.
 
 \`\`\`bash
 npm install
@@ -471,10 +492,10 @@ Open \`http://localhost:4321${basePath === '/' ? '/' : `${basePath}/`}\`.
 ## Configure
 
 - \`docsy.config.yaml\` controls product copy, navigation, visual tokens, OpenAPI/SDK sources, and permission tiers.
-- \`content/\` contains Markdown guides registered under \`content.articles\` in YAML.
+- \`content/\` contains Markdown or MDX guides registered under \`content.articles\` in YAML. MDX is declarative by default; \`content.mdx.allowJavaScript\` explicitly enables trusted executable source.
 - \`content.components\` and \`content.snippets\` configure rich Markdown blocks and reusable content.
 - \`versions\` and \`localization\` configure variant routes, selectors, and language fallbacks.
-- \`agent.query: true\` enables a JSON query endpoint and requires the Node server; keep it false for static hosting.
+- \`agent.query: true\` enables a JSON query endpoint and requires the Node/Bun server; keep it false for static hosting.
 - \`src/layouts/DocsLayout.astro\`, \`src/components/docs/\`, and \`src/styles/docsy.css\` are the editable interface.
 - \`sources/\` contains local ingestion inputs.
 - \`DOCSY_BRIEF.md\` tells an AI coding agent what it may customize without drifting from the reference UI.
@@ -491,6 +512,14 @@ npm run validate
 npm run build
 npm run preview
 \`\`\`
+
+For a Bun production runtime, build with Node as above, then run:
+
+\`\`\`bash
+HOST=0.0.0.0 PORT=8080 npm run start:bun
+\`\`\`
+
+The same command serves the staged static build or the permission-gated server build. \`Dockerfile.bun\` provides a Node-build/Bun-runtime container. Bun's package manager and the end-to-end Bun build toolchain are not part of this runtime support claim.
 
 ## Automatic documentation maintenance
 
@@ -549,7 +578,7 @@ npm run build
 
 ## Responsibility boundary
 
-YAML owns product copy, authored article registration, navigation, ingestion, colors, font stacks, and access rules. Markdown owns guide content. Astro/CSS source owns the interface. Start from the generated interface and change only what the request calls for.
+YAML owns product copy, authored article registration, navigation, ingestion, colors, font stacks, and access rules. Markdown or MDX owns guide content. MDX JavaScript execution requires explicit trust; never enable it for unchecked source or agent-generated code. Astro/CSS source owns the interface. Start from the generated interface and change only what the request calls for.
 
 ## Suggested AI kickoff
 
@@ -584,7 +613,7 @@ try {
   }
 
   const openapi = await loadOpenApi(options.openapi);
-  const suggestedName = openapi.spec.info?.title || humanize(basename(options.target));
+  const suggestedName = (options.openapi && openapi.spec.info?.title) || humanize(basename(options.target));
   if (!options.name && prompt) {
     options.name = (await prompt.question(`Product name (${suggestedName}): `)).trim();
   }
@@ -593,13 +622,16 @@ try {
   if (!options.base && prompt) {
     options.base = (await prompt.question('Documentation base path (/docs): ')).trim();
   }
-  const basePath = normalizeBasePath(options.base);
+  const repository = options.repo ? new URL(options.repo).pathname.split('/').filter(Boolean) : [];
+  const suggestedBase = options.deployment === 'github-pages' ? (repository[1].toLowerCase() === `${repository[0].toLowerCase()}.github.io` ? '/' : `/${repository[1]}`) : '/docs';
+  const basePath = normalizeBasePath(options.base || suggestedBase);
 
   if (!options.access && prompt) {
     const locked = (await prompt.question('Enable permission-gated lock mode? (y/N): ')).trim().toLowerCase();
     options.access = ['y', 'yes'].includes(locked) ? 'locked' : 'open';
   }
   options.access ||= 'open';
+  if (options.deployment === 'github-pages' && options.access === 'locked') fail('GitHub Pages cannot host permission-gated documentation.');
 
   const target = resolve(invocationRoot, options.target);
   if (target === invocationRoot || target === packageRoot || target === resolve('/')) {
@@ -627,7 +659,7 @@ try {
   safeRemove(resolve(target, 'public/assets/ag-logo.svg'));
 
   makePackageJson(target, options.name);
-  writeFileSync(resolve(target, 'docsy.config.yaml'), makeConfig({
+  const config = load(makeConfig({
     projectName: options.name,
     description,
     basePath,
@@ -636,6 +668,14 @@ try {
     configSource: openapi.configSource,
     sections,
   }));
+  if (options.repo) {
+    config.site.githubUrl = options.repo.replace(/\/$/, '');
+    config.reader = { editUrl: `${config.site.githubUrl}/edit/main/{source}`, reportUrl: `${config.site.githubUrl}/issues/new` };
+  }
+  if (options.deployment === 'github-pages') config.site.origin = `https://${repository[0]}.github.io`;
+  writeFileSync(resolve(target, 'docsy.config.yaml'), dump(config, { lineWidth: 120, noRefs: true }));
+  writeWorkflows(target, { ci: options.ci, deployment: options.deployment });
+  writeFileSync(resolve(target, 'DEPLOYING.md'), deploymentGuide({ deployment: options.deployment, repo: options.repo, basePath }));
   makeProjectDocs({
     target,
     projectName: options.name,
@@ -645,6 +685,10 @@ try {
     accessMode: options.access,
     sections,
   });
+  const upgradeGuide = existsSync(resolve(packageRoot, 'UPGRADING.md')) ? 'UPGRADING.md' : 'content/reference/upgrading.md';
+  writeFileSync(resolve(target, 'UPGRADING.md'), readFileSync(resolve(packageRoot, upgradeGuide), 'utf8'));
+  const templatePackage = JSON.parse(readFileSync(resolve(packageRoot, 'package.json'), 'utf8'));
+  writeTemplateManifest(target, templatePackage.docsy?.templateVersion ?? templatePackage.version, options.deployment);
 
   if (options.install) {
     console.log('\nInstalling dependencies…');
@@ -659,6 +703,9 @@ try {
   console.log(`  cd ${options.target}`);
   if (!options.install) console.log('  npm install');
   console.log('  npm run dev');
+  console.log('  npm run docsy -- doctor');
+  console.log('  Read DEPLOYING.md for content → preview → your chosen host.');
+  if (options.deployment === 'github-pages') console.log(`\nWhen you explicitly choose to publish: enable Pages (GitHub Actions), set repository variable DOCSY_ENABLE_PAGES=true and run Deploy documentation. Expected URL: https://${repository[0]}.github.io${basePath === '/' ? '/' : `${basePath}/`}. Nothing has been deployed.`);
   console.log('\nGive your coding agent DOCSY_BRIEF.md when you want it to customize the generated source.');
 } finally {
   prompt?.close();

@@ -6,19 +6,59 @@
   </picture>
 </p>
 
-<h1 align="center">Docsy</h1>
+<h1 align="center">Docsy by AppGram</h1>
 
-<p align="center"><strong>Documentation built for humans and coding agents.</strong></p>
+<p align="center"><strong>Your documentation. Your source. Your infrastructure.</strong><br />Built for humans and coding agents.</p>
 
-<p align="center"><a href="https://appgram.github.io/docsy/">Documentation</a> · <a href="https://github.com/AppGram/docsy/issues">Issues</a></p>
+<p align="center"><a href="content/getting-started.md">Documentation</a> · <a href="https://github.com/AppGram/docsy/issues">Issues</a></p>
 
-Docsy turns Markdown, OpenAPI, and SDK metadata into a self-hosted documentation portal. Readers get searchable guides and reference pages in a polished interface. Coding agents get Markdown exports to read, structured configuration to edit, and a local validation and build workflow to check their changes.
+> Private development preview. **No public release yet.** The CLI is packaged as `0.4.0-internal.0`, npm publication is blocked by `private: true`, and Pages deployment is opt-in. Public URLs in configuration are planned destinations, not a claim that a site is live.
+
+Docsy by AppGram turns Markdown, MDX, OpenAPI, and native SDK documentation into a self-hosted portal with source you own. Readers get searchable guides and reference pages. Coding agents get Markdown/JSON exports, YAML configuration, and local validation. No hosted control plane is required.
 
 Product copy, navigation, visual tokens, ingestion, and access rules live in `docsy.config.yaml`. The generated Astro components and CSS stay in your repository, alongside `AGENTS.md` and `DOCSY_BRIEF.md` to guide your coding agent.
 
-Docsy can ship as a fully static site or as a server-rendered Node application with permission-gated documentation tiers and an optional agent query API. Node 22.22 or newer is required to build and run this release.
+Docsy can ship as a fully static site or as a server-rendered application with permission-gated documentation tiers and an optional agent query API. Use Node 22.22 or newer for development and builds. The production server can run on Node or Bun 1.3.5 or newer.
 
 > This project is independent of the Hugo theme with a similar name.
+
+## Watch the product tour
+
+[![Watch the 73-second Docsy product tour](docs/assets/launch/video-poster.jpg)](docs/assets/launch/docsy-showcase.mp4)
+
+[Watch the video with narration](docs/assets/launch/docsy-showcase.mp4) · 73 seconds · 1080p
+
+See the actual interface, Markdown and API/SDK reference, YAML customization, self-hosting, and the documentation maintenance workflow.
+
+## Product Hunt slideshow
+
+<picture>
+  <source media="(prefers-reduced-motion: reduce)" srcset="docs/assets/launch/01-humans-and-agents.png" />
+  <img src="docs/assets/launch/product-hunt-slideshow.gif" alt="Four Docsy launch slides: documentation for humans and coding agents; Markdown, OpenAPI and SDK reference in one portal; YAML customization and self-hosting; and source changes to reviewed documentation updates." width="1270" />
+</picture>
+
+Four launch images, five seconds per slide. Prefer a still image? Open a slide below. SDK scenes use generator-tested teaching fixtures; see the [compatibility evidence and limits](content/reference/compatibility.md).
+
+<details>
+<summary>View the four original slides</summary>
+
+### 1. Built for humans and coding agents
+
+![Docsy documentation portal and agent-readable JSON export](docs/assets/launch/01-humans-and-agents.png)
+
+### 2. One portal for guides, APIs, and SDKs
+
+![Markdown articles, OpenAPI request examples, and native SDK reference in Docsy](docs/assets/launch/02-one-portal.png)
+
+### 3. Your configuration, source, and hosting
+
+![YAML configuration, light and dark themes, and self-hosting with Node.js or Bun](docs/assets/launch/03-yaml-and-self-hosting.png)
+
+### 4. Close the documentation maintenance loop
+
+![Source changes, documentation impact, agent updates, validation, and a draft pull request for human review](docs/assets/launch/04-maintenance-loop.png)
+
+</details>
 
 ## For humans and coding agents
 
@@ -45,7 +85,7 @@ See [Work with coding agents](content/tutorials/coding-agents.md) for both readi
 
 Agents can also discover `/llms.txt`, download the full-text corpus at `/agent/index.json`, or read a page as JSON at `/agent/pages/guides/getting-started.json`. Prefix these paths with your configured `site.basePath`. JSON documents include Markdown and citation URLs.
 
-For live retrieval, enable the Node-only endpoint:
+For live retrieval, enable the server-only endpoint on Node or Bun:
 
 ```yaml
 agent:
@@ -90,11 +130,11 @@ Both are the same generated OpenAPI page. Switching `theme.mode` and the YAML co
 - A YAML-configured maintenance workflow that turns source changes into validated draft documentation PRs.
 - OpenAPI 3 and Swagger 2 ingestion from local JSON/YAML or an HTTPS URL.
 - Native SDK documentation imports for 20 source languages across 16 generator formats, plus compact metadata and AppGram/docc2json compatibility.
-- Real generator-produced fixtures, source code, generator versions, reproduction commands, and SHA-256 provenance checks—not hand-authored JSON presented as native coverage. [Coverage and limitations](content/ingestion/sdk-samples.md).
+- Real generator-produced fixtures and reproducible larger-library tests (Zod, YAML, Lodash), with source/output hashes. Twenty-language fixtures establish format coverage, not blanket production compatibility. [Evidence and limits](content/reference/compatibility.md).
 - Rich native samples with multiple usage examples per language, batch APIs, properties, enum values, optional parameters, remarks, deprecations, and error contracts where supplied by the generator. Every reference reports its actual imported content; all 20 language logos are local SVGs configurable through YAML, including dark variants.
 - YAML-selected OpenAPI request examples in 24 language/client targets, synchronized language selection, and custom `x-codeSamples` overrides.
 - Generated API pages, navigation, search data, curl examples, response examples, and Markdown exports.
-- First-class authored Markdown articles for guides, tutorials, concepts, and migration notes.
+- First-class Markdown and MDX articles, including themed JSX components and explicitly opt-in trusted React imports.
 - Theme-aware callouts, numbered steps, synchronized tabs, code groups, accordions, and reusable Markdown snippets.
 - Full-text section search across article bodies, examples, API parameters, and SDK symbols.
 - Local, build-time syntax highlighting across articles, SDK declarations/examples, and API requests/responses, with language-logo badges and YAML-selectable light/dark palettes. No highlighter CDN or browser runtime is needed.
@@ -107,6 +147,8 @@ Both are the same generated OpenAPI page. Switching `theme.mode` and the YAML co
 - Header-based identity for trusted auth proxies or webhook authorization for an existing application.
 - Docker and Docker Compose files for a short self-hosting path.
 - System font stacks by default: no hosted font service and no generated typographic tracking.
+- Optional validation/preview and gated Pages workflows, template-version provenance, non-destructive upgrade comparison, and a bounded local Mintlify importer.
+- Configurable article edit/report links carrying the page, version, and locale.
 
 ## The mental model
 
@@ -123,7 +165,7 @@ Markdown / OpenAPI / SDK metadata
  editable Astro source
         │
         ├── open mode   ──► static files in release/
-        └── locked mode ──► Node server with request-time authorization
+        └── locked mode ──► Node/Bun server with request-time authorization
 ```
 
 The important boundary is simple:
@@ -137,7 +179,7 @@ Docsy never requires a hosted control plane. A generated project builds and runs
 
 ## Documentation
 
-The repository is its own Docsy documentation portal. Every article is readable on GitHub and rendered at [appgram.github.io/docsy](https://appgram.github.io/docsy/) through `content.articles`:
+The repository is its own Docsy documentation portal. Every article is readable here and rendered locally through `content.articles`. The configured future Pages destination is not published yet.
 
 | Article | What it explains |
 | --- | --- |
@@ -147,7 +189,8 @@ The repository is its own Docsy documentation portal. Every article is readable 
 | [Configure Docsy with YAML](content/tutorials/yaml-configuration.md) | The configuration lifecycle, top-level sections, paths, and environment values |
 | [Write authored documentation](content/tutorials/authored-articles.md) | Markdown articles, YAML registration, navigation, search, exports, and permissions |
 | [Rich article components](content/tutorials/rich-articles.md) | Callouts, steps, tabs, code groups, accordions, and reusable snippets |
-| [Full-text search and agent JSON API](content/tutorials/search-and-agents.md) | Static retrieval exports, the optional Node query endpoint, and permission filtering |
+| [Native MDX articles](content/tutorials/native-mdx.mdx) | YAML registration, themed JSX, trusted component modules, search and agent exports |
+| [Full-text search and agent JSON API](content/tutorials/search-and-agents.md) | Static retrieval exports, the optional server query endpoint, and permission filtering |
 | [Versions and localization](content/tutorials/versions-and-locales.md) | Stable context URLs, translated UI/navigation, fallbacks, and versioned ingestion |
 | [Content validation](content/tutorials/content-validation.md) | Source failures, API linting, schema examples, links, anchors, and component checks |
 | [Ingest an OpenAPI document](content/tutorials/openapi-ingestion.md) | Local and remote sources, section matching, and navigation |
@@ -158,6 +201,9 @@ The repository is its own Docsy documentation portal. Every article is readable 
 | [Self-host Docsy](content/deployment/self-hosting.md) | Static, Node, and Docker deployment shapes |
 | [Understand the Docsy license](content/reference/license.md) | What ELv2 permits, what it prohibits, and how it applies to generated sites |
 | [CLI reference](content/reference/cli.md) | Project generation, validation, building, and production startup |
+| [Upgrade a customized site](content/reference/upgrading.md) | Template provenance and a review-only comparison that never overwrites source |
+| [Migrate from Mintlify](content/tutorials/migrate-mintlify.md) | Supported local exports, assets, redirects, and explicit conversion limits |
+| [Compatibility evidence](content/reference/compatibility.md) | Real-library results, reproduction commands, and remaining coverage limits |
 
 ## Quick start
 
@@ -174,7 +220,30 @@ Open [http://localhost:4321/docsy/](http://localhost:4321/docsy/).
 
 The portal uses the default light interface and renders every registered Markdown article. Its [Posts request sample](https://appgram.github.io/docsy/api/posts/) and [Comments query sample](https://appgram.github.io/docsy/api/comments/) are generated from the committed `sources/samples/jsonplaceholder.openapi.yaml` teaching subset. Copy GET, POST, PUT, PATCH, and DELETE curl examples against JSONPlaceholder; writes are simulated and not persisted. The Nager.Date snapshot remains available as an alternative source. [How the OpenAPI sample is configured](content/tutorials/openapi-ingestion.md).
 
-## Generate a project
+## Create a site from the internal CLI
+
+From an authorized private checkout, build a local versioned package:
+
+```bash
+npm run release:pack
+```
+
+It prints one copyable `npm exec --package "/absolute/path/appgram-docsy-0.4.0-internal.0.tgz" -- create-docsy my-docs --yes --ci` command. This installs from the local tarball, not a public npm release. Add `--openapi ./my-api.yaml` to bring your own API, or edit the generated Markdown/YAML directly.
+
+For a future Pages site, add `--deploy github-pages --repo https://github.com/OWNER/REPOSITORY`. The generator derives the correct origin/base path, includes validation and deployment workflows, and prints the expected URL. It **does not** create a repository, push, enable Pages, or deploy. Deployment stays off until you explicitly set `DOCSY_ENABLE_PAGES=true` and enable Pages in your own repository. Locked sites and live queries require Node/Bun instead.
+
+After creation:
+
+```bash
+cd my-docs
+npm run docsy -- doctor
+npm run build
+npm run preview
+```
+
+The generated `DEPLOYING.md` walks through adding your content, local checks, source storage, the explicit publishing decision, and verifying the resulting URL. The project also records `.docsy/template.json`. Keep it in Git; see the [upgrade guide](content/reference/upgrading.md) before adopting future fixes.
+
+### Generate directly from a private checkout
 
 From a clone of this repository:
 
@@ -239,6 +308,8 @@ npm run maintain -- run --base HEAD~1 --pr
 
 The planner compares local OpenAPI and Swagger contracts, flags likely breaking changes, and maps changed paths and symbols to Markdown articles. The agent uses the source diff to update guides and explain migrations. Use committed snapshots to track remote ingestion changes; the workflow reacts to Git changes rather than polling upstream URLs. [Setup, scope, and review details](content/tutorials/documentation-maintenance.md).
 
+The private [evidence bundle](docs/evidence/README.md) includes a real Zod v3/v4 error-contract change: an actual agent update, executed assertion against the corrected example, independently validated build, and reviewable patch/PR body. No remote PR or public preview was created. Static CI updates attach a private rendered preview artifact; locked/server builds do not expose their bundle as static content.
+
 ## Configure it with YAML
 
 `docsy.config.yaml` is the source of truth for the generated site:
@@ -300,7 +371,7 @@ Configuration errors fail with their exact YAML path. Run this before committing
 npm run validate
 ```
 
-## Authored Markdown articles
+## Authored Markdown and MDX articles
 
 Docsy can render documentation you write directly; OpenAPI and SDK ingestion are optional companions, not the only content model.
 
@@ -331,6 +402,22 @@ navigation:
 Docsy serves it at `/guides/authentication` underneath `site.basePath`. Nested slugs such as `platform/security/authentication` create nested guide URLs. Level-two and level-three headings populate the page rail.
 
 Authored articles automatically participate in navigation, search, Markdown export, and lock-mode permission rules. Keep protected Markdown outside `public/`, because files under `public/` are served as unprotected static assets.
+
+Use a `.mdx` source in the same YAML registration to write native MDX. Built-in `<Note>`, `<Tabs>`, `<Steps>`, `<CardGroup>`, `<Accordion>` and `<CodeGroup>` components use Docsy's current theme, highlighting and client controls. Mintlify migration preserves supported MDX by default rather than flattening it to Markdown.
+
+```yaml
+content:
+  mdx:
+    enabled: true
+    allowJavaScript: false
+    components: {}
+  articles:
+    - slug: overview
+      source: content/overview.mdx
+      title: Overview
+```
+
+Declarative mode permits literal props such as `cols={2}` but rejects executable expressions, imports, unknown components and unsafe markup. For reviewed code only, set `allowJavaScript: true` and optionally map `components: { ApiStatus: content/components/ApiStatus.tsx }`. These default-export React modules and local MDX imports run during validation/build/server rendering with process permissions; they are **not sandboxed or automatically hydrated**. The maintenance agent remains restricted to Markdown/guarded YAML, not executable MDX. [Full authoring and compatibility guide](content/tutorials/native-mdx.mdx).
 
 ## OpenAPI ingestion
 
@@ -401,7 +488,7 @@ access:
   mode: open
 ```
 
-Locked mode switches the Astro build to Node SSR and evaluates ordered access rules on every protected request:
+Locked mode uses Astro's standalone server adapter, runs on Node or Bun, and evaluates ordered access rules on every protected request:
 
 ```yaml
 access:
@@ -518,7 +605,7 @@ The repository includes `.github/workflows/pages.yml`. It validates and builds t
 
 For a repository site, set `site.origin` to the GitHub Pages host and `site.basePath` to the repository name. The Docsy portal uses `https://appgram.github.io` and `/docsy`.
 
-### Node server
+### Node or Bun server
 
 For `access.mode: locked`:
 
@@ -530,6 +617,24 @@ HOST=0.0.0.0 PORT=8080 npm run preview
 
 Put the process behind the trusted authentication proxy described above. Rebuild after changing `access.mode`, `site.basePath`, or ingestion configuration.
 
+To run the same build on Bun instead:
+
+```bash
+HOST=0.0.0.0 PORT=8080 npm run start:bun
+# Equivalent: bun scripts/start.mjs
+```
+
+`start:bun` serves both public static output and the Astro standalone server used for lock mode and live agent queries. Node remains the build toolchain; this is Bun **production runtime** support, not a claim that all development/build tools or the test runner execute on Bun. The integration suite runs actual static, locked, and agent-query requests on Bun 1.3.5, including unauthorized retrieval checks.
+
+For a Node-build/Bun-runtime container:
+
+```bash
+docker build -f Dockerfile.bun -t docsy-bun .
+docker run --rm -p 8080:8080 docsy-bun
+```
+
+The default `Dockerfile` and Compose service continue to use Node. Both Dockerfiles are included in generated projects. Bun runtime regression checks run with `npm run test:runtime:bun` and in the dedicated CI job.
+
 ## Commands
 
 | Command | Purpose |
@@ -538,10 +643,12 @@ Put the process behind the trusted authentication proxy described above. Rebuild
 | `npm run validate` | Validate YAML, sources, API examples, components, links, anchors, and Astro types |
 | `npm run build` | Validate, build, and stage production output |
 | `npm run preview` | Serve the staged static build or locked Node build |
+| `npm start` | Start the production build with Node |
+| `npm run start:bun` | Start the same production build with Bun |
 | `npm run create -- <dir>` | Generate a new editable project |
 | `npm run maintain -- plan --base <ref>` | Inspect source changes and documentation impact |
 | `npm run maintain -- run --base <ref>` | Update docs with the agent and validate the result |
-| `npm test` | Run maintenance workflow regression tests |
+| `npm test` | Run content, ingestion, MDX, maintenance, theme and production-runtime regression tests |
 
 ## Project structure
 
@@ -568,11 +675,16 @@ Issues and pull requests are welcome. Before submitting a change:
 
 ```bash
 npm ci
+npm test
 npm run validate
 npm run build
 ```
 
 Please preserve the configuration/source boundary, keep permission checks server-side, and avoid external font services or typographic tracking.
+
+Pull requests targeting `main` automatically run the Node test suite and production build, real-library generator/import checks, and Bun runtime integration tests. CI installs Bun 1.3.5 alongside Node 22. Successful open/static builds attach a seven-day `docsy-static-preview-…` artifact; download it and serve its mount-aware directory locally. It is not a public preview URL. Locked/server output is never uploaded as a static preview.
+
+The combined **PR checks** job passes only if all three jobs succeed. No secrets, write token, automatic approval or merge are used for PR validation. Automatic Pages deployment can run only after successful main-branch CI and only when an owner explicitly enables `DOCSY_ENABLE_PAGES=true`. Publishing remains disabled during the private prerelease. Enforcing the combined check as a merge requirement additionally depends on the repository's GitHub plan and branch rules.
 
 Contributions are distributed under ELv2. By submitting a pull request, you confirm that you have the right to contribute the code under those terms. See [CONTRIBUTING.md](CONTRIBUTING.md) for the complete project contribution guidance.
 
