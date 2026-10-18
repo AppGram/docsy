@@ -1,0 +1,90 @@
+---
+import type { ArticleConfig } from '../../config';
+import { articleUrl } from '../../lib/article-loader';
+
+interface Props {
+  article: ArticleConfig;
+}
+
+const { article } = Astro.props;
+---
+
+<a class="article-card" href={articleUrl(article)}>
+  {article.eyebrow && <span class="article-card-category">{article.eyebrow}</span>}
+  <div class="article-card-heading">
+    <h3>{article.title}</h3>
+    <svg class="article-card-arrow" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true">
+      <path d="M4 10h12m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </div>
+  {article.description && <p>{article.description}</p>}
+</a>
+
+<style>
+  .article-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+    padding: 22px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--paper);
+    color: var(--ink);
+    text-decoration: none;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .article-card:hover {
+    border-color: color-mix(in srgb, var(--line) 50%, var(--muted));
+    background: color-mix(in srgb, var(--paper) 98%, var(--ink));
+  }
+
+  .article-card:focus-visible {
+    outline: 2px solid var(--violet);
+    outline-offset: 3px;
+  }
+
+  .article-card-category {
+    margin-bottom: 12px;
+    color: var(--muted);
+    font-family: var(--font-label);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .article-card-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    width: 100%;
+  }
+
+  .article-card h3 {
+    margin: 0;
+    color: var(--ink);
+    font-size: 18px;
+    font-weight: 550;
+    line-height: 1.35;
+    text-wrap: pretty;
+  }
+
+  .article-card-arrow {
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: var(--muted);
+  }
+
+  .article-card:hover .article-card-arrow {
+    color: var(--ink);
+  }
+
+  .article-card p {
+    margin: 9px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+</style>

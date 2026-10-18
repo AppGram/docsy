@@ -119,6 +119,7 @@ YAML is not a page-builder language. When the layout or interaction should chang
 | Responsibility | Location |
 | --- | --- |
 | Global documentation shell | `src/layouts/DocsLayout.astro` |
+| Guide cards on the overview | `src/components/docs/ArticleCard.astro` |
 | Authored article presentation | `src/components/docs/ArticlePage.astro` |
 | API and SDK presentation | `src/components/docs/` |
 | Landing page | `src/pages/index.astro` |

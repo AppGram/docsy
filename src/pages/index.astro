@@ -1,8 +1,9 @@
 ---
 import DocsLayout from '../layouts/DocsLayout.astro';
+import ArticleCard from '../components/docs/ArticleCard.astro';
 import { assetPath, docsPath, docsyConfig } from '../config';
 import { API_SECTIONS, filterEndpoints, loadSwagger } from '../lib/swagger-loader';
-import { articleUrl, getArticleSources } from '../lib/article-loader';
+import { getArticleSources } from '../lib/article-loader';
 
 const spec = await loadSwagger();
 const apiSections = API_SECTIONS.map((section) => ({
@@ -10,7 +11,7 @@ const apiSections = API_SECTIONS.map((section) => ({
   endpointCount: filterEndpoints(spec, section).length,
   href: docsPath(`/api/${section.section}`),
 }));
-const articles = getArticleSources().map((article) => ({ ...article, href: articleUrl(article) }));
+const articles = getArticleSources();
 ---
 
 <DocsLayout
@@ -46,17 +47,9 @@ const articles = getArticleSources().map((article) => ({ ...article, href: artic
     <>
       <h2>Guides</h2>
       <p class="docs-section-description">Authored Markdown registered under <code>content.articles</code> in <code>docsy.config.yaml</code>.</p>
-      <div class="docs-sdk-grid">
+      <div class="docs-article-grid">
         {articles.map((article) => (
-          <a class="docs-sdk-card" href={article.href}>
-            <div class="docs-sdk-head">
-              <span class="docs-sdk-mark docs-article-mark" aria-hidden="true">¶</span>
-              <span class="docs-sdk-arrow" aria-hidden="true">&rarr;</span>
-            </div>
-            <h3>{article.title}</h3>
-            <p>{article.description}</p>
-            <div class="docs-sdk-meta">Article</div>
-          </a>
+          <ArticleCard article={article} />
         ))}
       </div>
     </>
@@ -122,6 +115,13 @@ const articles = getArticleSources().map((article) => ({ ...article, href: artic
     margin: 20px 0 24px;
   }
 
+  .docs-article-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin: 24px 0;
+  }
+
   .docs-sdk-card {
     display: block;
     min-width: 0;
@@ -155,13 +155,6 @@ const articles = getArticleSources().map((article) => ({ ...article, href: artic
     border-radius: 10px;
     background: #fafafd;
     border: 1px solid #ebebf1;
-  }
-
-  .docs-article-mark {
-    color: var(--violet-dark);
-    font-family: var(--font-display);
-    font-size: 22px;
-    font-weight: 600;
   }
 
   .docs-sdk-arrow {
@@ -211,7 +204,8 @@ const articles = getArticleSources().map((article) => ({ ...article, href: artic
   }
 
   @media (max-width: 720px) {
-    .docs-sdk-grid {
+    .docs-sdk-grid,
+    .docs-article-grid {
       grid-template-columns: 1fr;
     }
   }
