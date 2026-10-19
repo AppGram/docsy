@@ -149,6 +149,7 @@ Both are the same generated OpenAPI page. Switching `theme.mode` and the YAML co
 - System font stacks by default: no hosted font service and no generated typographic tracking.
 - Optional validation/preview and gated Pages workflows, template-version provenance, non-destructive upgrade comparison, and a bounded local Mintlify importer.
 - Configurable article edit/report links carrying the page, version, and locale.
+- YAML author profiles, contributor/reviewer credits, explicit article dates and optional coding-agent/model provenance, preserved in Markdown/JSON exports. Per-article GitHub edit links can be overridden or disabled.
 
 ## The mental model
 
@@ -418,6 +419,35 @@ content:
 ```
 
 Declarative mode permits literal props such as `cols={2}` but rejects executable expressions, imports, unknown components and unsafe markup. For reviewed code only, set `allowJavaScript: true` and optionally map `components: { ApiStatus: content/components/ApiStatus.tsx }`. These default-export React modules and local MDX imports run during validation/build/server rendering with process permissions; they are **not sandboxed or automatically hydrated**. The maintenance agent remains restricted to Markdown/guarded YAML, not executable MDX. [Full authoring and compatibility guide](content/tutorials/native-mdx.mdx).
+
+### Authors and GitHub editing
+
+Register profiles once, then reference them on articles. Author GitHub profiles do not automatically enable repository editing; that is an explicit site or per-page choice.
+
+```yaml
+authors:
+  alex:
+    name: Alex Morgan
+    github: your-github-username
+    avatar: assets/authors/alex.png
+reader:
+  showByline: true
+  defaultAuthorAvatar: assets/authors/unknown.svg
+  unknownAuthorAvatar: assets/authors/unknown.svg
+  editEnabled: true
+  editUrl: https://github.com/OWNER/REPOSITORY/edit/main/{source}
+content:
+  articles:
+    - slug: authentication
+      source: content/authentication.md
+      title: Authentication
+      authors: [alex]
+      updatedAt: '2026-10-19'
+```
+
+Individual `avatar` pictures override the optional `reader.defaultAuthorAvatar`. Set `reader.unknownAuthorAvatar` to show an “Unknown author” picture on articles with no authors; omit it to leave those bylines absent. Use local images in `public/assets/` or explicit HTTP(S) URLs; Docsy never fetches GitHub profile pictures automatically.
+
+Use `editUrl: false` on an article to hide its edit button, or provide another edit URL. Optional `contributors`, `reviewedBy`, dates and agent/model provenance are documented in [Authors, reviews and edit links](content/tutorials/authors-and-edit-links.md). Attribution is configured, not an automatically verified authorship or quality score. `reader.showByline: false` hides the visual byline; it does not erase metadata from machine-readable exports.
 
 ### Image and video viewer
 

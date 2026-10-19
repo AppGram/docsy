@@ -3,6 +3,7 @@ import { createMarkdownProcessor, type MarkdownHeading } from '@astrojs/markdown
 import { defaultContext, docsPath, docsyConfig, resolveSource, type ArticleConfig, type DocsContext } from '../config';
 import { expandSnippets, plainMarkdown, richPlugins } from './rich-markdown';
 import { highlightArticles } from './code-renderer';
+import { authorshipMarkdown } from './authorship';
 
 export type ArticleDoc = {
   config: ArticleConfig;
@@ -64,5 +65,6 @@ export const loadArticle = async (article: ArticleConfig): Promise<ArticleDoc> =
 export const articleMarkdownExport = async (article: ArticleConfig): Promise<string> => {
   const body = /\.mdx$/i.test(article.source) ? (await loadArticle(article)).markdown : plainMarkdown(readArticleMarkdown(article));
   const description = article.description ? `\n\n${article.description}` : '';
-  return `# ${article.title}${description}\n\n${body}\n`;
+  const credits = authorshipMarkdown(article);
+  return `# ${article.title}${description}${credits ? `\n\n${credits}` : ''}\n\n${body}\n`;
 };

@@ -26,6 +26,10 @@ footer:
   href: https://github.com/AppGram
 reader:
   headingLinks: true
+  showByline: true
+  defaultAuthorAvatar: assets/authors/unknown.svg
+  unknownAuthorAvatar: assets/authors/unknown.svg
+  editEnabled: true
   editUrl: https://github.com/AppGram/docsy/edit/main/{source}
   reportUrl: https://github.com/AppGram/docsy/issues/new
 eyebrow:
@@ -56,6 +60,16 @@ localization:
       label: Español
   messages:
     es:
+      writtenBy: Escrito por
+      unknownAuthor: Autor desconocido
+      contributors: Colaboradores
+      reviewedBy: Revisado por
+      published: Publicado
+      updated: Actualizado
+      reviewed: Revisión
+      codingAgent: Agente
+      agentProvenance: Procedencia del agente
+      provenanceReference: Ver referencia
       copySectionLink: Copiar enlace a la sección
       sectionLinkCopied: Enlace copiado
       sectionLinkFailed: No se pudo copiar el enlace
@@ -109,6 +123,16 @@ localization:
       sdkDescription: Veinte lenguajes importados desde resultados reales de sus generadores de documentación. Se incluyen fuentes, versiones, comandos y hashes. Son bibliotecas de prueba, no paquetes publicados.
       symbols: símbolos
     fr:
+      writtenBy: Rédigé par
+      unknownAuthor: Auteur inconnu
+      contributors: Contributeurs
+      reviewedBy: Relu par
+      published: Publication
+      updated: Mise à jour
+      reviewed: Relecture
+      codingAgent: Agent
+      agentProvenance: Provenance de l’agent
+      provenanceReference: Voir la référence
       copySectionLink: Copier le lien de la section
       sectionLinkCopied: Lien copié
       sectionLinkFailed: Impossible de copier le lien
@@ -198,6 +222,12 @@ home:
       description: Un portail soigné pour vos lecteurs, des exports Markdown pour vos agents, et du code que vous contrôlez. Rédigez des guides, importez vos références API et SDK, puis hébergez le tout vous-même.
       primaryActionLabel: Bien démarrer →
       secondaryActionLabel: Travailler avec des agents
+authors:
+  docsy-agent:
+    name: Docsy coding agent
+    kind: agent
+    provider: OpenAI
+    avatar: assets/authors/docsy-agent.svg
 content:
   media:
     enabled: true
@@ -237,6 +267,15 @@ content:
       title: Write authored documentation
       description: Add Markdown guides and articles beside generated API and SDK reference pages.
       eyebrow: TUTORIAL
+    - slug: tutorials/authors-and-edit-links
+      source: content/tutorials/authors-and-edit-links.md
+      title: Authors, reviews and edit links
+      description: Credit authors and contributors, link to GitHub edits, and optionally record coding-agent provenance without claiming an automatic quality score.
+      eyebrow: AUTHORING
+      authors: [docsy-agent]
+      updatedAt: '2026-10-19'
+      provenance:
+        agent: docsy-agent
     - slug: tutorials/openapi-ingestion
       source: content/tutorials/openapi-ingestion.md
       title: Ingest an OpenAPI document
@@ -410,6 +449,9 @@ navigation:
       - title: Authored articles
         titles: { fr: Rédiger des articles, es: Escribir artículos }
         href: /guides/tutorials/authored-articles
+      - title: Authors and edit links
+        titles: { fr: Auteurs et liens de modification, es: Autores y enlaces de edición }
+        href: /guides/tutorials/authors-and-edit-links
       - title: Rich article components
         titles: { fr: Articles enrichis, es: Artículos enriquecidos }
         href: /guides/tutorials/rich-articles

@@ -4,6 +4,7 @@ import ArticlePage from '../../components/docs/ArticlePage.astro';
 import DocsLayout from '../../layouts/DocsLayout.astro';
 import { docsPath, docsyConfig, isServer, type ArticleConfig } from '../../config';
 import { findArticle, getArticleSources, loadArticle, type ArticleDoc } from '../../lib/article-loader';
+import { articleAuthorship, articleStructuredData } from '../../lib/authorship';
 
 export const prerender = !isServer;
 
@@ -26,6 +27,10 @@ const toc = article.headings.filter((heading) => heading.depth === 2 || heading.
   description={article.config.description || docsyConfig.site.description}
   eyebrow={article.config.eyebrow}
   type="article"
+  publishedAt={article.config.publishedAt}
+  updatedAt={article.config.updatedAt}
+  authorName={articleAuthorship(article.config).authors.map((author) => author.name).join(', ') || undefined}
+  structuredData={articleStructuredData(article.config)}
   wide={article.headings.some((heading) => heading.depth === 2 || heading.depth === 3)}
 >
   <ArticlePage article={article} />

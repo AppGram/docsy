@@ -242,6 +242,26 @@ test('guard rejects scripts, dependencies, and article sources outside editable 
   write(root, 'docsy.config.yaml', dump(config));
   assert.throws(() => guardChanges(root, plan), /outside the editable/);
 });
+test('maintenance preserves attribution, dates, review claims, provenance and page edit targets', () => {
+  const { root, base } = fixture();
+  const config = load(read(root, 'docsy.config.yaml'));
+  config.authors = { writer: { name: 'Writer' } };
+  config.content.articles[0].authors = ['writer'];
+  config.content.articles[0].updatedAt = '2026-10-19';
+  write(root, 'docsy.config.yaml', dump(config));
+  const head = commit(root); const plan = planMaintenance(root, { base, head });
+  const baseline = structuredClone(config);
+  for (const [field, value] of Object.entries({ authors: ['another'], contributors: ['writer'], reviewedBy: ['writer'], reviewedAt: '2026-10-19', updatedAt: '2026-10-20', provenance: { agent: 'some-agent' }, editUrl: 'https://other.example/edit' })) {
+    const next = structuredClone(baseline); next.content.articles[0][field] = value;
+    write(root, 'docsy.config.yaml', dump(next));
+    assert.throws(() => guardChanges(root, plan), /protected article authorship or edit metadata/);
+  }
+  const next = structuredClone(baseline); next.content.articles[0].title = 'Corrected title';
+  write(root, 'docsy.config.yaml', dump(next)); assert.ok(guardChanges(root, plan).includes('docsy.config.yaml'));
+  next.content.articles.push({ slug: 'new', source: 'content/new.md', title: 'New', reviewedBy: ['writer'] });
+  write(root, 'content/new.md', '# New'); write(root, 'docsy.config.yaml', dump(next));
+  assert.throws(() => guardChanges(root, plan), /protected article authorship or edit metadata/);
+});
 
 test('API-only sites may register their first migration article', () => {
   const { root, base } = fixture();

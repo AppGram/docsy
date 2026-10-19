@@ -112,6 +112,8 @@ Leave `maintenance.model` unset to use the agent's configured default, or set it
 
 ## Source and review boundaries
 
+Authorship and per-page edit metadata are protected. The agent may register or correct an article's ordinary route/title/source metadata, but cannot assign authors, contributors or reviewers, change publication/update/review dates, add agent provenance, or redirect the edit button. These are maintainer-supplied records, not claims that an automatic build may invent. See [Authors, reviews and edit links](../authors-and-edit-links).
+
 This workflow reacts to Git changes in the default branch. Remote OpenAPI and SDK URLs are still valid ingestion sources, but the maintenance planner does not poll them for upstream changes. Commit snapshots when you need reproducible version comparisons; a source-sync job can update those snapshots and trigger the same loop.
 
 SDK and application changes are reviewed from their Git diff and documentation references. Structural breaking-change classification currently applies to OpenAPI and Swagger; the agent interprets SDK and application semantics from the available code.

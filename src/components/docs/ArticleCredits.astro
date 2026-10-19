@@ -1,0 +1,24 @@
+---
+import type { ArticleConfig, DocsContext } from '../../config';
+import { defaultContext, docsyConfig } from '../../config';
+import { articleAuthorship } from '../../lib/authorship';
+import { message } from '../../lib/messages';
+import AuthorBadge from './AuthorBadge.astro';
+interface Props { article: ArticleConfig; context?: DocsContext; editUrl?: string }
+const { article, context = defaultContext, editUrl } = Astro.props;
+const credits = articleAuthorship(article);
+// An unknown byline is a visual opt-in, never a manufactured author identity in exports.
+const writers = credits.authors.length ? credits.authors : docsyConfig.reader.unknownAuthorAvatar ? [undefined] : [];
+const groups = [{ key: 'writtenBy', people: writers }, { key: 'contributors', people: credits.contributors }, { key: 'reviewedBy', people: credits.reviewedBy }].filter((group) => group.people.length);
+const dates = [{ key: 'published', value: credits.publishedAt }, { key: 'updated', value: credits.updatedAt }, { key: 'reviewed', value: credits.reviewedAt }].filter((date) => date.value);
+const displayDate = (value: string) => new Intl.DateTimeFormat(context.locale, { dateStyle: 'medium', timeZone: 'UTC' }).format(new Date(`${value}T00:00:00Z`));
+const showCredits = docsyConfig.reader.showByline && (groups.length > 0 || dates.length > 0 || credits.provenance);
+---
+{(showCredits || editUrl) && <div class="article-meta">
+  {showCredits && <div class="article-credits">
+    {groups.map((group) => <div class="article-credit-group"><span class="article-credit-label">{message(context, group.key)}</span><span class="article-credit-people">{group.people.map((author) => <AuthorBadge author={author} context={context} />)}</span></div>)}
+    {dates.length > 0 && <div class="article-dates">{dates.map((date) => <span>{message(context, date.key)} <time datetime={date.value}>{displayDate(date.value!)}</time></span>)}</div>}
+    {credits.provenance && <div class="article-provenance"><span>{message(context, 'agentProvenance')}: {credits.provenance.agent.name}{credits.provenance.agent.provider ? ` · ${credits.provenance.agent.provider}` : ''}{credits.provenance.model ? ` · ${credits.provenance.model}` : ''}</span>{credits.provenance.referenceUrl && <a href={credits.provenance.referenceUrl} target="_blank" rel="noopener noreferrer">{message(context, 'provenanceReference')} <span aria-hidden="true">↗</span></a>}</div>}
+  </div>}
+  {editUrl && <a class="article-edit-button" href={editUrl} target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m16 3 5 5-12 12-6 1 1-6L16 3Zm-2 2 5 5" /></svg>{message(context, 'editPage', docsyConfig.reader.editLabel)}</a>}
+</div>}

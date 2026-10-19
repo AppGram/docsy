@@ -1,8 +1,10 @@
+import type { ArticleAuthorship } from './authorship';
 export type SearchRecord = {
   id: string; type: 'page' | 'api' | 'sdk'; title: string; url: string; group: string;
   body: string; summary?: string; kind?: string; method?: string; path?: string;
   version: string; locale: string; markdownUrl: string; jsonUrl: string;
   contentLocale?: string; isFallback?: boolean;
+  authorship?: ArticleAuthorship;
 };
 export type SearchFilters = { version?: string; locale?: string; type?: string; limit?: number };
 const normalize = (value: string) => value.normalize('NFKD').replace(/\p{Diacritic}/gu, '').toLowerCase();

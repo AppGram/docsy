@@ -4,6 +4,7 @@ import { articleUrl, getArticleSources } from '../../lib/article-loader';
 import { defaultContext, docsyConfig, type DocsContext } from '../../config';
 import { message } from '../../lib/messages';
 import { readerLinks } from '../../lib/reader-links';
+import ArticleCredits from './ArticleCredits.astro';
 
 interface Props {
   article: ArticleDoc;
@@ -22,10 +23,10 @@ const links = readerLinks(article, context);
   <header class="article-header" lang={article.config.locale ?? defaultContext.locale}>
     <h1>{article.config.title}</h1>
     {article.config.description && <p class="article-description">{article.config.description}</p>}
+    <ArticleCredits article={article.config} context={context} editUrl={links.edit} />
   </header>
   <div class="article-body" lang={article.config.locale ?? defaultContext.locale} set:html={article.html} />
-  {(links.edit || links.report) && <div class="article-source-actions" aria-label={message(context, 'documentationFeedback')}>
-    {links.edit && <a href={links.edit} target="_blank" rel="noopener noreferrer">{message(context, 'editPage', docsyConfig.reader.editLabel)} <span aria-hidden="true">↗</span></a>}
+  {links.report && <div class="article-source-actions" aria-label={message(context, 'documentationFeedback')}>
     {links.report && <a href={links.report} target="_blank" rel="noopener noreferrer">{message(context, 'reportProblem', docsyConfig.reader.reportLabel)} <span aria-hidden="true">↗</span></a>}
   </div>}
   <nav class="article-reader-nav" aria-label={message(context, 'articleNavigation')}>

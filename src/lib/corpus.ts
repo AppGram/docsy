@@ -5,6 +5,7 @@ import { API_SECTIONS, filterEndpoints, loadSwagger } from './swagger-loader';
 import { htmlSections } from './html-content';
 import { documentKey } from './documents';
 import type { SearchRecord } from './search';
+import { articleAuthorship } from './authorship';
 
 let promise: Promise<SearchRecord[]> | undefined;
 export function buildCorpus(): Promise<SearchRecord[]> {
@@ -20,11 +21,13 @@ async function collect(): Promise<SearchRecord[]> {
       const article = await loadArticle(source);
       const url = articleUrl(source, context);
       const sections = htmlSections(article.html);
+      const authorship = articleAuthorship(source);
+      const creditNames = [...authorship.authors, ...authorship.contributors, ...authorship.reviewedBy, ...(authorship.provenance ? [authorship.provenance.agent] : [])].map((author) => author.name).join(' ');
       sections.forEach((section, index) => records.push({
         id: `${context.version}:${context.locale}:article:${source.slug}:${index}`,
         type: 'page', kind: index === 0 ? 'article' : 'section',
         title: section.title || source.title, group: source.title,
-        summary: source.description, body: `${index === 0 ? `${source.title} ${source.description} ` : ''}${section.text}`,
+        summary: source.description, authorship, body: `${index === 0 ? `${source.title} ${source.description} ${creditNames} ` : ''}${section.text}`,
         contentLocale: source.locale ?? docsyConfig.localization?.defaultLocale ?? docsyConfig.site.language,
         isFallback: (source.locale ?? docsyConfig.localization?.defaultLocale ?? docsyConfig.site.language) !== context.locale,
         url: `${url}${section.id ? `#${encodeURIComponent(section.id)}` : ''}`, ...context, ...links(articleRoute(source)),

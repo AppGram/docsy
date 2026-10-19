@@ -392,7 +392,8 @@ const makeConfig = ({ projectName, description, basePath, accessMode, apiBase, c
       sdkHeading: 'API reference',
       sdkDescription: 'Generated directly from the configured OpenAPI source.',
     },
-    reader: { headingLinks: true },
+    reader: { headingLinks: true, showByline: true, editEnabled: true },
+    authors: {},
     content: {
       media: { enabled: true, images: true, videos: true },
       mdx: { enabled: true, allowJavaScript: false, components: {} },

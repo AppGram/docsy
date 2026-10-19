@@ -6,6 +6,7 @@ import { join, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
 import { createServer } from 'node:net';
 import { dump } from 'js-yaml';
+import { parse } from 'parse5';
 import { setTimeout as delay } from 'node:timers/promises';
 
 const repo = process.cwd();
@@ -25,19 +26,20 @@ function site() {
     site: { name: 'Test Docs', title: 'Test Docs', description: 'Integration docs', origin: 'https://docs.example.test', basePath: '/docs', homeUrl: '/docs/', logo: 'assets/docsy-logo.png', logoDark: 'assets/docsy-logo-dark.png' },
     home: { title: 'Integration docs', description: 'Versions, articles and agent retrieval', primaryAction: { label: 'Read', href: '/guides/guide' }, translations: { fr: { title: 'Documentation française' } } },
     versions: { default: 'current', items: [{ id: 'current', label: 'Current' }, { id: 'v1', label: 'Version 1', status: 'deprecated' }] },
-    localization: { defaultLocale: 'en', fallback: true, locales: [{ code: 'en', label: 'English' }, { code: 'fr', label: 'Français' }, { code: 'ar', label: 'العربية', dir: 'rtl' }], messages: { fr: { language: 'Langue', guides: 'Guides', onThisPage: 'Sur cette page', searchLabel: 'Rechercher' } } },
+    localization: { defaultLocale: 'en', fallback: true, locales: [{ code: 'en', label: 'English' }, { code: 'fr', label: 'Français' }, { code: 'ar', label: 'العربية', dir: 'rtl' }], messages: { fr: { language: 'Langue', guides: 'Guides', onThisPage: 'Sur cette page', searchLabel: 'Rechercher', unknownAuthor: 'Auteur inconnu' } } },
     content: { snippets: { shared: 'content/shared.md' }, articles: [
-      { slug: 'guide', title: 'Guide', source: 'content/guide.md' },
-      { slug: 'guide', title: 'Guide français', locale: 'fr', source: 'content/fr.md' },
-      { slug: 'guide', title: 'Old guide', version: 'v1', source: 'content/v1.md' },
-      { slug: 'private', title: 'Restricted guide', source: 'content/private.mdx' },
+      { slug: 'guide', title: 'Guide', source: 'content/guide.md', authors: ['writer'], contributors: ['agent'], reviewedBy: ['writer'], updatedAt: '2026-10-19', reviewedAt: '2026-10-19', provenance: { agent: 'agent', model: 'fixture-model', referenceUrl: 'https://github.com/example/docs/pull/1' } },
+      { slug: 'guide', title: 'Guide français', locale: 'fr', source: 'content/fr.md', authors: ['writer'], updatedAt: '2026-10-18' },
+      { slug: 'guide', title: 'Old guide', version: 'v1', source: 'content/v1.md', editUrl: false },
+      { slug: 'private', title: 'Restricted guide', source: 'content/private.mdx', authors: ['secret'], editUrl: false },
       { slug: 'native', title: 'Native MDX', source: 'content/native.mdx' },
     ] },
     navigation: [{ title: 'Guides', items: [{ title: 'Guide', titles: { fr: 'Guide français' }, href: '/guides/guide' }, { title: 'Restricted guide', href: '/guides/private' }, { title: 'API', href: '/api/widgets' }, { title: 'SDK', href: '/widget-sdk' }] }],
     ingestion: { openapi: { source: 'sources/api.yaml', apiBaseUrl: 'https://api.example.test', versions: { v1: 'sources/v1.yaml' }, sections: [{ section: 'widgets', title: 'Widgets', description: 'Widgets API', paths: ['/widgets'] }] }, sdks: [{ id: 'widget', slug: 'widget-sdk', adapter: 'typedoc-lite', source: 'sources/sdk.json', versions: { v1: 'sources/sdk-v1.json' }, name: 'Widget SDK', language: 'typescript', install: 'npm install widget', overview: 'Widget API client', quickstart: { code: 'client.get("quickstartneedle");', language: 'typescript' } }] },
     access: { mode: 'open', tiers: { pro: { label: 'Pro' } }, rules: [{ pattern: '/guides/private', tiers: ['pro'] }] },
     agent: { enabled: true, query: false },
-    reader: { editUrl: 'https://github.com/example/docs/edit/{version}/{locale}/{source}', reportUrl: 'https://github.com/example/docs/issues/new' },
+    authors: { writer: { name: 'Fixture Writer', github: 'fixture-writer', avatar: 'assets/authors/writer.svg' }, agent: { name: 'Fixture Coding Agent', kind: 'agent', provider: 'Fixture provider' }, secret: { name: 'PrivateAuthorIdentity' } },
+    reader: { defaultAuthorAvatar: 'assets/authors/docsy-agent.svg', unknownAuthorAvatar: 'assets/authors/unknown.svg', editUrl: 'https://github.com/example/docs/edit/{version}/{locale}/{source}', reportUrl: 'https://github.com/example/docs/issues/new' },
     redirects: { '/old-guide': '/guides/guide', '/old-private': '/guides/private' },
   };
   write(root, 'content/guide.md', '# Guide body\n\nThe elusive platypusword only appears inside a paragraph.\n\n## Details\n\n:::note[Read carefully]\n::include{src="shared"}\n:::\n\n::::tabs{sync="runtime"}\n:::tab[Node]\nNode instructions.\n:::\n:::tab[Python]\nPython instructions.\n:::\n::::\n');
@@ -48,6 +50,7 @@ function site() {
   write(root, 'content/shared.md', 'Shared reusable instructions.\n');
   write(root, 'public/assets/sample.mp4', '0123456789');
   write(root, 'public/assets/sample.vtt', 'WEBVTT\n');
+  write(root, 'public/assets/authors/writer.svg', '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><circle cx="20" cy="20" r="20" fill="#5188ff"/></svg>');
   write(root, 'sources/upstream-code.ts', 'import { UnavailableUpstreamType } from "./not-shipped.js";\n// Ingested source snapshot, not executable portal code.\n');
   const spec = { openapi: '3.1.0', info: { title: 'Widgets', version: '2' }, paths: { '/widgets': { get: { responses: { 200: { description: 'OK' } } } } } };
   write(root, 'sources/api.yaml', dump(spec)); write(root, 'sources/v1.yaml', dump({ ...spec, info: { title: 'Widgets', version: '1' } }));
@@ -95,6 +98,15 @@ test(`generated template serves static variants and permission-aware APIs on ${r
       assert.match(body, /platypusword/);
       assert.match(body, /https:\/\/github.com\/example\/docs\/edit\/current\/en\/content\/guide.md/);
       assert.match(body, /Report a problem/);
+      assert.match(body, /article-edit-button/); assert.match(body, /Fixture Writer/); assert.match(body, /Fixture Coding Agent/);
+      assert.match(body, /datetime="2026-10-19"/); assert.match(body, /https:\/\/github.com\/fixture-writer/);
+      assert.match(body, /article:author/); assert.match(body, /TechArticle/); assert.match(body, /fixture-model/);
+      assert.doesNotMatch(body, /avatars.githubusercontent.com/);
+      assert.match(body, /src="\/docs\/assets\/authors\/writer.svg"/);
+      assert.match(body, /src="\/docs\/assets\/authors\/docsy-agent.svg"/);
+      assert.doesNotMatch(body, /class="article-author-placeholder"/);
+      assert.match(body, /referrerpolicy="no-referrer"/);
+      assert.equal((await fetch(`${staticServer.base}/assets/authors/writer.svg`)).status, 200);
       const redirect = await fetch(`${staticServer.base}/old-guide`);
       assert.equal(redirect.status, 200);
       assert.match(await redirect.text(), /\/docs\/guides\/guide/);
@@ -103,12 +115,19 @@ test(`generated template serves static variants and permission-aware APIs on ${r
       assert.match(await markdown.text(), /platypusword/);
       assert.equal((await fetch(`${staticServer.base}/not-a-document`)).status, 404);
       const mdx = await fetch(`${staticServer.base}/guides/native`);
-      assert.equal(mdx.status, 200); assert.match(await mdx.text(), /docsy-tabs/);
+      assert.equal(mdx.status, 200); const unknown = await mdx.text(); assert.match(unknown, /docsy-tabs/);
+      assert.match(unknown, /Unknown author/); assert.match(unknown, /class="article-author-placeholder"/);
+      assert.match(unknown, /--author-placeholder:url\([^)]*\/docs\/assets\/authors\/unknown.svg/);
+      assert.equal((await fetch(`${staticServer.base}/assets/authors/unknown.svg`)).status, 200);
+      const unknownJson = await fetch(`${staticServer.base}/agent/pages/guides/native.json`);
+      assert.deepEqual((await unknownJson.json()).authorship.authors, []);
     } finally { await staticServer.stop(); }
     const fr = read(root, 'release/docs/versions/current/fr/guides/guide/index.html');
     assert.match(fr, /lang="fr"/); assert.match(fr, /Guide français/); assert.match(fr, /Rechercher/); assert.match(fr, /hreflang="fr"/);
     const old = read(root, 'release/docs/versions/v1/fr/guides/guide/index.html');
     assert.match(old, /legacyfirefly/); assert.ok(!old.includes('Instructions françaises')); assert.match(old, /default language/);
+    assert.doesNotMatch(old, /article-edit-button|Fixture Writer/);
+    assert.match(old, /Auteur inconnu/); assert.match(old, /--author-placeholder:url\([^)]*\/docs\/assets\/authors\/unknown.svg/);
     assert.match(read(root, 'release/docs/versions/current/ar/guides/guide/index.html'), /dir="rtl"/);
     assert.match(read(root, 'release/docs/guides/guide/index.html'), /docsy-tabs/);
     assert.match(read(root, 'release/docs/versions/v1/en/widget-sdk/index.html'), /Legacy SDK client/);
@@ -129,12 +148,23 @@ test(`generated template serves static variants and permission-aware APIs on ${r
     assert.equal(JSON.parse(read(root, 'release/docs/agent/query.json')).queryAvailable, false);
 
     config.content.media = { enabled: false };
+    config.reader.showByline = false;
+    config.authors.writer.name = 'Fixture Writer </script><script data-injected>bad()</script>';
     config.localization.fallback = false; save(); command(root, 'scripts/docsy.mjs', 'build');
     assert.ok(!read(root, 'release/docs/guides/guide/index.html').includes('<dialog class="docs-media-viewer"'));
+    const hiddenCredits = read(root, 'release/docs/guides/guide/index.html');
+    assert.ok(!hiddenCredits.includes('<div class="article-credits"'));
+    assert.ok(!read(root, 'release/docs/guides/native/index.html').includes('<div class="article-credits"'));
+    const scriptNodes: any[] = [];
+    const inspect = (node: any) => { if (node.tagName === 'script') scriptNodes.push(node); node.childNodes?.forEach(inspect); };
+    inspect(parse(hiddenCredits));
+    assert.ok(!scriptNodes.some((node) => node.attrs?.some((attribute: any) => attribute.name === 'data-injected')), 'Author metadata must not create script elements');
+    assert.match(hiddenCredits, /article-edit-button/); assert.ok(hiddenCredits.includes('\\u003c/script>'));
     assert.ok(!existsSync(join(root, 'release/docs/versions/current/ar/guides/guide/index.html')));
     assert.ok(!existsSync(join(root, 'release/docs/versions/v1/fr/guides/guide/index.html')));
     assert.ok(existsSync(join(root, 'release/docs/versions/current/ar/index.html')));
     config.content.media = { enabled: true, images: false, videos: true };
+    config.reader.showByline = true; config.authors.writer.name = 'Fixture Writer';
     config.localization.fallback = true; save();
 
     // A malformed source and broken links must stop the exact generated CLI.
@@ -167,6 +197,7 @@ test(`generated template serves static variants and permission-aware APIs on ${r
         const body = await response.text();
         assert.ok(!body.includes('classifiedsecretword'), `Leak in ${path}`);
         assert.ok(!body.includes('Restricted guide'), `Private metadata leak in ${path}`);
+        assert.ok(!body.includes('PrivateAuthorIdentity'), `Private authorship leak in ${path}`);
       }
       let response = await fetch(`${server.base}/agent/query.json?q=classifiedsecretword`);
       assert.equal((await response.json()).count, 0);

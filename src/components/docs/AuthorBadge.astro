@@ -1,0 +1,29 @@
+---
+import type { AuthorProfile } from '../../lib/authorship';
+import { assetPath, defaultContext, docsyConfig, type DocsContext } from '../../config';
+import { message } from '../../lib/messages';
+interface Props { author?: AuthorProfile; context?: DocsContext }
+const { author, context = defaultContext } = Astro.props;
+const name = author?.name ?? message(context, 'unknownAuthor');
+const avatar = author ? author.avatar : docsyConfig.reader.unknownAuthorAvatar ? assetPath(docsyConfig.reader.unknownAuthorAvatar) : undefined;
+// Tint only Docsy's bundled neutral placeholder. Custom pictures keep their colours.
+const themedPlaceholder = avatar === assetPath('assets/authors/unknown.svg');
+const Tag = author?.url ? 'a' : 'span';
+const initials = name.split(/\s+/).slice(0, 2).map((part) => [...part][0]).join('').toUpperCase();
+---
+<Tag class="article-author" href={author?.url} target={author?.url ? '_blank' : undefined} rel={author?.url ? 'noopener noreferrer' : undefined} title={author?.role}>
+  <span class:list={['article-author-avatar', { 'article-author-avatar--placeholder': themedPlaceholder }]} aria-hidden="true">
+    {themedPlaceholder ? <span class="article-author-placeholder" style={`--author-placeholder:url(${JSON.stringify(avatar)})`} /> : <>
+      <span class="article-author-avatar-fallback">{!author ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="8" r="3.25" /><path d="M5.5 20v-1.5a6.5 6.5 0 0 1 13 0V20" /></svg> : author.kind === 'agent' ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m8 7-5 5 5 5m8-10 5 5-5 5m-3-14-2 18" /></svg> : initials}</span>
+      {avatar && <img src={avatar} alt="" width="26" height="26" loading="lazy" decoding="async" referrerpolicy="no-referrer" data-author-avatar />}
+    </>}
+  </span>
+  <span class="article-author-name">{name}</span>
+  {author?.kind === 'agent' && <span class="article-author-kind">{message(context, 'codingAgent')}</span>}
+</Tag>
+
+<script>
+  import { initAuthorAvatars } from '../../lib/author-avatars-client';
+  initAuthorAvatars();
+  document.addEventListener('astro:page-load', () => initAuthorAvatars());
+</script>

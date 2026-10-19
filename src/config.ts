@@ -60,6 +60,26 @@ const apiSectionSchema = z.object({
   paths: z.array(z.string()).default([]),
 });
 
+const httpUrlSchema = z.string().url().refine((value) => /^https?:\/\//i.test(value) && !/[\u0000-\u0020<>]/.test(value), 'Use an HTTP(S) URL without whitespace or markup');
+const authorAvatarSchema = z.string().trim().min(1).refine((value) => {
+  if (/[\u0000-\u001f<>"\\]/.test(value) || value.startsWith('//')) return false;
+  if (/^[a-z][a-z0-9+.-]*:/i.test(value)) return httpUrlSchema.safeParse(value).success;
+  return !/^[^/]*:/.test(value);
+}, 'Use a local asset or HTTP(S) avatar URL');
+const authorIdSchema = z.string().regex(/^[a-z0-9][a-z0-9_-]*$/);
+const authorIdsSchema = z.array(authorIdSchema).refine((ids) => new Set(ids).size === ids.length, 'Author references must be unique').default([]);
+const articleDateSchema = z.preprocess((value) => value instanceof Date && Number.isFinite(value.getTime()) ? value.toISOString().slice(0, 10) : value,
+  z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Use a YYYY-MM-DD date').refine((value) => { const date = new Date(`${value}T00:00:00Z`); return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value; }, 'Invalid calendar date'));
+const authorSchema = z.object({
+  name: z.string().trim().min(1).max(120),
+  kind: z.enum(['human', 'organization', 'agent']).default('human'),
+  github: z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9-]{0,38}$/, 'Use a GitHub username or organization name').optional(),
+  url: httpUrlSchema.optional(),
+  avatar: authorAvatarSchema.optional(),
+  role: z.string().trim().min(1).max(120).optional(),
+  provider: z.string().trim().min(1).max(120).optional(),
+});
+
 const articleSchema = z.object({
   slug: z.string().regex(/^[a-z0-9]+(?:[\/-][a-z0-9]+)*$/),
   source: z.string().min(1),
@@ -68,6 +88,18 @@ const articleSchema = z.object({
   eyebrow: z.string().default('GUIDE'),
   version: z.string().optional(),
   locale: z.string().optional(),
+  authors: authorIdsSchema,
+  contributors: authorIdsSchema,
+  reviewedBy: authorIdsSchema,
+  publishedAt: articleDateSchema.optional(),
+  updatedAt: articleDateSchema.optional(),
+  reviewedAt: articleDateSchema.optional(),
+  editUrl: z.union([httpUrlSchema, z.literal(false)]).optional(),
+  provenance: z.object({
+    agent: authorIdSchema,
+    model: z.string().trim().min(1).max(200).optional(),
+    referenceUrl: httpUrlSchema.optional(),
+  }).optional(),
 });
 
 const accessProviderSchema = z.discriminatedUnion('type', [
@@ -174,6 +206,10 @@ const configSchema = z.object({
   }).optional(),
   reader: z.object({
     headingLinks: z.boolean().default(true),
+    showByline: z.boolean().default(true),
+    defaultAuthorAvatar: authorAvatarSchema.optional(),
+    unknownAuthorAvatar: authorAvatarSchema.optional(),
+    editEnabled: z.boolean().default(true),
     editUrl: z.string().url().refine((value) => /^https?:\/\//i.test(value), 'Use an HTTP(S) source-edit URL').optional(),
     reportUrl: z.string().url().refine((value) => /^https?:\/\//i.test(value), 'Use an HTTP(S) issue URL').optional(),
     editLabel: z.string().default('Edit this page'),
@@ -220,6 +256,7 @@ const configSchema = z.object({
     sdkHeading: z.string().default('Choose your platform'),
     sdkDescription: z.string().default('Official SDKs with full type support and identical primitives across every runtime.'),
   }),
+  authors: z.record(authorIdSchema, authorSchema).default({}),
   content: z.object({
     articles: z.array(articleSchema).default([]),
     media: z.object({
@@ -318,6 +355,12 @@ const configSchema = z.object({
       });
     }
     articleSlugs.add(key);
+    for (const field of ['authors', 'contributors', 'reviewedBy'] as const) article[field].forEach((id, i) => {
+      if (!Object.hasOwn(config.authors, id)) context.addIssue({ code: 'custom', path: ['content', 'articles', articleIndex, field, i], message: `Unknown author "${id}"; register it in authors.` });
+    });
+    if (article.provenance && config.authors[article.provenance.agent]?.kind !== 'agent') context.addIssue({ code: 'custom', path: ['content', 'articles', articleIndex, 'provenance', 'agent'], message: 'Provenance requires a registered author with kind: agent.' });
+    if (article.reviewedAt && !article.reviewedBy.length) context.addIssue({ code: 'custom', path: ['content', 'articles', articleIndex, 'reviewedAt'], message: 'Set reviewedBy when recording a review date.' });
+    if (article.publishedAt && article.updatedAt && article.updatedAt < article.publishedAt) context.addIssue({ code: 'custom', path: ['content', 'articles', articleIndex, 'updatedAt'], message: 'Updated date cannot be before publication.' });
     if (article.version && !config.versions.items.some((v) => v.id === article.version)) context.addIssue({ code: 'custom', path: ['content', 'articles', articleIndex, 'version'], message: 'Unknown documentation version' });
     if (article.locale && !(config.localization?.locales.some((l) => l.code === article.locale) ?? article.locale === config.site.language)) context.addIssue({ code: 'custom', path: ['content', 'articles', articleIndex, 'locale'], message: 'Unknown documentation locale' });
   });
@@ -369,6 +412,7 @@ export type DocsyConfig = z.infer<typeof configSchema>;
 export type SdkSourceConfig = DocsyConfig['ingestion']['sdks'][number];
 export type ApiSectionConfig = DocsyConfig['ingestion']['openapi']['sections'][number];
 export type ArticleConfig = DocsyConfig['content']['articles'][number];
+export type AuthorConfig = DocsyConfig['authors'][string];
 export type DocsContext = { version: string; locale: string };
 export const locales = docsyConfig.localization?.locales ?? [{ code: docsyConfig.site.language, label: docsyConfig.site.language, dir: 'ltr' as const }];
 export const defaultContext: DocsContext = { version: docsyConfig.versions.default, locale: docsyConfig.localization?.defaultLocale ?? docsyConfig.site.language };
@@ -400,7 +444,7 @@ export const parseDocsPath = (pathname: string): { path: string; context: DocsCo
 };
 
 export const assetPath = (path: string): string => {
-  if (/^(?:https?:)?\/\//.test(path) || path.startsWith('data:')) return path;
+  if (/^(?:https?:)?\/\//i.test(path) || path.startsWith('data:')) return path;
   return docsPath(path);
 };
 

@@ -72,6 +72,14 @@ navigation:
 
 Navigation entries do not create pages by themselves. Their `href` must point to an authored article, API section, SDK page, or Astro route that exists.
 
+## Credit writers and let readers correct a page
+
+Register reusable profiles under `authors`, then reference their IDs in each article's `authors`, `contributors` or `reviewedBy` arrays. Human, organization and coding-agent profiles are supported. Publication/update/review dates and optional agent provenance are explicit YAML metadata, not inferred from Git commits or build dates.
+
+Set `reader.editUrl` to your repository's edit URL template to show an **Edit this page** button. An article's `editUrl: false` disables it for that page, or a page-specific URL overrides the template. Author GitHub profiles and the documentation repository are separate settings.
+
+See [Authors, reviews and edit links](../authors-and-edit-links) for complete YAML examples, optional agent/model references, and export/privacy behavior.
+
 ## Search and Markdown export
 
 Registered articles automatically participate in:

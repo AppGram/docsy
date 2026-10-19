@@ -26,6 +26,8 @@ npm run validate
 | `theme` | Light or dark mode, colors, and system font stacks |
 | `home` | Landing-page copy, actions, optional image, and `articleLayout` (`grid` or `list`) |
 | `content.articles` | Authored Markdown pages rendered under `/guides/` |
+| `authors` | Reusable human, organization and coding-agent profiles referenced by articles |
+| `reader` | Heading links, byline visibility, default/unknown author pictures, and optional edit/report links |
 | `content.components` / `content.snippets` | Enabled rich components and named reusable Markdown |
 | `content.media` | Enable the fullscreen image/video viewer, or switch images/videos off independently |
 | `versions` / `localization` | Documentation contexts, locale routing, fallbacks, and UI messages |
