@@ -43,5 +43,5 @@ test('the archive audit rejects missing templates, credentials, checkout depende
   paths.push('scripts/release/package.mjs', 'scripts/release/prepublish.mjs', 'scripts/release/publish.mjs', 'scripts/pack-package.mjs');
   const files = paths.map(path => ({ path })); assert.doesNotThrow(() => auditPackageFiles(files));
   assert.throws(() => auditPackageFiles(files.filter(file => file.path !== 'scripts/release/prepublish.mjs')), /Missing packaged release tool/);
-  for (const path of ['.env', 'public/.env.production', '.npmrc', 'scripts/id_rsa', 'node_modules/private/index.js', 'dist/index.html', '../outside', '/absolute']) assert.throws(() => auditPackageFiles([...files, { path }]), path);
+  for (const path of ['.env', 'public/.env.production', '.npmrc', 'scripts/id_rsa', 'node_modules/private/index.js', 'dist/index.html', '../outside', '/absolute', 'docs/npm-release.md']) assert.throws(() => auditPackageFiles([...files, { path }]), path);
 });

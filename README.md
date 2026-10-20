@@ -12,8 +12,6 @@
 
 <p align="center"><a href="https://appgram.github.io/docsy/">Documentation</a> · <a href="content/getting-started.md">Getting started</a> · <a href="https://github.com/AppGram/docsy/issues">Issues</a></p>
 
-> Source-available under ELv2. The versioned CLI is `@appgram/docsy@0.4.0`. Create an editable site with the command below, or run from source. The separate [npm release workflow](docs/npm-release.md) verifies the actual installed package and requires explicit publication approval; pushing to main or deploying Pages does not publish to npm.
-
 Docsy by AppGram turns Markdown, MDX, OpenAPI, and native SDK documentation into a self-hosted portal with source you own. Readers get searchable guides and reference pages. Coding agents get Markdown/JSON exports, YAML configuration, and local validation. No hosted control plane is required.
 
 Product copy, navigation, visual tokens, ingestion, and access rules live in `docsy.config.yaml`. The generated Astro components and CSS stay in your repository, alongside `AGENTS.md` and `DOCSY_BRIEF.md` to guide your coding agent.
@@ -239,7 +237,7 @@ npm exec --package @appgram/docsy@0.4.0 -- create-docsy my-docs --yes --ci
 
 Add `--openapi ./my-api.yaml` to bring your own API, or edit the generated Markdown/YAML directly. From a repository checkout, `npm run release:pack` also builds a local tarball and prints an equivalent `npm exec --package "/absolute/path/appgram-docsy-0.4.0.tgz" -- create-docsy ...` command. Packing never publishes anything.
 
-Release preparation can be checked locally with `npm run test:package`. It packs the real archive, installs it in a clean consumer without checkout dependency links, generates a project using your own OpenAPI and MDX, validates/builds it, and tests both static and locked serving. The result and archive checksum are saved under `.docsy/packages/release/`. See the [release and trusted-publisher checklist](docs/npm-release.md); this command never publishes anything.
+Run `npm run test:package` to test the actual packed CLI. It installs the archive in a clean consumer without checkout dependency links, generates a project using your own OpenAPI and MDX, validates/builds it, and tests both static and locked serving. The result and archive checksum are saved under `.docsy/packages/release/`. This command never publishes anything.
 
 To scaffold your own Pages site, add `--deploy github-pages --repo https://github.com/OWNER/REPOSITORY`. The generator derives the correct origin/base path, includes validation and deployment workflows, and prints the expected URL. It **does not** create a repository, push, enable Pages, or deploy. Deployment stays off until you explicitly set `DOCSY_ENABLE_PAGES=true` and enable Pages in your own repository. Locked sites and live queries require Node/Bun instead.
 

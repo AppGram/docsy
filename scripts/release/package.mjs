@@ -31,6 +31,7 @@ export function auditPackageFiles(files) {
     assert.ok(!/(^|\/)(?:\.env(?:\.|$)|\.npmrc$|id_rsa(?:\.|$)|id_ed25519(?:\.|$))/.test(path), `Sensitive file in package: ${path}`);
     assert.ok(!/^(?:node_modules|dist|release|tests|\.git|\.docsy)\//.test(path), `Unnecessary build/test output in package: ${path}`);
     assert.ok(!path.startsWith('docs/assets/launch/'), 'Launch media must not inflate the npm package');
+    assert.notEqual(path, 'docs/npm-release.md', 'Internal release runbooks must not be packaged');
   }
 }
 export const sha256 = (file) => createHash('sha256').update(readFileSync(file)).digest('hex');

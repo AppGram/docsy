@@ -43,7 +43,6 @@
     "docsy.config.yaml",
     "README.md",
     "CHANGELOG.md",
-    "docs/npm-release.md",
     "tsconfig.json"
   ],
   "scripts": {
