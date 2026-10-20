@@ -23,7 +23,7 @@ Mintlify migration preserves native `.mdx` sources by default. Add `--format mar
 
 ## Generate a project
 
-This is a private internal preview, not a published npm release. In the private template checkout, run `npm run release:pack` and use the copyable local-tarball creation command it prints. `npm run create -- <directory>` is also available **in the template checkout**; generated sites use `npm run docsy -- create <directory>` when another project is needed.
+The repository is public and the `0.4.0` npm release candidate is prepared, but has not been published yet. In a template checkout, run `npm run release:pack` and use the copyable local-tarball creation command it prints. `npm run create -- <directory>` is also available **in the template checkout**; generated sites use `npm run docsy -- create <directory>` when another project is needed. `npm run test:package` tests installation of the real tarball, not a dependency symlink to this checkout. Neither command publishes a package.
 
 ```text
 docsy create <directory> [options]

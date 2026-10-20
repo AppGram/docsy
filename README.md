@@ -12,7 +12,7 @@
 
 <p align="center"><a href="https://appgram.github.io/docsy/">Documentation</a> · <a href="content/getting-started.md">Getting started</a> · <a href="https://github.com/AppGram/docsy/issues">Issues</a></p>
 
-> Public, source-available repository under ELv2. Run Docsy from source or generate a site with the bundled CLI. The CLI package is currently versioned `0.4.0-internal.0` and is not published to npm; `private: true` in `package.json` prevents npm publication and does not mean this GitHub repository is private.
+> Public, source-available repository under ELv2. The `@appgram/docsy@0.4.0` npm release candidate is prepared but not published yet. Use the bundled CLI or a local tarball today. The separate [npm release workflow](docs/npm-release.md) verifies the actual installed package and requires explicit publication approval; pushing to main or deploying Pages does not publish to npm.
 
 Docsy by AppGram turns Markdown, MDX, OpenAPI, and native SDK documentation into a self-hosted portal with source you own. Readers get searchable guides and reference pages. Coding agents get Markdown/JSON exports, YAML configuration, and local validation. No hosted control plane is required.
 
@@ -229,7 +229,15 @@ From a clone of this public repository with dependencies installed, build a loca
 npm run release:pack
 ```
 
-It prints one copyable `npm exec --package "/absolute/path/appgram-docsy-0.4.0-internal.0.tgz" -- create-docsy my-docs --yes --ci` command. This installs from the local tarball, not a public npm release. Add `--openapi ./my-api.yaml` to bring your own API, or edit the generated Markdown/YAML directly.
+It prints one copyable `npm exec --package "/absolute/path/appgram-docsy-0.4.0.tgz" -- create-docsy my-docs --yes --ci` command. This installs from the local tarball, not a public npm release. Add `--openapi ./my-api.yaml` to bring your own API, or edit the generated Markdown/YAML directly.
+
+After the first npm release is actually published, the equivalent registry command will be:
+
+```bash
+npm exec --package @appgram/docsy@0.4.0 -- create-docsy my-docs --yes --ci
+```
+
+Release preparation can be checked locally with `npm run test:package`. It packs the real archive, installs it in a clean consumer without checkout dependency links, generates a project using your own OpenAPI and MDX, validates/builds it, and tests both static and locked serving. The result and archive checksum are saved under `.docsy/packages/release/`. See the [release and trusted-publisher checklist](docs/npm-release.md); this command never publishes anything.
 
 To scaffold your own Pages site, add `--deploy github-pages --repo https://github.com/OWNER/REPOSITORY`. The generator derives the correct origin/base path, includes validation and deployment workflows, and prints the expected URL. It **does not** create a repository, push, enable Pages, or deploy. Deployment stays off until you explicitly set `DOCSY_ENABLE_PAGES=true` and enable Pages in your own repository. Locked sites and live queries require Node/Bun instead.
 
@@ -695,6 +703,8 @@ The default `Dockerfile` and Compose service continue to use Node. Both Dockerfi
 | `npm run maintain -- plan --base <ref>` | Inspect source changes and documentation impact |
 | `npm run maintain -- run --base <ref>` | Update docs with the agent and validate the result |
 | `npm test` | Run content, ingestion, MDX, maintenance, theme and production-runtime regression tests |
+| `npm run release:pack` | Audit and pack a local npm release candidate without publishing |
+| `npm run test:package` | Install the actual tarball, generate content, build and test static/locked serving |
 
 ## Project structure
 
@@ -728,9 +738,9 @@ npm run build
 
 Please preserve the configuration/source boundary, keep permission checks server-side, and avoid external font services or typographic tracking.
 
-Pull requests targeting `main` automatically run the Node test suite and production build, real-library generator/import checks, and Bun runtime integration tests. CI installs Bun 1.3.5 alongside Node 22. Successful open/static builds attach a seven-day `docsy-static-preview-…` artifact; download it and serve its mount-aware directory locally. It is not a public preview URL. Locked/server output is never uploaded as a static preview.
+Pull requests targeting `main` automatically run the Node test suite and production build, real-library generator/import checks, Bun runtime integration tests, and a clean installed-tarball end-to-end test. CI installs Bun 1.3.5 alongside Node 22. Successful open/static builds attach a seven-day `docsy-static-preview-…` artifact; download it and serve its mount-aware directory locally. It is not a public preview URL. Locked/server output is never uploaded as a static preview.
 
-The combined **PR checks** job passes only if all three jobs succeed. No secrets, write token, automatic approval or merge are used for PR validation. Automatic Pages deployment runs only after successful main-branch CI with `DOCSY_ENABLE_PAGES=true`; it is enabled for this repository's public documentation portal. npm publication remains separately disabled by `package.json`. Enforcing the combined check as a merge requirement additionally depends on the repository's branch rules.
+The combined **PR checks** job passes only if all four jobs succeed. No secrets, write token, automatic approval or merge are used for PR validation. Automatic Pages deployment runs only after successful main-branch CI with `DOCSY_ENABLE_PAGES=true`; it is enabled for this repository's public documentation portal. npm publication uses a separate manual workflow, repository gate and typed confirmation, not the Pages switch. Enforcing the combined check as a merge requirement additionally depends on the repository's branch rules.
 
 Contributions are distributed under ELv2. By submitting a pull request, you confirm that you have the right to contribute the code under those terms. See [CONTRIBUTING.md](CONTRIBUTING.md) for the complete project contribution guidance.
 

@@ -30,7 +30,7 @@ test('scaffold records version provenance and optional gated workflows without p
   assert.match(read(root, 'DEPLOYING.md'), /Explicit publishing decision/);
   assert.match(output, /Nothing has been deployed/);
   const version = execFileSync(process.execPath, [join(root, 'scripts/docsy.mjs'), '--version'], { cwd: root, encoding: 'utf8' }).trim();
-  assert.match(version, /-internal\./);
+  assert.equal(version, JSON.parse(readFileSync('package.json', 'utf8')).version);
 });
 
 test('Pages scaffold rejects locked sites and invalid repository URLs before creating a project', () => {
@@ -64,10 +64,12 @@ test('provenance refuses symlinks and unknown upgrade baselines', () => {
   assert.throws(() => inspectUpgrade(temp(), temp()), /No template provenance/);
 });
 
-test('private internal package cannot accidentally be treated as a public release', () => {
+test('the public release candidate keeps publication explicit and generated projects private', () => {
   const pkg = JSON.parse(readFileSync(resolve('package.json'), 'utf8'));
-  assert.equal(pkg.private, true);
-  assert.match(pkg.version, /-internal\./);
+  assert.equal(pkg.private, false);
+  assert.equal(pkg.publishConfig.access, 'public');
+  assert.equal(pkg.scripts.prepublishOnly, 'node scripts/release/prepublish.mjs');
+  assert.ok(!pkg.version.includes('internal'));
 });
 test('a generated site can generate another site without losing its template version', () => {
   const first = join(temp(), 'first'); const second = join(temp(), 'second');

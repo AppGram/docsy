@@ -17,7 +17,7 @@ test('PR CI validates main and merge queues without secrets or privileged PR exe
   assert.deepEqual(checks.permissions, { contents: 'read' });
   assert.ok(!checksText.includes('secrets.'));
   assert.equal(checks.concurrency['cancel-in-progress'], true);
-  for (const id of ['check', 'native-imports', 'bun-runtime']) {
+  for (const id of ['check', 'native-imports', 'bun-runtime', 'package']) {
     const job = checks.jobs[id];
     assert.ok(job['timeout-minutes'] > 0);
     assert.ok(!job.permissions);
@@ -39,7 +39,8 @@ test('CI builds reviewable static previews and requires Node, native imports and
   assert.ok(checks.jobs['bun-runtime'].steps.some((step) => step.run === 'npm run test:runtime:bun'));
   assert.equal(checks.jobs.ci.name, 'PR checks');
   assert.equal(checks.jobs.ci.if, 'always()');
-  assert.deepEqual(checks.jobs.ci.needs, ['check', 'native-imports', 'bun-runtime']);
+  assert.ok(checks.jobs.package.steps.some((step) => step.run === 'npm run test:package'));
+  assert.deepEqual(checks.jobs.ci.needs, ['check', 'native-imports', 'bun-runtime', 'package']);
   assert.match(checks.jobs.ci.steps[0].run, /job.result !== "success"/);
 });
 test('CD cannot deploy PRs and stays explicitly gated behind main CI and release approval', () => {

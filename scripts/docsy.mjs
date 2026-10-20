@@ -3,7 +3,7 @@
 import { existsSync, readFileSync, rmSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { dirname, resolve } from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
 
 const projectRoot = process.cwd();
 const ownRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -55,8 +55,9 @@ Commands:
 `);
 };
 
-const loader = pathToFileURL(resolve(ownRoot, 'node_modules/tsx/dist/loader.mjs')).href;
-const validateContent = () => run(process.execPath, ['--import', loader, resolve(projectRoot, 'scripts/validate-content.ts')]);
+// npm hoists dependencies when this CLI is installed from a tarball or registry.
+const loader = () => import.meta.resolve('tsx');
+const validateContent = () => run(process.execPath, ['--import', loader(), resolve(projectRoot, 'scripts/validate-content.ts')]);
 
 if (command === '--version' || command === '-v' || command === 'version') {
   const manifest = resolve(projectRoot, '.docsy/template.json');
@@ -89,7 +90,7 @@ if (command === '--version' || command === '-v' || command === 'version') {
   }
   run(astroBinary(), ['check']);
   run(astroBinary(), ['build', ...args]);
-  run(process.execPath, ['--import', loader, resolve(projectRoot, 'scripts/check-output-links.ts')]);
+  run(process.execPath, ['--import', loader(), resolve(projectRoot, 'scripts/check-output-links.ts')]);
   run(process.execPath, [resolve(projectRoot, 'scripts/stage-deployment.mjs')]);
 } else if (command === 'preview' || command === 'start') {
   run(process.execPath, [resolve(projectRoot, 'scripts/start.mjs'), ...args]);

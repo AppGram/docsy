@@ -223,6 +223,18 @@ home:
       primaryActionLabel: Bien démarrer →
       secondaryActionLabel: Travailler avec des agents
 authors:
+  nedimf:
+    name: nedimf
+    kind: human
+    github: nedimf
+    role: appgram.dev
+    avatar: assets/authors/nedimf.png
+  appgram:
+    name: appgram.dev
+    kind: organization
+    url: https://appgram.dev
+    github: AppGram
+    avatar: assets/docsy-logo.png
   docsy-agent:
     name: Docsy coding agent
     kind: agent
@@ -244,26 +256,31 @@ content:
   articles:
     - slug: getting-started
       source: content/getting-started.md
+      authors: [nedimf, appgram]
       title: Get started with Docsy
       description: Build documentation for humans and coding agents, generate a project, and understand its editable source.
       eyebrow: GET STARTED
     - slug: tutorials/coding-agents
       source: content/tutorials/coding-agents.md
+      authors: [nedimf, appgram]
       title: Work with coding agents
       description: Read Markdown exports, guide your coding agent with project instructions, and validate documentation changes.
       eyebrow: WORKFLOW
     - slug: tutorials/documentation-maintenance
       source: content/tutorials/documentation-maintenance.md
+      authors: [nedimf, appgram]
       title: Maintain documentation automatically
       description: Turn API and code changes into validated draft PRs with updated articles, corrected examples, and migration notes.
       eyebrow: WORKFLOW
     - slug: tutorials/yaml-configuration
       source: content/tutorials/yaml-configuration.md
+      authors: [nedimf, appgram]
       title: Configure Docsy with YAML
       description: Understand how docsy.config.yaml controls product copy, navigation, visual tokens, content, and access.
       eyebrow: TUTORIAL
     - slug: tutorials/authored-articles
       source: content/tutorials/authored-articles.md
+      authors: [nedimf, appgram]
       title: Write authored documentation
       description: Add Markdown guides and articles beside generated API and SDK reference pages.
       eyebrow: TUTORIAL
@@ -272,116 +289,138 @@ content:
       title: Authors, reviews and edit links
       description: Credit authors and contributors, link to GitHub edits, and optionally record coding-agent provenance without claiming an automatic quality score.
       eyebrow: AUTHORING
-      authors: [docsy-agent]
+      authors: [nedimf, appgram]
+      contributors: [docsy-agent]
       updatedAt: '2026-10-19'
       provenance:
         agent: docsy-agent
     - slug: tutorials/openapi-ingestion
       source: content/tutorials/openapi-ingestion.md
+      authors: [nedimf, appgram]
       title: Ingest an OpenAPI document
       description: Turn a local or remote OpenAPI source into grouped, searchable API reference pages.
       eyebrow: TUTORIAL
     - slug: tutorials/rich-articles
       source: content/tutorials/rich-articles.md
+      authors: [nedimf, appgram]
       title: Rich article components
       description: Write callouts, steps, synchronized tabs, accordions, code groups, and reusable snippets in Markdown.
       eyebrow: AUTHORING
     - slug: tutorials/native-mdx
       source: content/tutorials/native-mdx.mdx
+      authors: [nedimf, appgram]
       title: Write native MDX articles
       description: Mix Markdown with themed JSX components, keep Mintlify MDX sources, and explicitly opt into trusted custom components.
       eyebrow: AUTHORING
     - slug: tutorials/search-and-agents
       source: content/tutorials/search-and-agents.md
+      authors: [nedimf, appgram]
       title: Full-text search and agent JSON API
       description: Search complete content and retrieve permission-aware JSON or Markdown for coding agents.
       eyebrow: AGENTS
     - slug: tutorials/versions-and-locales
       source: content/tutorials/versions-and-locales.md
+      authors: [nedimf, appgram]
       title: Versions and localization
       description: Configure versioned articles, translated navigation, language fallbacks, and version-specific ingestion.
       eyebrow: CONFIGURATION
     - slug: tutorials/content-validation
       source: content/tutorials/content-validation.md
+      authors: [nedimf, appgram]
       title: Validate documentation content
       description: Catch ingestion failures, invalid API examples, broken links, and invalid article components before publishing.
       eyebrow: RELIABILITY
     - slug: ingestion/sdk-adapters
       source: content/ingestion/sdk-adapters.md
+      authors: [nedimf, appgram]
       title: Ingest SDK documentation
       description: Import 16 native generator formats covering 20 source languages into consistent SDK reference pages.
       eyebrow: INGESTION
     - slug: ingestion/sdk-samples
       source: content/ingestion/sdk-samples.md
+      authors: [nedimf, appgram]
       title: Explore 20 native SDK samples
       description: Inspect actual generator output, source fixtures, tool versions, reproduction commands, and provenance hashes.
       eyebrow: EXAMPLES
     - slug: customization/default-ui
       source: content/customization/default-ui.md
+      authors: [nedimf, appgram]
       title: Customize the default UI
       description: Change branding and theme tokens in YAML, then edit the source-owned Astro interface when needed.
       eyebrow: CUSTOMIZATION
     - slug: tutorials/lock-mode
       source: content/tutorials/lock-mode.md
+      authors: [nedimf, appgram]
       title: Protect documentation by tier
       description: Configure server-side documentation permissions using ordered YAML rules.
       eyebrow: TUTORIAL
     - slug: deployment/github-pages
       source: content/deployment/github-pages.md
+      authors: [nedimf, appgram]
       title: Deploy to GitHub Pages
       description: Publish an open-mode Docsy site from GitHub Actions with the correct origin and base path.
       eyebrow: DEPLOYMENT
     - slug: deployment/self-hosting
       source: content/deployment/self-hosting.md
+      authors: [nedimf, appgram]
       title: Self-host Docsy
       description: Deploy static documentation or run locked mode on Node, Bun, or Docker.
       eyebrow: DEPLOYMENT
     - slug: reference/cli
       source: content/reference/cli.md
+      authors: [nedimf, appgram]
       title: CLI reference
       description: Generate projects, validate configuration, build releases, and run production previews.
       eyebrow: REFERENCE
     - slug: reference/upgrading
       source: content/reference/upgrading.md
+      authors: [nedimf, appgram]
       title: Upgrade a customized site
       description: Record template provenance and compare upstream fixes without overwriting your source or content.
       eyebrow: REFERENCE
     - slug: tutorials/migrate-mintlify
       source: content/tutorials/migrate-mintlify.md
+      authors: [nedimf, appgram]
       title: Migrate from Mintlify
       description: Preserve native MDX and supported components from a local Mintlify export, with navigation, assets, and redirects.
       eyebrow: MIGRATION
     - slug: reference/compatibility
       source: content/reference/compatibility.md
+      authors: [nedimf, appgram]
       title: Compatibility evidence
       description: Reproduce real-library imports and understand exactly what the tests do and do not establish.
       eyebrow: REFERENCE
     - slug: reference/license
       source: content/reference/license.md
+      authors: [nedimf, appgram]
       title: Docsy license
       description: Understand what ELv2 permits, what it prohibits, and how it applies to self-hosting and contributions.
       eyebrow: REFERENCE
     - slug: getting-started
       locale: fr
       source: content/fr/getting-started.md
+      authors: [nedimf, appgram]
       title: Bien démarrer avec Docsy
       description: Créez un portail pour les humains et les agents, générez un projet et prenez le contrôle de son code.
       eyebrow: PREMIERS PAS
     - slug: tutorials/rich-articles
       locale: fr
       source: content/fr/rich-articles.md
+      authors: [nedimf, appgram]
       title: Des articles plus expressifs
       description: Ajoutez des encadrés, des étapes, des onglets, des blocs de code et des extraits réutilisables en Markdown.
       eyebrow: RÉDACTION
     - slug: tutorials/versions-and-locales
       locale: fr
       source: content/fr/versions-and-locales.md
+      authors: [nedimf, appgram]
       title: Versions et langues
       description: Testez les sélecteurs, les variantes d’un article et le repli vers la langue par défaut.
       eyebrow: CONFIGURATION
     - slug: getting-started
       version: preview
       source: content/preview/getting-started.md
+      authors: [nedimf, appgram]
       title: Get started — preview workspace
       description: A distinct demo article for testing version switching, localized content, and English fallbacks.
       eyebrow: PREVIEW DEMO
@@ -389,24 +428,28 @@ content:
       version: preview
       locale: fr
       source: content/preview/fr/getting-started.md
+      authors: [nedimf, appgram]
       title: Bien démarrer — espace de démonstration
       description: Un article propre à la version Preview pour tester les variantes, les traductions et le repli en anglais.
       eyebrow: DÉMONSTRATION
     - slug: getting-started
       locale: es
       source: content/es/getting-started.md
+      authors: [nedimf, appgram]
       title: Primeros pasos con Docsy
       description: Crea un portal para personas y agentes, genera un proyecto y toma el control de su código.
       eyebrow: PRIMEROS PASOS
     - slug: tutorials/rich-articles
       locale: es
       source: content/es/rich-articles.md
+      authors: [nedimf, appgram]
       title: Artículos enriquecidos
       description: Añade avisos, pasos, pestañas, grupos de código y fragmentos reutilizables con Markdown.
       eyebrow: REDACCIÓN
     - slug: tutorials/versions-and-locales
       locale: es
       source: content/es/versions-and-locales.md
+      authors: [nedimf, appgram]
       title: Versiones e idiomas
       description: Prueba los selectores, las variantes de los artículos y el contenido en inglés cuando falta una traducción.
       eyebrow: CONFIGURACIÓN
@@ -414,6 +457,7 @@ content:
       version: preview
       locale: es
       source: content/preview/es/getting-started.md
+      authors: [nedimf, appgram]
       title: Primeros pasos — espacio de demostración
       description: Un artículo específico de Preview para probar las versiones, las traducciones y el contenido alternativo en inglés.
       eyebrow: DEMOSTRACIÓN

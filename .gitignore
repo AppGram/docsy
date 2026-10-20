@@ -1,7 +1,7 @@
 node_modules/
 .astro/
 dist/
-release/
+/release/
 .env
 .docsy/maintenance/
 .docsy/generators/

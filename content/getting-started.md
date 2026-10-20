@@ -19,7 +19,7 @@ Open `http://localhost:4321/docsy/`. Changes to `docsy.config.yaml`, Markdown ar
 
 ## Generate a new project
 
-Run `npm run release:pack` in your repository checkout. Copy the `npm exec --package ... -- create-docsy my-docs --yes --ci` command it prints. This uses a local versioned tarball rather than assuming an npm release exists. The package's `private: true` setting blocks npm publication, not access to this public repository.
+Run `npm run release:pack` in your repository checkout. Copy the `npm exec --package ... -- create-docsy my-docs --yes --ci` command it prints. This uses the local `0.4.0` release-candidate tarball rather than assuming an npm release exists. Packing and testing never publish anything; registry publication has its own manual workflow and approval gates. Generated documentation projects remain `private: true` by default so they are not accidentally published as npm packages.
 
 Use the included generator when you want a separate documentation site:
 

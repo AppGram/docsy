@@ -20,6 +20,6 @@ Review the report and compare files with the clean project. Merge only the chang
 
 Do not invent hashes for an unknown baseline. Recover the exact generator release or commit originally used and generate a clean project from it. Review differences with your existing site before adopting provenance. If the original release is unavailable, use a manual source comparison and record that the baseline is unknown. The comparison command refuses to guess.
 
-## Internal builds only
+## Release candidates and published versions
 
-This checkout is an internal prerelease. `npm run release:pack` creates a versioned local tarball; it does not publish to a registry. The root package is marked private to block accidental npm publication. Public distribution requires a separate explicit release decision.
+`npm run release:pack` creates a versioned local tarball; it does not publish to a registry. The `0.4.0` candidate is prepared for public npm distribution but is not published yet. Use the tarball until a version is actually listed in the registry. Registry publication requires the separate manual release workflow, owner-controlled gate and explicit confirmation. Generated documentation projects stay private npm packages by default.

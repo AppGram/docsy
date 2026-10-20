@@ -1,7 +1,7 @@
 {
   "name": "@appgram/docsy",
-  "version": "0.4.0-internal.0",
-  "private": true,
+  "version": "0.4.0",
+  "private": false,
   "description": "Documentation built for humans and coding agents. Self-host Markdown, OpenAPI, and SDK docs with editable Astro source.",
   "license": "Elastic-2.0",
   "repository": {
@@ -12,6 +12,10 @@
     "url": "https://github.com/AppGram/docsy/issues"
   },
   "homepage": "https://appgram.github.io/docsy/",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "type": "module",
   "bin": {
     "docsy": "scripts/docsy.mjs",
@@ -34,10 +38,13 @@
     "docsy.config.yaml",
     "README.md",
     "CHANGELOG.md",
+    "docs/npm-release.md",
     "tsconfig.json"
   ],
   "scripts": {
-    "release:pack": "node scripts/pack-internal.mjs",
+    "release:pack": "node scripts/pack-package.mjs",
+    "prepublishOnly": "node scripts/release/prepublish.mjs",
+    "test:package": "node scripts/test-package.mjs",
     "docsy": "node scripts/docsy.mjs",
     "create": "node scripts/create-docsy.mjs",
     "dev": "node scripts/docsy.mjs dev",

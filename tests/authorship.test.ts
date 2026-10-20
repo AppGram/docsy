@@ -1,12 +1,23 @@
 import test, { afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
-import { dump } from 'js-yaml';
+import { dump, load } from 'js-yaml';
 
 const repo = process.cwd(), temporary: string[] = [];
+test('portal articles credit nedimf and appgram.dev across all registered versions and locales', () => {
+  const config: any = load(readFileSync(resolve(repo, 'docsy.config.yaml'), 'utf8'));
+  assert.equal(config.authors.nedimf.name, 'nedimf');
+  assert.equal(config.authors.nedimf.github, 'nedimf');
+  assert.equal(config.authors.appgram.kind, 'organization');
+  assert.equal(config.authors.appgram.url, 'https://appgram.dev');
+  for (const article of config.content.articles) assert.deepEqual(article.authors, ['nedimf', 'appgram'], article.source);
+  const guide = config.content.articles.find((article: any) => article.slug === 'tutorials/authors-and-edit-links');
+  assert.deepEqual(guide.contributors, ['docsy-agent']);
+  assert.equal(guide.provenance.agent, 'docsy-agent');
+});
 afterEach(() => { for (const root of temporary.splice(0)) rmSync(root, { recursive: true, force: true }); });
 const moduleUrl = (path: string) => JSON.stringify(new URL(`../${path}`, import.meta.url).href);
 const run = (root: string, code: string) => execFileSync(process.execPath, ['--import', resolve(repo, 'node_modules/tsx/dist/loader.mjs'), '--input-type=module', '-e', code], { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, DOCSY_CONFIG: 'docsy.config.yaml' } }).trim();
