@@ -227,14 +227,14 @@ authors:
     name: nedimf
     kind: human
     github: nedimf
-    role: appgram.dev
+    role: AppGram
     avatar: assets/authors/nedimf.png
   appgram:
-    name: appgram.dev
+    name: AppGram
     kind: organization
     url: https://appgram.dev
     github: AppGram
-    avatar: assets/docsy-logo.png
+    avatar: assets/ag-logo.svg
   docsy-agent:
     name: Docsy coding agent
     kind: agent

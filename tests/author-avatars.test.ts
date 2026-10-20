@@ -3,6 +3,23 @@ import assert from 'node:assert/strict';
 import { initAuthorAvatars } from '../src/lib/author-avatars-client';
 import { readFileSync } from 'node:fs';
 
+test('organization profiles render as compact theme-aware tags beside personal author profiles', () => {
+  const css = readFileSync(new URL('../src/styles/article-credits.css', import.meta.url), 'utf8');
+  const badge = readFileSync(new URL('../src/components/docs/AuthorBadge.astro', import.meta.url), 'utf8');
+  assert.match(badge, /'article-author--organization': author\?\.kind === 'organization'/);
+  assert.match(css, /\.article-author--organization\s*\{[^}]*border: 1px solid var\(--line\);[^}]*color: var\(--muted\);[^}]*font-size: 11px;/);
+  assert.match(css, /\.article-author--organization \.article-author-avatar\s*\{[^}]*width: 16px;[^}]*height: 16px;/);
+  assert.match(css, /\.article-meta a\.article-author--organization\s*\{\s*color: var\(--muted\);/);
+});
+
+test('transparent author pictures hide fallback initials and organization logos are contained, not cropped', () => {
+  const css = readFileSync(new URL('../src/styles/article-credits.css', import.meta.url), 'utf8');
+  const badge = readFileSync(new URL('../src/components/docs/AuthorBadge.astro', import.meta.url), 'utf8');
+  assert.match(css, /\.article-author-avatar:has\(> img:not\(\[hidden\]\)\) > \.article-author-avatar-fallback\s*\{\s*visibility: hidden;/);
+  assert.match(css, /\.article-author-avatar--organization img\s*\{[^}]*object-fit: contain;[^}]*padding: 4px;/);
+  assert.match(badge, /'article-author-avatar--organization': author\?\.kind === 'organization'/);
+});
+
 test('the bundled unknown-author placeholder has no fixed palette and follows theme tokens', () => {
   const svg = readFileSync(new URL('../public/assets/authors/unknown.svg', import.meta.url), 'utf8');
   const css = readFileSync(new URL('../src/styles/article-credits.css', import.meta.url), 'utf8');

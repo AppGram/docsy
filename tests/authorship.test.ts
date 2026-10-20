@@ -7,12 +7,15 @@ import { tmpdir } from 'node:os';
 import { dump, load } from 'js-yaml';
 
 const repo = process.cwd(), temporary: string[] = [];
-test('portal articles credit nedimf and appgram.dev across all registered versions and locales', () => {
+test('portal articles credit nedimf and AppGram across all registered versions and locales', () => {
   const config: any = load(readFileSync(resolve(repo, 'docsy.config.yaml'), 'utf8'));
   assert.equal(config.authors.nedimf.name, 'nedimf');
   assert.equal(config.authors.nedimf.github, 'nedimf');
   assert.equal(config.authors.appgram.kind, 'organization');
+  assert.equal(config.authors.appgram.name, 'AppGram');
   assert.equal(config.authors.appgram.url, 'https://appgram.dev');
+  assert.equal(config.authors.appgram.avatar, 'assets/ag-logo.svg');
+  assert.match(readFileSync(resolve(repo, 'public', config.authors.appgram.avatar), 'utf8'), /viewBox="0 0 490 552"/);
   for (const article of config.content.articles) assert.deepEqual(article.authors, ['nedimf', 'appgram'], article.source);
   const guide = config.content.articles.find((article: any) => article.slug === 'tutorials/authors-and-edit-links');
   assert.deepEqual(guide.contributors, ['docsy-agent']);

@@ -26,6 +26,8 @@ Avatars are optional for human, team and coding-agent profiles. Local `assets/..
 
 ## Configure profile pictures and unknown authors
 
+Profiles with `kind: organization` appear as compact logo-and-name tags beside the other credited profiles. Use a short `name` such as `AppGram` for the tag label and `url: https://appgram.dev` for its link destination; the domain does not need to be the displayed name.
+
 ```yaml
 authors:
   alex:
