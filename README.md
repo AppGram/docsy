@@ -24,9 +24,9 @@ Docsy can ship as a fully static site or as a server-rendered application with p
 
 ## Watch the product tour
 
-[![Watch the 73-second Docsy product tour](docs/assets/launch/video-poster.jpg)](docs/assets/launch/docsy-showcase.mp4)
+[![Watch the 73-second Docsy product tour on YouTube](docs/assets/launch/video-poster.jpg)](https://youtu.be/-9HpXcbcjY4)
 
-[Watch the video with narration](docs/assets/launch/docsy-showcase.mp4) · 73 seconds · 1080p
+[Watch the video with narration on YouTube](https://youtu.be/-9HpXcbcjY4) · 73 seconds · 1080p
 
 See the actual interface, Markdown and API/SDK reference, YAML customization, self-hosting, and the documentation maintenance workflow.
 
