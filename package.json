@@ -4,6 +4,11 @@
   "private": false,
   "description": "Documentation built for humans and coding agents. Self-host Markdown, OpenAPI, and SDK docs with editable Astro source.",
   "license": "Elastic-2.0",
+  "author": {
+    "name": "nedimf",
+    "url": "https://github.com/nedimf"
+  },
+  "keywords": ["documentation", "docs", "openapi", "mdx", "astro", "self-hosted", "sdk", "cli", "coding-agents"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AppGram/docsy.git"

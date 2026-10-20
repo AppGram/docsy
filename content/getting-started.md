@@ -1,7 +1,7 @@
 Docsy by AppGram is documentation you own: YAML configuration, native SDK and OpenAPI imports, editable source, and self-hosting. People read searchable guides and reference pages; coding agents read Markdown/JSON and help maintain the same repository.
 
-:::note[Public source; CLI package not on npm]
-Docsy's repository is public and source-available under ELv2. Read the [public documentation portal](https://appgram.github.io/docsy/) or run a clone locally. Use the bundled generator or local versioned CLI tarball; no published npm package or hosted control plane is required. Generation and local preview do not deploy anything.
+:::note[Your source and hosting]
+Docsy is source-available under ELv2. Use the versioned CLI, a local tarball or the public source repository. No hosted control plane is required. Generation and local preview do not deploy anything.
 :::
 
 ## Run this documentation portal
@@ -19,9 +19,17 @@ Open `http://localhost:4321/docsy/`. Changes to `docsy.config.yaml`, Markdown ar
 
 ## Generate a new project
 
-Run `npm run release:pack` in your repository checkout. Copy the `npm exec --package ... -- create-docsy my-docs --yes --ci` command it prints. This uses the local `0.4.0` release-candidate tarball rather than assuming an npm release exists. Packing and testing never publish anything; registry publication has its own manual workflow and approval gates. Generated documentation projects remain `private: true` by default so they are not accidentally published as npm packages.
+Create your own site with the versioned npm CLI:
 
-Use the included generator when you want a separate documentation site:
+```bash
+npm exec --package @appgram/docsy@0.4.0 -- create-docsy my-docs --yes --ci
+cd my-docs
+npm run dev
+```
+
+For local CLI development, run `npm run release:pack` in the source checkout and copy the tarball-based command it prints. Packing and testing never publish anything; registry publication has its own manual workflow and approval gates. Generated documentation projects remain `private: true` by default so they are not accidentally published as npm packages.
+
+The source checkout also includes the generator directly:
 
 ```bash
 npm run create -- ../acme-docs \

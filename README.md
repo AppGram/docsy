@@ -1,8 +1,8 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/docsy-logo-dark.png" />
-    <source media="(prefers-color-scheme: light)" srcset="docs/assets/docsy-logo.png" />
-    <img src="docs/assets/docsy-logo.png" alt="Docsy logo" width="200" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/AppGram/docsy/main/docs/assets/docsy-logo-dark.png" />
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/AppGram/docsy/main/docs/assets/docsy-logo.png" />
+    <img src="https://raw.githubusercontent.com/AppGram/docsy/main/docs/assets/docsy-logo.png" alt="Docsy logo" width="200" />
   </picture>
 </p>
 
@@ -12,7 +12,7 @@
 
 <p align="center"><a href="https://appgram.github.io/docsy/">Documentation</a> · <a href="content/getting-started.md">Getting started</a> · <a href="https://github.com/AppGram/docsy/issues">Issues</a></p>
 
-> Public, source-available repository under ELv2. The `@appgram/docsy@0.4.0` npm release candidate is prepared but not published yet. Use the bundled CLI or a local tarball today. The separate [npm release workflow](docs/npm-release.md) verifies the actual installed package and requires explicit publication approval; pushing to main or deploying Pages does not publish to npm.
+> Source-available under ELv2. The versioned CLI is `@appgram/docsy@0.4.0`. Create an editable site with the command below, or run from source. The separate [npm release workflow](docs/npm-release.md) verifies the actual installed package and requires explicit publication approval; pushing to main or deploying Pages does not publish to npm.
 
 Docsy by AppGram turns Markdown, MDX, OpenAPI, and native SDK documentation into a self-hosted portal with source you own. Readers get searchable guides and reference pages. Coding agents get Markdown/JSON exports, YAML configuration, and local validation. No hosted control plane is required.
 
@@ -24,7 +24,7 @@ Docsy can ship as a fully static site or as a server-rendered application with p
 
 ## Watch the product tour
 
-[![Watch the 73-second Docsy product tour on YouTube](docs/assets/launch/video-poster.jpg)](https://youtu.be/-9HpXcbcjY4)
+[![Watch the 73-second Docsy product tour on YouTube](https://raw.githubusercontent.com/AppGram/docsy/main/docs/assets/launch/video-poster.jpg)](https://youtu.be/-9HpXcbcjY4)
 
 [Watch the video with narration on YouTube](https://youtu.be/-9HpXcbcjY4) · 73 seconds · 1080p
 
@@ -34,7 +34,7 @@ See the actual interface, Markdown and API/SDK reference, YAML customization, se
 
 <picture>
   <source media="(prefers-reduced-motion: reduce)" srcset="docs/assets/launch/01-humans-and-agents.png" />
-  <img src="docs/assets/launch/product-hunt-slideshow.gif" alt="Four Docsy launch slides: documentation for humans and coding agents; Markdown, OpenAPI and SDK reference in one portal; YAML customization and self-hosting; and source changes to reviewed documentation updates." width="1270" />
+  <img src="https://raw.githubusercontent.com/AppGram/docsy/main/docs/assets/launch/product-hunt-slideshow.gif" alt="Four Docsy launch slides: documentation for humans and coding agents; Markdown, OpenAPI and SDK reference in one portal; YAML customization and self-hosting; and source changes to reviewed documentation updates." width="1270" />
 </picture>
 
 Four launch images, five seconds per slide. Prefer a still image? Open a slide below. SDK scenes use generator-tested teaching fixtures; see the [compatibility evidence and limits](content/reference/compatibility.md).
@@ -44,19 +44,19 @@ Four launch images, five seconds per slide. Prefer a still image? Open a slide b
 
 ### 1. Built for humans and coding agents
 
-![Docsy documentation portal and agent-readable JSON export](docs/assets/launch/01-humans-and-agents.png)
+![Docsy documentation portal and agent-readable JSON export](https://raw.githubusercontent.com/AppGram/docsy/main/docs/assets/launch/01-humans-and-agents.png)
 
 ### 2. One portal for guides, APIs, and SDKs
 
-![Markdown articles, OpenAPI request examples, and native SDK reference in Docsy](docs/assets/launch/02-one-portal.png)
+![Markdown articles, OpenAPI request examples, and native SDK reference in Docsy](https://raw.githubusercontent.com/AppGram/docsy/main/docs/assets/launch/02-one-portal.png)
 
 ### 3. Your configuration, source, and hosting
 
-![YAML configuration, light and dark themes, and self-hosting with Node.js or Bun](docs/assets/launch/03-yaml-and-self-hosting.png)
+![YAML configuration, light and dark themes, and self-hosting with Node.js or Bun](https://raw.githubusercontent.com/AppGram/docsy/main/docs/assets/launch/03-yaml-and-self-hosting.png)
 
 ### 4. Close the documentation maintenance loop
 
-![Source changes, documentation impact, agent updates, validation, and a draft pull request for human review](docs/assets/launch/04-maintenance-loop.png)
+![Source changes, documentation impact, agent updates, validation, and a draft pull request for human review](https://raw.githubusercontent.com/AppGram/docsy/main/docs/assets/launch/04-maintenance-loop.png)
 
 </details>
 
@@ -113,8 +113,8 @@ These screenshots show the default interface configured for the public Nager.Dat
     <th width="50%">Dark</th>
   </tr>
   <tr>
-    <td><img src="docs/assets/docsy-light.png" alt="Docsy OpenAPI reference using the light theme" /></td>
-    <td><img src="docs/assets/docsy-dark.png" alt="Docsy OpenAPI reference using the dark theme" /></td>
+    <td><img src="https://raw.githubusercontent.com/AppGram/docsy/main/docs/assets/docsy-light.png" alt="Docsy OpenAPI reference using the light theme" /></td>
+    <td><img src="https://raw.githubusercontent.com/AppGram/docsy/main/docs/assets/docsy-dark.png" alt="Docsy OpenAPI reference using the dark theme" /></td>
   </tr>
 </table>
 
@@ -122,7 +122,7 @@ Both are the same generated OpenAPI page. Switching `theme.mode` and the YAML co
 
 ### Permission gate
 
-![A Docsy API page protected by a configured documentation tier](docs/assets/docsy-lock-mode.png)
+![A Docsy API page protected by a configured documentation tier](https://raw.githubusercontent.com/AppGram/docsy/main/docs/assets/docsy-lock-mode.png)
 
 ## What Docsy gives you
 
@@ -208,7 +208,15 @@ Read the [Docsy documentation portal](https://appgram.github.io/docsy/) or brows
 
 ## Quick start
 
-Use Node 22.22 or newer. Run Docsy's own documentation portal:
+Use Node 22.22 or newer. Create your own documentation site:
+
+```bash
+npm exec --package @appgram/docsy@0.4.0 -- create-docsy my-docs --yes --ci
+cd my-docs
+npm run dev
+```
+
+Or run Docsy's own documentation portal from source:
 
 ```bash
 git clone https://github.com/AppGram/docsy.git docsy
@@ -223,19 +231,13 @@ The portal uses the default light interface and renders every registered Markdow
 
 ## Create your own documentation site
 
-From a clone of this public repository with dependencies installed, build a local versioned CLI package:
-
-```bash
-npm run release:pack
-```
-
-It prints one copyable `npm exec --package "/absolute/path/appgram-docsy-0.4.0.tgz" -- create-docsy my-docs --yes --ci` command. This installs from the local tarball, not a public npm release. Add `--openapi ./my-api.yaml` to bring your own API, or edit the generated Markdown/YAML directly.
-
-After the first npm release is actually published, the equivalent registry command will be:
+Generate a source-owned project from the versioned CLI:
 
 ```bash
 npm exec --package @appgram/docsy@0.4.0 -- create-docsy my-docs --yes --ci
 ```
+
+Add `--openapi ./my-api.yaml` to bring your own API, or edit the generated Markdown/YAML directly. From a repository checkout, `npm run release:pack` also builds a local tarball and prints an equivalent `npm exec --package "/absolute/path/appgram-docsy-0.4.0.tgz" -- create-docsy ...` command. Packing never publishes anything.
 
 Release preparation can be checked locally with `npm run test:package`. It packs the real archive, installs it in a clean consumer without checkout dependency links, generates a project using your own OpenAPI and MDX, validates/builds it, and tests both static and locked serving. The result and archive checksum are saved under `.docsy/packages/release/`. See the [release and trusted-publisher checklist](docs/npm-release.md); this command never publishes anything.
 

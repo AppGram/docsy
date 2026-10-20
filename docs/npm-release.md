@@ -1,6 +1,6 @@
 # npm release checklist
 
-`@appgram/docsy@0.4.0` is a prepared release candidate, not an already published package. Repository visibility, Pages deployment and npm publication are separate. The release workflow does not create Git tags or GitHub releases.
+This checklist covers releases of `@appgram/docsy`, beginning with version `0.4.0`. Repository visibility, Pages deployment and npm publication are separate. A prepared archive is not a registry release until npm accepts it. The release workflow does not create Git tags or GitHub releases.
 
 ## Verify locally without publishing
 
@@ -49,4 +49,4 @@ After an authorized first release, verify the npm listing and create a fresh sit
 npm exec --package @appgram/docsy@0.4.0 -- create-docsy my-docs --yes --ci
 ```
 
-Update the README's candidate/unpublished status only after the registry publication succeeds. Do not claim a local tarball, workflow artifact or successful dry run proves the npm release is live.
+Prepare the versioned installation instructions in the release commit, but report the version as live only after registry publication succeeds. Do not claim a local tarball, workflow artifact or successful dry run proves the npm release is live.

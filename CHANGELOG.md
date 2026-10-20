@@ -1,12 +1,12 @@
 # Changes
 
-## 0.4.0 — release candidate, not published
+## 0.4.0
 
 - Public npm package metadata and a versioned, audited tarball packer.
 - A manual GitHub Actions release workflow: verify-only by default, separately gated OIDC publishing of the exact tested archive.
 - Clean installed-package tests covering generation, user-supplied OpenAPI/MDX, validation, static serving, locked serving and permission-aware agent exports.
 - YAML authors, profile pictures and theme-aware unknown-author placeholders, reviews, dates, optional agent provenance and per-page edit controls.
-- Public documentation portal and YouTube product tour; npm publication remains a separate decision.
+- Public documentation portal, YouTube product tour, and npm CLI distribution.
 
 ## 0.4.0-internal.0 — internal, not published
 
