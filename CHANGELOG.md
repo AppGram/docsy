@@ -1,6 +1,6 @@
 # Changes
 
-## Unreleased
+## 0.4.2
 
 - Subtle article-footer edit links by default, with independent YAML placement (`header`/`footer`) and style (`subtle`/`button`) options.
 - YAML-registered draw.io SVG/PNG previews with optional editable-source downloads in Markdown and MDX, using the existing fullscreen viewer and article access gates.

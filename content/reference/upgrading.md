@@ -22,4 +22,4 @@ Do not invent hashes for an unknown baseline. Recover the exact generator releas
 
 ## Release candidates and published versions
 
-Use a specific registry version such as `@appgram/docsy@0.4.1` to generate a clean upgrade baseline. `npm run release:pack` creates a local tarball for testing unreleased changes; it does not publish to a registry. Only versions actually listed in npm are registry releases. Publication requires the separate manual release workflow, owner-controlled gate and explicit confirmation. Generated documentation projects stay private npm packages by default.
+Use a specific registry version such as `@appgram/docsy@0.4.2` to generate a clean upgrade baseline. `npm run release:pack` creates a local tarball for testing unreleased changes; it does not publish to a registry. Only versions actually listed in npm are registry releases. Publication requires the separate manual release workflow, owner-controlled gate and explicit confirmation. Generated documentation projects stay private npm packages by default.
