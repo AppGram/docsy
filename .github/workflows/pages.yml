@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   build:
-    # Internal prerelease: never enable deployment without a separate release decision.
+    # Owner-controlled documentation deployment; npm publication remains separate.
     if: github.ref == 'refs/heads/main' && vars.DOCSY_ENABLE_PAGES == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15

@@ -10,9 +10,9 @@
 
 <p align="center"><strong>Your documentation. Your source. Your infrastructure.</strong><br />Built for humans and coding agents.</p>
 
-<p align="center"><a href="content/getting-started.md">Documentation</a> · <a href="https://github.com/AppGram/docsy/issues">Issues</a></p>
+<p align="center"><a href="https://appgram.github.io/docsy/">Documentation</a> · <a href="content/getting-started.md">Getting started</a> · <a href="https://github.com/AppGram/docsy/issues">Issues</a></p>
 
-> Private development preview. **No public release yet.** The CLI is packaged as `0.4.0-internal.0`, npm publication is blocked by `private: true`, and Pages deployment is opt-in. Public URLs in configuration are planned destinations, not a claim that a site is live.
+> Public, source-available repository under ELv2. Run Docsy from source or generate a site with the bundled CLI. The CLI package is currently versioned `0.4.0-internal.0` and is not published to npm; `private: true` in `package.json` prevents npm publication and does not mean this GitHub repository is private.
 
 Docsy by AppGram turns Markdown, MDX, OpenAPI, and native SDK documentation into a self-hosted portal with source you own. Readers get searchable guides and reference pages. Coding agents get Markdown/JSON exports, YAML configuration, and local validation. No hosted control plane is required.
 
@@ -180,7 +180,7 @@ Docsy never requires a hosted control plane. A generated project builds and runs
 
 ## Documentation
 
-The repository is its own Docsy documentation portal. Every article is readable here and rendered locally through `content.articles`. The configured future Pages destination is not published yet.
+Read the [Docsy documentation portal](https://appgram.github.io/docsy/) or browse the article sources below. This repository powers that portal using its own `content.articles` configuration; you can also build and run the same site locally.
 
 | Article | What it explains |
 | --- | --- |
@@ -221,9 +221,9 @@ Open [http://localhost:4321/docsy/](http://localhost:4321/docsy/).
 
 The portal uses the default light interface and renders every registered Markdown article. Its [Posts request sample](https://appgram.github.io/docsy/api/posts/) and [Comments query sample](https://appgram.github.io/docsy/api/comments/) are generated from the committed `sources/samples/jsonplaceholder.openapi.yaml` teaching subset. Copy GET, POST, PUT, PATCH, and DELETE curl examples against JSONPlaceholder; writes are simulated and not persisted. The Nager.Date snapshot remains available as an alternative source. [How the OpenAPI sample is configured](content/tutorials/openapi-ingestion.md).
 
-## Create a site from the internal CLI
+## Create your own documentation site
 
-From an authorized private checkout, build a local versioned package:
+From a clone of this public repository with dependencies installed, build a local versioned CLI package:
 
 ```bash
 npm run release:pack
@@ -231,7 +231,7 @@ npm run release:pack
 
 It prints one copyable `npm exec --package "/absolute/path/appgram-docsy-0.4.0-internal.0.tgz" -- create-docsy my-docs --yes --ci` command. This installs from the local tarball, not a public npm release. Add `--openapi ./my-api.yaml` to bring your own API, or edit the generated Markdown/YAML directly.
 
-For a future Pages site, add `--deploy github-pages --repo https://github.com/OWNER/REPOSITORY`. The generator derives the correct origin/base path, includes validation and deployment workflows, and prints the expected URL. It **does not** create a repository, push, enable Pages, or deploy. Deployment stays off until you explicitly set `DOCSY_ENABLE_PAGES=true` and enable Pages in your own repository. Locked sites and live queries require Node/Bun instead.
+To scaffold your own Pages site, add `--deploy github-pages --repo https://github.com/OWNER/REPOSITORY`. The generator derives the correct origin/base path, includes validation and deployment workflows, and prints the expected URL. It **does not** create a repository, push, enable Pages, or deploy. Deployment stays off until you explicitly set `DOCSY_ENABLE_PAGES=true` and enable Pages in your own repository. Locked sites and live queries require Node/Bun instead.
 
 After creation:
 
@@ -244,7 +244,7 @@ npm run preview
 
 The generated `DEPLOYING.md` walks through adding your content, local checks, source storage, the explicit publishing decision, and verifying the resulting URL. The project also records `.docsy/template.json`. Keep it in Git; see the [upgrade guide](content/reference/upgrading.md) before adopting future fixes.
 
-### Generate directly from a private checkout
+### Generate directly from source
 
 From a clone of this repository:
 
@@ -309,7 +309,7 @@ npm run maintain -- run --base HEAD~1 --pr
 
 The planner compares local OpenAPI and Swagger contracts, flags likely breaking changes, and maps changed paths and symbols to Markdown articles. The agent uses the source diff to update guides and explain migrations. Use committed snapshots to track remote ingestion changes; the workflow reacts to Git changes rather than polling upstream URLs. [Setup, scope, and review details](content/tutorials/documentation-maintenance.md).
 
-The private [evidence bundle](docs/evidence/README.md) includes a real Zod v3/v4 error-contract change: an actual agent update, executed assertion against the corrected example, independently validated build, and reviewable patch/PR body. No remote PR or public preview was created. Static CI updates attach a private rendered preview artifact; locked/server builds do not expose their bundle as static content.
+The checked-in [evidence bundle](docs/evidence/README.md) includes a real Zod v3/v4 error-contract change: an actual agent update, executed assertion against the corrected example, independently validated build, and reviewable patch/PR body. That demonstration did not create a remote PR or hosted preview. Static CI updates attach a downloadable rendered preview artifact; locked/server builds do not expose their bundle as static content.
 
 ## Configure it with YAML
 
@@ -645,7 +645,9 @@ Any conventional static server, object storage website, or CDN can host this out
 
 ### GitHub Pages
 
-The repository includes `.github/workflows/pages.yml`. It validates and builds the open-mode portal, uploads `dist/`, and deploys it through the `github-pages` environment whenever `main` changes.
+The public documentation portal is hosted at [appgram.github.io/docsy](https://appgram.github.io/docsy/). Main-branch CI in `.github/workflows/checks.yml` invokes `.github/workflows/pages.yml` only after validation succeeds and `DOCSY_ENABLE_PAGES=true`. The Pages workflow validates and builds the open-mode portal, uploads `dist/`, and deploys it through the `github-pages` environment. It can also be run manually from Actions.
+
+For your own repository, select **GitHub Actions** as the Pages source and set the repository Actions variable `DOCSY_ENABLE_PAGES` to `true`. This publishes documentation only; it does not publish an npm package or create a GitHub release. The generated workflows keep this deployment gate off until you enable it.
 
 For a repository site, set `site.origin` to the GitHub Pages host and `site.basePath` to the repository name. The Docsy portal uses `https://appgram.github.io` and `/docsy`.
 
@@ -700,7 +702,7 @@ The default `Dockerfile` and Compose service continue to use Node. Both Dockerfi
 .
 ├── docsy.config.yaml       # Product, theme, ingestion, navigation, access
 ├── content/                # Authored Markdown articles
-├── sources/                # Private build-time OpenAPI and SDK inputs
+├── sources/                # Build-time OpenAPI and SDK inputs, not public web assets
 ├── public/                 # Public assets only
 ├── src/
 │   ├── components/docs/    # API and SDK UI
@@ -728,7 +730,7 @@ Please preserve the configuration/source boundary, keep permission checks server
 
 Pull requests targeting `main` automatically run the Node test suite and production build, real-library generator/import checks, and Bun runtime integration tests. CI installs Bun 1.3.5 alongside Node 22. Successful open/static builds attach a seven-day `docsy-static-preview-…` artifact; download it and serve its mount-aware directory locally. It is not a public preview URL. Locked/server output is never uploaded as a static preview.
 
-The combined **PR checks** job passes only if all three jobs succeed. No secrets, write token, automatic approval or merge are used for PR validation. Automatic Pages deployment can run only after successful main-branch CI and only when an owner explicitly enables `DOCSY_ENABLE_PAGES=true`. Publishing remains disabled during the private prerelease. Enforcing the combined check as a merge requirement additionally depends on the repository's GitHub plan and branch rules.
+The combined **PR checks** job passes only if all three jobs succeed. No secrets, write token, automatic approval or merge are used for PR validation. Automatic Pages deployment runs only after successful main-branch CI with `DOCSY_ENABLE_PAGES=true`; it is enabled for this repository's public documentation portal. npm publication remains separately disabled by `package.json`. Enforcing the combined check as a merge requirement additionally depends on the repository's branch rules.
 
 Contributions are distributed under ELv2. By submitting a pull request, you confirm that you have the right to contribute the code under those terms. See [CONTRIBUTING.md](CONTRIBUTING.md) for the complete project contribution guidance.
 
