@@ -17,9 +17,6 @@ header:
   searchLabel: Search documentation
   searchPlaceholder: Search Docsy guides and reference
   llmLabel: Markdown
-  cta:
-    label: View on GitHub
-    href: https://github.com/AppGram/docsy
 footer:
   prefix: Docsy provided by
   label: AppGram
