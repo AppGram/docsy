@@ -1,5 +1,11 @@
 # Changes
 
+## 0.4.1
+
+- Remove the internal npm release runbook from source and distributed packages, with an archive-audit regression check.
+- Simplify the README introduction and update versioned CLI examples to this patch release.
+- Publish through the protected GitHub Actions trusted-publisher workflow with npm provenance.
+
 ## 0.4.0
 
 - Public npm package metadata and a versioned, audited tarball packer.

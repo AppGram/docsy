@@ -209,7 +209,7 @@ Read the [Docsy documentation portal](https://appgram.github.io/docsy/) or brows
 Use Node 22.22 or newer. Create your own documentation site:
 
 ```bash
-npm exec --package @appgram/docsy@0.4.0 -- create-docsy my-docs --yes --ci
+npm exec --package @appgram/docsy@0.4.1 -- create-docsy my-docs --yes --ci
 cd my-docs
 npm run dev
 ```
@@ -232,10 +232,10 @@ The portal uses the default light interface and renders every registered Markdow
 Generate a source-owned project from the versioned CLI:
 
 ```bash
-npm exec --package @appgram/docsy@0.4.0 -- create-docsy my-docs --yes --ci
+npm exec --package @appgram/docsy@0.4.1 -- create-docsy my-docs --yes --ci
 ```
 
-Add `--openapi ./my-api.yaml` to bring your own API, or edit the generated Markdown/YAML directly. From a repository checkout, `npm run release:pack` also builds a local tarball and prints an equivalent `npm exec --package "/absolute/path/appgram-docsy-0.4.0.tgz" -- create-docsy ...` command. Packing never publishes anything.
+Add `--openapi ./my-api.yaml` to bring your own API, or edit the generated Markdown/YAML directly. From a repository checkout, `npm run release:pack` also builds a local tarball and prints an equivalent `npm exec --package "/absolute/path/appgram-docsy-0.4.1.tgz" -- create-docsy ...` command. Packing never publishes anything.
 
 Run `npm run test:package` to test the actual packed CLI. It installs the archive in a clean consumer without checkout dependency links, generates a project using your own OpenAPI and MDX, validates/builds it, and tests both static and locked serving. The result and archive checksum are saved under `.docsy/packages/release/`. This command never publishes anything.
 
