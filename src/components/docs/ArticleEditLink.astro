@@ -1,0 +1,23 @@
+---
+import { defaultContext, docsyConfig, type DocsContext } from '../../config';
+import { message } from '../../lib/messages';
+
+interface Props { href: string; context?: DocsContext }
+const { href, context = defaultContext } = Astro.props;
+---
+<a class="article-edit-button" data-edit-style={docsyConfig.reader.editStyle} href={href} target="_blank" rel="noopener noreferrer">
+  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m16 3 5 5-12 12-6 1 1-6L16 3Zm-2 2 5 5" /></svg>
+  <span>{message(context, 'editPage', docsyConfig.reader.editLabel)}</span>
+</a>
+
+<style>
+  .article-edit-button { display: inline-flex; align-items: center; gap: 7px; min-height: 32px; max-width: 100%; padding: 4px 0; border: 0; border-radius: 3px; background: transparent; color: var(--muted); font: inherit; font-size: 13px; line-height: 1.5; text-decoration: none; }
+  .article-edit-button svg { flex-shrink: 0; }
+  .article-edit-button span { overflow-wrap: anywhere; }
+  .article-edit-button:hover { color: var(--ink); }
+  .article-edit-button:hover span { text-decoration: underline; text-underline-offset: 3px; }
+  .article-edit-button[data-edit-style="button"] { padding: 8px 11px; border: 1px solid var(--line); border-radius: 6px; color: var(--ink); }
+  .article-edit-button[data-edit-style="button"]:hover { background: color-mix(in srgb, var(--ink) 6%, var(--paper)); }
+  .article-edit-button[data-edit-style="button"]:hover span { text-decoration: none; }
+  .article-edit-button:focus-visible { outline: 2px solid var(--violet); outline-offset: 4px; }
+</style>

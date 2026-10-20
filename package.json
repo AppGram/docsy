@@ -67,7 +67,8 @@
     "test:maintenance:live": "node tests/maintenance.live.mjs",
     "test:maintenance:real": "node tests/maintenance.real.mjs --run-agent",
     "test:requests:live": "node --import tsx tests/request-examples.live.mjs",
-    "test:imports:real": "node --import tsx scripts/prove-real-imports.ts --render"
+    "test:imports:real": "node --import tsx scripts/prove-real-imports.ts --render",
+    "test:diagrams:real": "node --import tsx tests/drawio.real.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.3.3",

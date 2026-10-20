@@ -30,6 +30,8 @@ reader:
   defaultAuthorAvatar: assets/authors/unknown.svg
   unknownAuthorAvatar: assets/authors/unknown.svg
   editEnabled: true
+  editPlacement: footer
+  editStyle: subtle
   editUrl: https://github.com/AppGram/docsy/edit/main/{source}
   reportUrl: https://github.com/AppGram/docsy/issues/new
 eyebrow:
@@ -241,6 +243,13 @@ authors:
     provider: OpenAI
     avatar: assets/authors/docsy-agent.svg
 content:
+  diagrams:
+    documentation-pipeline:
+      image: content/diagrams/documentation-pipeline.drawio.svg
+      source: content/diagrams/documentation-pipeline.drawio
+      alt: Editable Markdown, YAML, OpenAPI and SDK inputs flow through Docsy validation and rendering to self-hosted documentation for humans and coding agents.
+      caption: Your source, validated output, your infrastructure. Expand to inspect the diagram or download its editable source.
+      background: light
   media:
     enabled: true
     images: true
@@ -254,6 +263,12 @@ content:
     publicationFr: content/snippets/publishing-checklist.fr.md
     publicacionEs: content/snippets/publishing-checklist.es.md
   articles:
+    - slug: tutorials/drawio-diagrams
+      source: content/tutorials/drawio-diagrams.md
+      authors: [nedimf, appgram]
+      title: draw.io diagrams
+      description: Embed SVG and PNG architecture diagrams, expand them to inspect details, and offer editable source downloads.
+      eyebrow: TUTORIAL
     - slug: getting-started
       source: content/getting-started.md
       authors: [nedimf, appgram]
@@ -499,6 +514,9 @@ navigation:
       - title: Rich article components
         titles: { fr: Articles enrichis, es: Artículos enriquecidos }
         href: /guides/tutorials/rich-articles
+      - title: draw.io diagrams
+        titles: { fr: Diagrammes draw.io, es: Diagramas draw.io }
+        href: /guides/tutorials/drawio-diagrams
       - title: Native MDX articles
         titles: { fr: Articles MDX natifs, es: Artículos MDX nativos }
         href: /guides/tutorials/native-mdx

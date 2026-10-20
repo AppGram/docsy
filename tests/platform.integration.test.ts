@@ -99,6 +99,11 @@ test(`generated template serves static variants and permission-aware APIs on ${r
       assert.match(body, /https:\/\/github.com\/example\/docs\/edit\/current\/en\/content\/guide.md/);
       assert.match(body, /Report a problem/);
       assert.match(body, /article-edit-button/); assert.match(body, /Fixture Writer/); assert.match(body, /Fixture Coding Agent/);
+      const header = body.match(/<header class="article-header"[^>]*>([\s\S]*?)<\/header>/)?.[1];
+      const footer = body.match(/<div class="article-source-actions"[^>]*>([\s\S]*?)<\/div>/)?.[1];
+      assert.ok(header); assert.doesNotMatch(header, /article-edit-button/);
+      assert.ok(footer); assert.match(footer, /article-edit-button/); assert.match(footer, /data-edit-style="subtle"/);
+      assert.equal((body.match(/class="article-edit-button"/g) ?? []).length, 1);
       assert.match(body, /datetime="2026-10-19"/); assert.match(body, /https:\/\/github.com\/fixture-writer/);
       assert.match(body, /article:author/); assert.match(body, /TechArticle/); assert.match(body, /fixture-model/);
       assert.doesNotMatch(body, /avatars.githubusercontent.com/);
@@ -126,7 +131,7 @@ test(`generated template serves static variants and permission-aware APIs on ${r
     assert.match(fr, /lang="fr"/); assert.match(fr, /Guide français/); assert.match(fr, /Rechercher/); assert.match(fr, /hreflang="fr"/);
     const old = read(root, 'release/docs/versions/v1/fr/guides/guide/index.html');
     assert.match(old, /legacyfirefly/); assert.ok(!old.includes('Instructions françaises')); assert.match(old, /default language/);
-    assert.doesNotMatch(old, /article-edit-button|Fixture Writer/);
+    assert.doesNotMatch(old, /class="article-edit-button"|Fixture Writer/);
     assert.match(old, /Auteur inconnu/); assert.match(old, /--author-placeholder:url\([^)]*\/docs\/assets\/authors\/unknown.svg/);
     assert.match(read(root, 'release/docs/versions/current/ar/guides/guide/index.html'), /dir="rtl"/);
     assert.match(read(root, 'release/docs/guides/guide/index.html'), /docsy-tabs/);
@@ -149,6 +154,7 @@ test(`generated template serves static variants and permission-aware APIs on ${r
 
     config.content.media = { enabled: false };
     config.reader.showByline = false;
+    config.reader.editPlacement = 'header'; config.reader.editStyle = 'button';
     config.authors.writer.name = 'Fixture Writer </script><script data-injected>bad()</script>';
     config.localization.fallback = false; save(); command(root, 'scripts/docsy.mjs', 'build');
     assert.ok(!read(root, 'release/docs/guides/guide/index.html').includes('<dialog class="docs-media-viewer"'));
@@ -160,11 +166,16 @@ test(`generated template serves static variants and permission-aware APIs on ${r
     inspect(parse(hiddenCredits));
     assert.ok(!scriptNodes.some((node) => node.attrs?.some((attribute: any) => attribute.name === 'data-injected')), 'Author metadata must not create script elements');
     assert.match(hiddenCredits, /article-edit-button/); assert.ok(hiddenCredits.includes('\\u003c/script>'));
+    const headerEdit = hiddenCredits.match(/<header class="article-header"[^>]*>([\s\S]*?)<\/header>/)?.[1];
+    assert.ok(headerEdit); assert.match(headerEdit, /article-edit-button/); assert.match(headerEdit, /data-edit-style="button"/);
+    assert.equal((hiddenCredits.match(/class="article-edit-button"/g) ?? []).length, 1);
+    assert.doesNotMatch(hiddenCredits.match(/<div class="article-source-actions"[^>]*>([\s\S]*?)<\/div>/)?.[1] ?? '', /article-edit-button/);
     assert.ok(!existsSync(join(root, 'release/docs/versions/current/ar/guides/guide/index.html')));
     assert.ok(!existsSync(join(root, 'release/docs/versions/v1/fr/guides/guide/index.html')));
     assert.ok(existsSync(join(root, 'release/docs/versions/current/ar/index.html')));
     config.content.media = { enabled: true, images: false, videos: true };
     config.reader.showByline = true; config.authors.writer.name = 'Fixture Writer';
+    config.reader.editPlacement = 'footer'; config.reader.editStyle = 'subtle';
     config.localization.fallback = true; save();
 
     // A malformed source and broken links must stop the exact generated CLI.

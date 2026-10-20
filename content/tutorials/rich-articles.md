@@ -113,6 +113,12 @@ Then insert `::include{src="publishing"}` on its own line. The result below is s
 
 Includes are expanded in rendered articles, search, JSON documents, and Markdown exports. Unknown names, includes outside the project, circular references, and more than ten nested includes stop validation. Include directives inside fenced examples are not expanded.
 
+## draw.io diagrams
+
+Use SVG or PNG exports for technical architecture diagrams. Register the preview and optional editable `.drawio` source in `content.diagrams`, then embed `::drawio{src="architecture"}`. MDX supports `<Drawio src="architecture" />`. Diagrams share the fullscreen image viewer and remain protected with their article.
+
+See [draw.io diagrams](/guides/tutorials/drawio-diagrams) for a working example, YAML, source downloads, and supported export boundaries.
+
 ## Images and videos
 
 Article images open in a fullscreen viewer when clicked. Videos keep their native inline controls and get an **Expand video** button. The viewer follows the portal's light/dark theme and offers image zoom, captions, previous/next controls, and an original-file link. Escape closes it and returns focus to the trigger. Opening a video pauses the inline player and preserves its time position without starting audio automatically.

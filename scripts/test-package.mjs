@@ -70,7 +70,11 @@ try {
 
   const configPath = join(site, 'docsy.config.yaml'), config = load(read(configPath));
   const signal = 'tarball-onboarding-proof', privateSignal = 'tarball-private-proof';
-  write(join(site, 'content/package-handbook.mdx'), `## Bring your own content\n\n<Note title="Installed from the tarball">${signal}</Note>\n\n\`\`\`typescript\nconst tarball = true;\n\`\`\`\n`);
+  write(join(site, 'content/package-handbook.mdx'), `## Bring your own content\n\n<Note title="Installed from the tarball">${signal}</Note>\n\n<Drawio src="architecture" />\n\n\`\`\`typescript\nconst tarball = true;\n\`\`\`\n`);
+  write(join(site, 'content/architecture.svg'), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 80"><rect width="160" height="80" fill="white"/><text x="10" y="40">Docsy architecture</text></svg>');
+  const diagramSource = '<mxfile><diagram name="Architecture"><mxGraphModel><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel></diagram></mxfile>';
+  write(join(site, 'content/architecture.drawio'), diagramSource);
+  config.content.diagrams = { architecture: { image: 'content/architecture.svg', source: 'content/architecture.drawio', alt: 'Tarball diagram preview', caption: 'Diagram generated in the installed package test.' } };
   write(join(site, 'content/private.md'), `## Internal contract\n\n${privateSignal}\n`);
   config.authors = { writer: { name: 'Package test writer', avatar: 'assets/authors/unknown.svg' } };
   config.content.articles.push({ slug: 'package-handbook', source: 'content/package-handbook.mdx', title: 'Package handbook', authors: ['writer'] }, { slug: 'private', source: 'content/private.md', title: 'Internal contract' });
@@ -88,14 +92,19 @@ try {
   try {
     const html = await (await fetch(`${server.base}/guides/package-handbook`)).text();
     assert.match(html, new RegExp(signal)); assert.match(html, /Package test writer/);
+    assert.match(html, /data-docsy-diagram="architecture"/);
+    assert.match(html, /download="architecture.drawio"/);
+    assert.ok(html.includes(`data:application/octet-stream;base64,${Buffer.from(diagramSource).toString('base64')}`));
     assert.equal((await fetch(`${server.base}/api/widgets`)).status, 200);
     assert.equal((await fetch(`${server.base}/assets/authors/unknown.svg`)).status, 200);
     const search = await (await fetch(`${server.base}/search-index.json`)).text(); assert.match(search, new RegExp(signal));
     const json = await (await fetch(`${server.base}/agent/pages/guides/package-handbook.json`)).json(); assert.equal(json.authorship.authors[0].name, 'Package test writer');
+    assert.match(JSON.stringify(json), /Tarball diagram preview/); assert.ok(!JSON.stringify(json).includes('base64,'));
     assert.match(await (await fetch(`${server.base}/format-md/guides/package-handbook`)).text(), new RegExp(signal));
     const css = html.match(/href="([^"]+\.css)"/); assert.ok(css); assert.equal((await fetch(new URL(css[1], server.base))).status, 200);
   } finally { await server.stop(); }
   checks.push('Actual static server: article, generated API, local avatar/CSS, full-text search and Markdown/JSON exports');
+  checks.push('Installed draw.io component renders its SVG and exact source download; agent exports retain the description without binary payloads');
 
   run(site, 'npm', ['run', 'docsy', '--', 'create', join(workspace, 'second'), '--yes', '--no-install']);
   assert.equal(JSON.parse(read(join(workspace, 'second/.docsy/template.json'))).templateVersion, artifact.version);

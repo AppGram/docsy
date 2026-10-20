@@ -1,4 +1,13 @@
 /* Local fonts and the portal's existing palette, including the alternate theme. */
+.article-body .docsy-diagram { margin: 28px 0; }
+.docsy-diagram-preview { overflow: hidden; border: 1px solid var(--line); border-radius: 8px; }
+.docsy-diagram-preview img, .docsy-diagram-preview .docs-media-trigger { display: block; width: 100%; }
+.docsy-diagram-preview img { height: auto; margin: 0; }
+[data-diagram-background="light"] .docsy-diagram-preview, img[data-media-background="light"] { background: #fff; }
+[data-diagram-background="dark"] .docsy-diagram-preview, img[data-media-background="dark"] { background: #111; }
+.article-body .docsy-diagram figcaption { display: flex; align-items: baseline; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; margin-top: 10px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+.article-body .docsy-diagram-source { flex-shrink: 0; color: var(--ink); font: inherit; text-decoration: none; }
+.article-body .docsy-diagram-source:hover { text-decoration: underline; text-underline-offset: 3px; }
 .docs-media-trigger, .docs-media-inline { position: relative; display: inline-block; max-width: 100%; vertical-align: middle; }
 .docs-media-trigger { padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--ink); cursor: zoom-in; font: inherit; line-height: 0; text-align: inherit; }
 .docs-media-trigger > img, .docs-media-trigger > picture > img { display: block; max-width: 100%; height: auto; border-radius: inherit; }

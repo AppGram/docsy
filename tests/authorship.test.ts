@@ -96,6 +96,19 @@ test('global edit opt-out wins, page-specific URLs override, and profiles do not
   delete config.content.articles[0].editUrl; delete config.reader.editUrl; config.reader.editEnabled = true; save();
   assert.equal(JSON.parse(run(root, links)).edit, undefined);
 });
+test('edit link placement and prominence are independently configurable, with quiet footer defaults', () => {
+  const { root, config, save } = fixture();
+  const reader = `import {docsyConfig} from ${moduleUrl('src/config.ts')}; console.log(JSON.stringify(docsyConfig.reader));`;
+  let settings = JSON.parse(run(root, reader));
+  assert.equal(settings.editPlacement, 'footer'); assert.equal(settings.editStyle, 'subtle');
+  for (const placement of ['header', 'footer']) for (const style of ['subtle', 'button']) {
+    config.reader.editPlacement = placement; config.reader.editStyle = style; save();
+    settings = JSON.parse(run(root, reader));
+    assert.equal(settings.editPlacement, placement); assert.equal(settings.editStyle, style);
+  }
+  config.reader.editPlacement = 'floating'; save(); assert.throws(() => run(root, reader), /Invalid Docsy configuration/);
+  config.reader.editPlacement = 'footer'; config.reader.editStyle = 'invisible'; save(); assert.throws(() => run(root, reader), /Invalid Docsy configuration/);
+});
 test('unknown/duplicate author references, unsafe URLs, invalid dates and fake agent references fail validation', () => {
   const { root, config, save } = fixture(); const baseline = structuredClone(config);
   const cases: ((value: any) => void)[] = [

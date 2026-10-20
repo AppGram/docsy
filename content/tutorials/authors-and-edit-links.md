@@ -78,11 +78,15 @@ Attribution on a fallback article comes from the selected source registration, n
 reader:
   showByline: true
   editEnabled: true
+  editPlacement: footer
+  editStyle: subtle
   editUrl: https://github.com/OWNER/REPOSITORY/edit/main/{source}
   reportUrl: https://github.com/OWNER/REPOSITORY/issues/new
 ```
 
-The edit button appears beside the article credits. It opens GitHub's existing edit flow; Docsy does not authenticate to GitHub, grant repository access, commit edits or create a pull request itself. GitHub determines what the reader can do. A private repository still requires the appropriate GitHub access.
+The edit link appears below the article body by default, alongside the optional report link. `editStyle: subtle` uses muted text and a small pencil icon with no button border; hover and keyboard focus keep it discoverable. To restore a bordered control, use `editStyle: button`. To place it beside the author credits instead, use `editPlacement: header`. These settings work independently, default to `footer` and `subtle`, and apply to all article versions and languages.
+
+It opens GitHub's existing edit flow; Docsy does not authenticate to GitHub, grant repository access, commit edits or create a pull request itself. GitHub determines what the reader can do. A private repository still requires the appropriate GitHub access.
 
 `{source}` expands to the selected article's source path, encoding each path segment. `{version}` and `{locale}` are also supported, but are documentation context IDs—not automatically Git branches or directory names. For a branch literally named `main`, keep `main` in the template as above. Paths for translations follow their actual `source` values, including when a locale falls back to another language.
 

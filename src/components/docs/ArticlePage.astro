@@ -5,6 +5,7 @@ import { defaultContext, docsyConfig, type DocsContext } from '../../config';
 import { message } from '../../lib/messages';
 import { readerLinks } from '../../lib/reader-links';
 import ArticleCredits from './ArticleCredits.astro';
+import ArticleEditLink from './ArticleEditLink.astro';
 
 interface Props {
   article: ArticleDoc;
@@ -16,6 +17,7 @@ const articles = getArticleSources(context);
 const index = articles.findIndex((item) => item.slug === article.config.slug);
 const previous = articles[index - 1]; const next = articles[index + 1];
 const links = readerLinks(article, context);
+const footerEdit = docsyConfig.reader.editPlacement === 'footer' ? links.edit : undefined;
 ---
 
 <article class="article-page">
@@ -23,11 +25,12 @@ const links = readerLinks(article, context);
   <header class="article-header" lang={article.config.locale ?? defaultContext.locale}>
     <h1>{article.config.title}</h1>
     {article.config.description && <p class="article-description">{article.config.description}</p>}
-    <ArticleCredits article={article.config} context={context} editUrl={links.edit} />
+    <ArticleCredits article={article.config} context={context} editUrl={docsyConfig.reader.editPlacement === 'header' ? links.edit : undefined} />
   </header>
   <div class="article-body" lang={article.config.locale ?? defaultContext.locale} set:html={article.html} />
-  {links.report && <div class="article-source-actions" aria-label={message(context, 'documentationFeedback')}>
-    {links.report && <a href={links.report} target="_blank" rel="noopener noreferrer">{message(context, 'reportProblem', docsyConfig.reader.reportLabel)} <span aria-hidden="true">↗</span></a>}
+  {(footerEdit || links.report) && <div class="article-source-actions" aria-label={message(context, 'documentationFeedback')}>
+    {footerEdit && <ArticleEditLink href={footerEdit} context={context} />}
+    {links.report && <a class="article-report-link" href={links.report} target="_blank" rel="noopener noreferrer">{message(context, 'reportProblem', docsyConfig.reader.reportLabel)} <span aria-hidden="true">↗</span></a>}
   </div>}
   <nav class="article-reader-nav" aria-label={message(context, 'articleNavigation')}>
     {previous ? <a href={articleUrl(previous, context)}>← {message(context, 'previous')}: {previous.title}</a> : <span />}
@@ -36,10 +39,10 @@ const links = readerLinks(article, context);
 </article>
 
 <style>
-  .article-source-actions { display:flex; flex-wrap:wrap; gap:24px; margin:44px 0 26px; padding-top:20px; border-top:1px solid var(--line); }
-  .article-source-actions a { color:var(--muted); font-size:13px; text-decoration:none; letter-spacing:normal; }
-  .article-source-actions a:hover { color:var(--ink); text-decoration:underline; text-underline-offset:4px; }
-  .article-source-actions a:focus-visible { outline:2px solid var(--violet); outline-offset:5px; border-radius:2px; }
+  .article-source-actions { display:flex; align-items:center; flex-wrap:wrap; justify-content:space-between; gap:12px 24px; margin:44px 0 26px; padding-top:20px; border-top:1px solid var(--line); }
+  .article-report-link { color:var(--muted); font-size:13px; text-decoration:none; letter-spacing:normal; min-height:32px; display:inline-flex; align-items:center; gap:5px; }
+  .article-report-link:hover { color:var(--ink); text-decoration:underline; text-underline-offset:4px; }
+  .article-report-link:focus-visible { outline:2px solid var(--violet); outline-offset:5px; border-radius:2px; }
   .article-header {
     margin-bottom: 40px;
     padding-bottom: 28px;

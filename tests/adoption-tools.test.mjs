@@ -22,6 +22,8 @@ test('scaffold records version provenance and optional gated workflows without p
   assert.equal(config.site.origin, 'https://example.github.io');
   assert.equal(config.site.name, 'Docs');
   assert.equal(config.reader.editUrl, 'https://github.com/example/handbook/edit/main/{source}');
+  assert.equal(config.reader.editPlacement, 'footer');
+  assert.equal(config.reader.editStyle, 'subtle');
   assert.match(read(root, '.github/workflows/pages.yml'), /DOCSY_ENABLE_PAGES == 'true'/);
   assert.match(read(root, '.github/workflows/docsy-checks.yml'), /docsy-static-preview/);
   assert.equal(JSON.parse(read(root, '.docsy/template.json')).templateVersion, JSON.parse(readFileSync('package.json', 'utf8')).version);

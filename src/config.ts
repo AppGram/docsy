@@ -210,6 +210,8 @@ const configSchema = z.object({
     defaultAuthorAvatar: authorAvatarSchema.optional(),
     unknownAuthorAvatar: authorAvatarSchema.optional(),
     editEnabled: z.boolean().default(true),
+    editPlacement: z.enum(['header', 'footer']).default('footer'),
+    editStyle: z.enum(['subtle', 'button']).default('subtle'),
     editUrl: z.string().url().refine((value) => /^https?:\/\//i.test(value), 'Use an HTTP(S) source-edit URL').optional(),
     reportUrl: z.string().url().refine((value) => /^https?:\/\//i.test(value), 'Use an HTTP(S) issue URL').optional(),
     editLabel: z.string().default('Edit this page'),
@@ -273,7 +275,15 @@ const configSchema = z.object({
       for (const name of Object.keys(value.components)) if (!/^[A-Z][A-Za-z0-9]*$/.test(name)) context.addIssue({ code: z.ZodIssueCode.custom, message: `Invalid MDX component name: ${name}` });
     }),
     snippets: z.record(z.string().regex(/\.(?:md|markdown|mdown)$/i)).default({}),
-    components: z.array(z.enum(['note', 'tip', 'warning', 'danger', 'steps', 'tabs', 'accordion', 'code-group', 'include', 'card', 'frame'])).default(['note', 'tip', 'warning', 'danger', 'steps', 'tabs', 'accordion', 'code-group', 'include', 'card', 'frame']),
+    diagrams: z.record(z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9_-]*$/), z.object({
+      image: z.string().regex(/\.(?:svg|png)$/i, 'Use a local draw.io SVG or PNG export'),
+      source: z.string().regex(/\.(?:drawio|xml)$/i, 'Use a local .drawio or .xml source').optional(),
+      sourceLabel: z.string().trim().min(1).default('Download source'),
+      alt: z.string().trim().min(1),
+      caption: z.string().default(''),
+      background: z.enum(['light', 'dark', 'transparent']).default('light'),
+    }).strict()).default({}),
+    components: z.array(z.enum(['note', 'tip', 'warning', 'danger', 'steps', 'tabs', 'accordion', 'code-group', 'include', 'card', 'frame', 'drawio'])).default(['note', 'tip', 'warning', 'danger', 'steps', 'tabs', 'accordion', 'code-group', 'include', 'card', 'frame', 'drawio']),
   }).default({}),
   versions: z.object({
     default: z.string().default('current'),

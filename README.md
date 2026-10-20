@@ -188,6 +188,7 @@ Read the [Docsy documentation portal](https://appgram.github.io/docsy/) or brows
 | [Configure Docsy with YAML](content/tutorials/yaml-configuration.md) | The configuration lifecycle, top-level sections, paths, and environment values |
 | [Write authored documentation](content/tutorials/authored-articles.md) | Markdown articles, YAML registration, navigation, search, exports, and permissions |
 | [Rich article components](content/tutorials/rich-articles.md) | Callouts, steps, tabs, code groups, accordions, and reusable snippets |
+| [draw.io diagrams](content/tutorials/drawio-diagrams.md) | SVG/PNG previews, fullscreen inspection, and editable-source downloads |
 | [Native MDX articles](content/tutorials/native-mdx.mdx) | YAML registration, themed JSX, trusted component modules, search and agent exports |
 | [Full-text search and agent JSON API](content/tutorials/search-and-agents.md) | Static retrieval exports, the optional server query endpoint, and permission filtering |
 | [Versions and localization](content/tutorials/versions-and-locales.md) | Stable context URLs, translated UI/navigation, fallbacks, and versioned ingestion |
@@ -443,6 +444,8 @@ reader:
   defaultAuthorAvatar: assets/authors/unknown.svg
   unknownAuthorAvatar: assets/authors/unknown.svg
   editEnabled: true
+  editPlacement: footer
+  editStyle: subtle
   editUrl: https://github.com/OWNER/REPOSITORY/edit/main/{source}
 content:
   articles:
@@ -455,7 +458,7 @@ content:
 
 Individual `avatar` pictures override the optional `reader.defaultAuthorAvatar`. Set `reader.unknownAuthorAvatar` to show an “Unknown author” picture on articles with no authors; omit it to leave those bylines absent. Use local images in `public/assets/` or explicit HTTP(S) URLs; Docsy never fetches GitHub profile pictures automatically.
 
-Use `editUrl: false` on an article to hide its edit button, or provide another edit URL. Optional `contributors`, `reviewedBy`, dates and agent/model provenance are documented in [Authors, reviews and edit links](content/tutorials/authors-and-edit-links.md). Attribution is configured, not an automatically verified authorship or quality score. `reader.showByline: false` hides the visual byline; it does not erase metadata from machine-readable exports.
+Edit links default to a subtle, borderless link below the article. Use `reader.editPlacement: header` to move it beside the byline, or `reader.editStyle: button` for a bordered control. Use `editUrl: false` on an article to hide its edit link, or provide another edit URL. Optional `contributors`, `reviewedBy`, dates and agent/model provenance are documented in [Authors, reviews and edit links](content/tutorials/authors-and-edit-links.md). Attribution is configured, not an automatically verified authorship or quality score. `reader.showByline: false` hides the visual byline; it does not erase metadata from machine-readable exports.
 
 ### Image and video viewer
 
@@ -470,6 +473,23 @@ content:
 ```
 
 All three default to `true`. Set `enabled: false` to disable the viewer or disable either media type independently. Use `data-docsy-media="off"` on individual HTML/MDX media or figures to opt out. Linked images and decorative UI icons retain their original behavior. [Authoring examples and public/protected-media boundaries](content/tutorials/rich-articles.md#images-and-videos).
+
+### draw.io diagrams
+
+Register a local SVG/PNG export and optionally its editable source in YAML:
+
+```yaml
+content:
+  diagrams:
+    architecture:
+      image: content/diagrams/architecture.drawio.svg
+      source: content/diagrams/architecture.drawio
+      alt: Clients reach the API through an authentication gateway.
+      caption: Authorization happens before internal services.
+      background: light
+```
+
+Embed it with `::drawio{src="architecture"}` in Markdown or `<Drawio src="architecture" />` in MDX. The existing viewer provides fullscreen zoom/pan. The optional source download stays inside the article’s access boundary; no third-party viewer, editor, or font service is loaded. Raw `.drawio` XML is downloaded, not automatically rendered. See [the live example and export guidance](content/tutorials/drawio-diagrams.md).
 
 ## OpenAPI ingestion
 

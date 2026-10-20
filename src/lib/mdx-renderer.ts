@@ -18,6 +18,7 @@ import { docsyConfig, resolveSource } from '../config';
 import { splitMdxFrontmatter, validateMdx } from '../../scripts/lib/mdx-policy.mjs';
 import { builtInMdxComponents, mdxHref } from './mdx-components';
 import { highlightArticles } from './code-renderer';
+import { diagramExportTree } from './drawio';
 import type { MarkdownHeading } from '@astrojs/markdown-remark';
 import type { Root as HastRoot } from 'hast';
 import type { Root as MdastRoot } from 'mdast';
@@ -115,7 +116,7 @@ export async function renderMdx(source: string, file: string) {
   };
   const tree = await unified().use(rehypeParse, { fragment: true }).use(rehypeSlug).use(collectHeadings).run(unified().use(rehypeParse, { fragment: true }).parse(raw)) as HastRoot;
   // Export before syntax decoration: agents get real code, not UI labels/copy buttons.
-  const mdast = await unified().use(rehypeRemark).run(tree);
+  const mdast = await unified().use(rehypeRemark).run(diagramExportTree(tree));
   const markdown = unified().use(remarkGfm).use(remarkStringify, { fences: true }).stringify(mdast as MdastRoot);
   const highlighted = await unified().use(highlightArticles).run(tree);
   const html = unified().use(rehypeStringify).stringify(highlighted as HastRoot);

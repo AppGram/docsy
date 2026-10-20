@@ -10,6 +10,7 @@ export function mediaUrl(value: string | null | undefined, base: string): string
   if (!value?.trim()) return null;
   try { const url = new URL(value, base); return ['http:', 'https:'].includes(url.protocol) ? url.href : null; } catch { return null; }
 }
+export const embeddedImageUrl = (value: string | null | undefined): string | null => value && value.length <= 8 * 1024 * 1024 && /^data:image\/(?:svg\+xml|png);base64,[A-Za-z0-9+/]+={0,2}$/.test(value) ? value : null;
 
 export function initMediaViewer(root: Document = document): () => void {
   controllers.get(root)?.();
@@ -41,6 +42,7 @@ export function initMediaViewer(root: Document = document): () => void {
   let inlineVideo: HTMLVideoElement | undefined;
   let imageZoom: ReturnType<typeof initImageZoom> | undefined;
   const url = (value?: string | null) => mediaUrl(value, root.baseURI);
+  const imageUrl = (media: Media) => url(media.currentSrc || media.getAttribute('src')) || (media.tagName === 'IMG' && media.hasAttribute('data-docsy-embedded-image') ? embeddedImageUrl(media.currentSrc || media.getAttribute('src')) : null);
   const clear = () => {
     imageZoom?.destroy(); imageZoom = undefined;
     const video = stage.querySelector('video');
@@ -63,17 +65,20 @@ export function initMediaViewer(root: Document = document): () => void {
     clear(); error.hidden = true;
     const source = gallery[index].media;
     const isVideo = source.tagName === 'VIDEO';
-    const currentUrl = url(source.currentSrc || source.getAttribute('src'));
+    const currentUrl = imageUrl(source);
     const originalUrl = currentUrl || (isVideo ? [...source.querySelectorAll('source')].map((child) => url(child.getAttribute('src'))).find(Boolean) : null);
-    originalLink.hidden = !originalUrl;
-    if (originalUrl) originalLink.href = originalUrl; else originalLink.removeAttribute('href');
-    const description = source.closest('figure')?.querySelector('figcaption')?.textContent?.trim() || source.getAttribute('title') || source.getAttribute('alt') || source.getAttribute('aria-label') || '';
+    originalLink.hidden = !originalUrl || originalUrl.startsWith('data:');
+    if (originalUrl && !originalUrl.startsWith('data:')) originalLink.href = originalUrl; else originalLink.removeAttribute('href');
+    const figure = source.closest('figure');
+    const description = (figure?.querySelector('[data-diagram-caption]') || figure?.querySelector('figcaption'))?.textContent?.trim() || source.getAttribute('title') || source.getAttribute('alt') || source.getAttribute('aria-label') || '';
     caption.textContent = description;
     counter.textContent = (dialog.dataset.count || '{current} / {total}').replace('{current}', String(index + 1)).replace('{total}', String(gallery.length));
     previous.disabled = index === 0; next.disabled = index === gallery.length - 1;
     zoomControls.hidden = isVideo;
     zoomIn.disabled = true; zoomOut.disabled = true; zoom.disabled = true; scaleLabel.textContent = '—';
     const displayed = root.createElement(isVideo ? 'video' : 'img');
+    const background = source.getAttribute('data-media-background');
+    if (['light', 'dark', 'transparent'].includes(background || '')) displayed.setAttribute('data-media-background', background!);
     if (currentUrl) displayed.src = currentUrl;
     if (displayed.tagName === 'VIDEO') {
       const video = displayed as HTMLVideoElement;
@@ -138,8 +143,8 @@ export function initMediaViewer(root: Document = document): () => void {
     if (media.closest('a, button, [role="button"], [aria-hidden="true"], [data-docsy-media="off"], [data-docsy-media="false"], .cb, pre, code')) continue;
     if (media.hasAttribute('aria-hidden') && media.getAttribute('aria-hidden') !== 'false') continue;
     const width = Number(media.getAttribute('width')), height = Number(media.getAttribute('height'));
-    if (!isVideo && width > 0 && width <= 48 && height > 0 && height <= 48) continue;
-    if (!url(media.currentSrc || media.getAttribute('src')) && !(isVideo && [...media.querySelectorAll('source')].some((child) => url(child.getAttribute('src'))))) continue;
+    if (!isVideo && !media.hasAttribute('data-docsy-embedded-image') && width > 0 && width <= 48 && height > 0 && height <= 48) continue;
+    if (!imageUrl(media) && !(isVideo && [...media.querySelectorAll('source')].some((child) => url(child.getAttribute('src'))))) continue;
     const original = media.parentElement?.tagName === 'PICTURE' ? media.parentElement : media;
     const trigger = root.createElement('button'); trigger.type = 'button';
     const label = (isVideo ? dialog.dataset.openVideo : dialog.dataset.openImage) || 'Expand media';

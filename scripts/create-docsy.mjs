@@ -392,12 +392,13 @@ const makeConfig = ({ projectName, description, basePath, accessMode, apiBase, c
       sdkHeading: 'API reference',
       sdkDescription: 'Generated directly from the configured OpenAPI source.',
     },
-    reader: { headingLinks: true, showByline: true, editEnabled: true },
+    reader: { headingLinks: true, showByline: true, editEnabled: true, editPlacement: 'footer', editStyle: 'subtle' },
     authors: {},
     content: {
       media: { enabled: true, images: true, videos: true },
       mdx: { enabled: true, allowJavaScript: false, components: {} },
-      components: ['note', 'tip', 'warning', 'danger', 'steps', 'tabs', 'accordion', 'code-group', 'include', 'card', 'frame'],
+      components: ['note', 'tip', 'warning', 'danger', 'steps', 'tabs', 'accordion', 'code-group', 'include', 'card', 'frame', 'drawio'],
+      diagrams: {},
       snippets: {},
       articles: [
         {

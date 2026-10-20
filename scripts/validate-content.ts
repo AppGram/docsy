@@ -6,11 +6,13 @@ import { getSdkSources, loadSdk } from '../src/lib/sdk-loaders';
 import { API_SECTIONS, loadSwagger, filterEndpoints } from '../src/lib/swagger-loader';
 import { extractHtml } from '../src/lib/html-content';
 import { getDocsNav, type DocsNavItem } from '../src/data/docs-nav';
+import { loadDiagram } from '../src/lib/drawio';
 
 const errors: string[] = [];
 const pages = new Map<string, { ids: Set<string>; links: string[] }>();
 const root = docsPath();
 const clean = (path: string) => path.replace(/\/+$/, '') || '/';
+if (docsyConfig.content.components.includes('drawio')) for (const id of Object.keys(docsyConfig.content.diagrams)) loadDiagram(id);
 for (const context of allContexts) {
   pages.set(docsPath('/', context), { ids: new Set(), links: [] });
   for (const article of getArticleSources(context)) {

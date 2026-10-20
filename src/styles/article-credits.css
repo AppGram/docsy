@@ -25,7 +25,6 @@ a.article-author--organization:hover .article-author-name { text-decoration: non
 .article-dates { display: flex; flex-wrap: wrap; gap: 6px 18px; color: var(--muted); font-size: 12px; line-height: 1.6; }
 .article-provenance { display: flex; flex-wrap: wrap; gap: 6px 14px; color: var(--muted); font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; }
 .article-provenance a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
-.article-edit-button { display: inline-flex; flex-shrink: 0; align-items: center; gap: 7px; margin-inline-start: auto; padding: 9px 12px; border: 1px solid var(--line); border-radius: 6px; background: transparent; color: var(--ink); font: inherit; font-size: 12px; text-decoration: none; }
-.article-edit-button:hover { background: color-mix(in srgb, var(--ink) 6%, var(--paper)); }
+.article-meta .article-edit-button { margin-inline-start: auto; }
 .article-meta a:focus-visible { outline: 2px solid var(--violet); outline-offset: 4px; border-radius: 4px; }
-@media (max-width: 560px) { .article-credits { flex-basis: 100%; } .article-edit-button { margin-inline-start: 0; } }
+@media (max-width: 560px) { .article-credits { flex-basis: 100%; } .article-meta .article-edit-button { margin-inline-start: 0; } }

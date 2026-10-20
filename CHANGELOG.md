@@ -1,5 +1,10 @@
 # Changes
 
+## Unreleased
+
+- Subtle article-footer edit links by default, with independent YAML placement (`header`/`footer`) and style (`subtle`/`button`) options.
+- YAML-registered draw.io SVG/PNG previews with optional editable-source downloads in Markdown and MDX, using the existing fullscreen viewer and article access gates.
+
 ## 0.4.1
 
 - Remove the internal npm release runbook from source and distributed packages, with an archive-audit regression check.

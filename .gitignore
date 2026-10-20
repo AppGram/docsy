@@ -9,6 +9,7 @@ dist/
 .docsy/cache/
 .docsy/upgrades/
 .docsy/real-projects/
+.docsy/proofs/
 tests/generators/input/**/bin/
 tests/generators/input/**/obj/
 tests/generators/input/**/_build/

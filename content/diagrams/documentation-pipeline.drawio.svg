@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="350" viewBox="0 0 1100 350">
+  <title>Docsy documentation pipeline</title>
+  <desc>Owned content and YAML flow through Docsy validation and rendering, to static or Node/Bun hosting, then humans and coding agents.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#3b82f6"/></marker>
+    <style>text{font-family:Arial,sans-serif;fill:#0f172a;font-size:13px;text-anchor:middle}.heading{font-size:15px;font-weight:700}.panel{fill:#fff;stroke:#93c5fd}.header{fill:#eff6ff}.node{fill:#f8fafc;stroke:#cbd5e1}.edge{stroke:#3b82f6;stroke-width:2;fill:none;marker-end:url(#arrow)}</style>
+  </defs>
+  <path class="edge" d="M240 175H292"/><path class="edge" d="M520 175H572"/><path class="edge" d="M800 175H852"/>
+  <g transform="translate(20 30)">
+    <rect class="panel" width="220" height="290" rx="10"/><path class="header" d="M10 1H210Q219 1 219 10V42H1V10Q1 1 10 1Z"/>
+    <text class="heading" x="110" y="27">Your repository</text>
+    <rect class="node" x="20" y="65" width="180" height="46" rx="7"/><text x="110" y="93">Markdown / MDX</text>
+    <rect class="node" x="20" y="130" width="180" height="46" rx="7"/><text x="110" y="158">YAML configuration</text>
+    <rect class="node" x="20" y="195" width="180" height="65" rx="7"/><text x="110" y="233">OpenAPI + native SDK docs</text>
+  </g>
+  <g transform="translate(300 30)">
+    <rect class="panel" width="220" height="290" rx="10"/><path class="header" d="M10 1H210Q219 1 219 10V42H1V10Q1 1 10 1Z"/>
+    <text class="heading" x="110" y="27">Build and validate</text>
+    <rect class="node" x="20" y="65" width="180" height="46" rx="7"/><text x="110" y="93">Ingestion adapters</text>
+    <rect class="node" x="20" y="130" width="180" height="46" rx="7"/><text x="110" y="158">Articles + reference pages</text>
+    <rect class="node" x="20" y="195" width="180" height="65" rx="7"/><text x="110" y="225"><tspan x="110">Configuration, types</tspan><tspan x="110" dy="18">and links</tspan></text>
+  </g>
+  <g transform="translate(580 30)">
+    <rect class="panel" width="220" height="290" rx="10"/><path class="header" d="M10 1H210Q219 1 219 10V42H1V10Q1 1 10 1Z"/>
+    <text class="heading" x="110" y="27">Your infrastructure</text>
+    <rect class="node" x="20" y="75" width="180" height="65" rx="7"/><text x="110" y="102"><tspan x="110">Static HTML</tspan><tspan x="110" dy="19">Pages / CDN / web server</tspan></text>
+    <rect class="node" x="20" y="175" width="180" height="80" rx="7"/><text x="110" y="200"><tspan x="110">Node / Bun</tspan><tspan x="110" dy="19">Permission-gated docs</tspan><tspan x="110" dy="19">and live queries</tspan></text>
+  </g>
+  <g transform="translate(860 30)">
+    <rect class="panel" width="220" height="290" rx="10"/><path class="header" d="M10 1H210Q219 1 219 10V42H1V10Q1 1 10 1Z"/>
+    <text class="heading" x="110" y="27">Humans + coding agents</text>
+    <rect class="node" x="20" y="75" width="180" height="65" rx="7"/><text x="110" y="102"><tspan x="110">Searchable guides</tspan><tspan x="110" dy="19">API and SDK reference</tspan></text>
+    <rect class="node" x="20" y="175" width="180" height="80" rx="7"/><text x="110" y="206"><tspan x="110">Markdown / JSON exports</tspan><tspan x="110" dy="19">Citable documentation</tspan></text>
+  </g>
+</svg>

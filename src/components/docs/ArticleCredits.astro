@@ -4,6 +4,7 @@ import { defaultContext, docsyConfig } from '../../config';
 import { articleAuthorship } from '../../lib/authorship';
 import { message } from '../../lib/messages';
 import AuthorBadge from './AuthorBadge.astro';
+import ArticleEditLink from './ArticleEditLink.astro';
 interface Props { article: ArticleConfig; context?: DocsContext; editUrl?: string }
 const { article, context = defaultContext, editUrl } = Astro.props;
 const credits = articleAuthorship(article);
@@ -20,5 +21,5 @@ const showCredits = docsyConfig.reader.showByline && (groups.length > 0 || dates
     {dates.length > 0 && <div class="article-dates">{dates.map((date) => <span>{message(context, date.key)} <time datetime={date.value}>{displayDate(date.value!)}</time></span>)}</div>}
     {credits.provenance && <div class="article-provenance"><span>{message(context, 'agentProvenance')}: {credits.provenance.agent.name}{credits.provenance.agent.provider ? ` · ${credits.provenance.agent.provider}` : ''}{credits.provenance.model ? ` · ${credits.provenance.model}` : ''}</span>{credits.provenance.referenceUrl && <a href={credits.provenance.referenceUrl} target="_blank" rel="noopener noreferrer">{message(context, 'provenanceReference')} <span aria-hidden="true">↗</span></a>}</div>}
   </div>}
-  {editUrl && <a class="article-edit-button" href={editUrl} target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m16 3 5 5-12 12-6 1 1-6L16 3Zm-2 2 5 5" /></svg>{message(context, 'editPage', docsyConfig.reader.editLabel)}</a>}
+  {editUrl && <ArticleEditLink href={editUrl} context={context} />}
 </div>}
