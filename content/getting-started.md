@@ -1,7 +1,7 @@
 Docsy by AppGram is documentation you own: YAML configuration, native SDK and OpenAPI imports, editable source, and self-hosting. People read searchable guides and reference pages; coding agents read Markdown/JSON and help maintain the same repository.
 
-:::note[Private preview — not publicly released]
-Use an authorized checkout or the local versioned CLI tarball. No public npm package or hosted service is required. Generation and local preview do not deploy anything.
+:::note[Public source; CLI package not on npm]
+Docsy's repository is public and source-available under ELv2. Read the [public documentation portal](https://appgram.github.io/docsy/) or run a clone locally. Use the bundled generator or local versioned CLI tarball; no published npm package or hosted control plane is required. Generation and local preview do not deploy anything.
 :::
 
 ## Run this documentation portal
@@ -19,7 +19,7 @@ Open `http://localhost:4321/docsy/`. Changes to `docsy.config.yaml`, Markdown ar
 
 ## Generate a new project
 
-Run `npm run release:pack` in the private checkout. Copy the `npm exec --package ... -- create-docsy my-docs --yes --ci` command it prints. That is the distribution-level test path: it uses the internal tarball rather than assuming an npm release exists.
+Run `npm run release:pack` in your repository checkout. Copy the `npm exec --package ... -- create-docsy my-docs --yes --ci` command it prints. This uses a local versioned tarball rather than assuming an npm release exists. The package's `private: true` setting blocks npm publication, not access to this public repository.
 
 Use the included generator when you want a separate documentation site:
 

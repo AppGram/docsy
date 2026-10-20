@@ -36,9 +36,9 @@ Describe the behavior being changed, include screenshots for visible changes, an
 
 Every PR targeting `main` runs Node tests and the portal build, real native-generator import checks, and Bun production-runtime tests. The combined **PR checks** job reports success only when all three pass. Open/static builds attach a seven-day, downloadable `docsy-static-preview-…` artifact containing the mount-aware site; it is not publicly hosted. Protected/server output is not uploaded as a static preview.
 
-PR validation uses read-only permissions and no secrets, with no automatic approval, merge or deployment. Automatic Pages deployment is chained after passing main-branch checks but remains disabled until the owner explicitly enables `DOCSY_ENABLE_PAGES`. Do not enable publication during the private prerelease. Required merge-check enforcement depends on the repository's GitHub plan and branch rules.
+PR validation uses read-only permissions and no secrets, with no automatic approval, merge or deployment. Automatic Pages deployment is chained after passing main-branch checks and gated by `DOCSY_ENABLE_PAGES`; it is enabled for this repository's public documentation portal. npm package publication is separate and remains disabled. Required merge-check enforcement depends on the repository's branch rules.
 
-Fork-originated workflows also depend on the private repository's security settings. If the owner enables them, require maintainer approval and leave fork secrets, variables and write tokens disabled. Approving a run authorizes CI, not a merge or release; this workflow does not enable that repository setting itself.
+Fork-originated workflows follow the repository and organization's Actions approval policies. Treat fork code as untrusted, require maintainer approval where configured, and do not grant fork jobs secrets or write tokens. Approving a run authorizes CI, not a merge or release; this workflow does not change those repository settings itself.
 
 ## Contribution terms
 

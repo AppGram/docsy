@@ -1,7 +1,7 @@
 GitHub Pages is a good fit for a public Docsy project running in open mode. Pages serves static files, so it cannot enforce lock-mode permissions.
 
-:::warning[No public release yet]
-This repository remains private and deployment stays disabled. The steps below describe a future explicit publishing decision. A configured URL is not an existing deployment.
+:::note[Public Docsy portal]
+This repository is public, and its documentation portal is published at [appgram.github.io/docsy](https://appgram.github.io/docsy/). Main-branch validation invokes the Pages workflow after all checks pass, with `DOCSY_ENABLE_PAGES=true`. For a generated site of your own, deployment remains opt-in until you enable Pages and its repository variable. Publishing documentation does not publish the CLI package to npm.
 :::
 
 ## Generate the workflow
