@@ -332,6 +332,7 @@ const makePackageJson = (target, projectName) => {
 const makeConfig = ({ projectName, description, basePath, accessMode, apiBase, configSource, sections }) => {
   const apiItems = sections.map((section) => ({
     title: section.title,
+    icon: 'tabler:api',
     href: `/api/${section.section}`,
   }));
   const firstApiPath = apiItems[0]?.href ?? '/guides/getting-started';
@@ -359,6 +360,7 @@ const makeConfig = ({ projectName, description, basePath, accessMode, apiBase, c
       searchPlaceholder: 'Search docs and API endpoints',
       llmLabel: 'LLM Docs',
     },
+    sidebar: { iconSize: 16 },
     eyebrow: {
       icon: 'assets/docsy-logo.svg',
       size: 14,
@@ -463,8 +465,8 @@ const makeConfig = ({ projectName, description, basePath, accessMode, apiBase, c
       {
         title: 'Introduction',
         items: [
-          { title: 'Overview', href: '/' },
-          { title: 'Getting started', href: '/guides/getting-started' },
+          { title: 'Overview', href: '/', icon: 'lucide:house' },
+          { title: 'Getting started', href: '/guides/getting-started', icon: 'lucide:book-open' },
         ],
       },
       ...(apiItems.length ? [{ title: 'API Reference', items: apiItems }] : []),

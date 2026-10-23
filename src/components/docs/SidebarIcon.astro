@@ -1,0 +1,29 @@
+---
+import { docsyConfig } from '../../config';
+import type { SidebarIconView } from '../../lib/sidebar-icons';
+interface Props { icon?: SidebarIconView }
+const { icon } = Astro.props;
+const size = docsyConfig.sidebar.iconSize;
+const style = icon ? [
+  `--sidebar-icon-size:${size}px`,
+  ...(icon.mode === 'mask' ? [
+    `--sidebar-icon-light:url(${JSON.stringify(icon.src)})`,
+    `--sidebar-icon-dark:url(${JSON.stringify(icon.darkSrc ?? icon.src)})`,
+  ] : []),
+].join(';') : '';
+---
+{icon && <span class:list={['docs-sidebar-icon', `is-${icon.mode}`, { 'has-dark': Boolean(icon.darkSrc) }]} style={style} aria-hidden="true" data-sidebar-icon={icon.reference ?? 'custom'}>
+  {icon.mode === 'image' && <>
+    <img class="sidebar-icon-light" src={icon.src} alt="" width={size} height={size} decoding="async" referrerpolicy="no-referrer" />
+    {icon.darkSrc && <img class="sidebar-icon-dark" src={icon.darkSrc} alt="" width={size} height={size} decoding="async" referrerpolicy="no-referrer" />}
+  </>}
+</span>}
+<style>
+  .docs-sidebar-icon { display: inline-grid; place-items: center; width: var(--sidebar-icon-size); height: var(--sidebar-icon-size); flex-shrink: 0; }
+  .docs-sidebar-icon img { grid-area: 1 / 1; display: block; width: 100%; height: 100%; object-fit: contain; }
+  .docs-sidebar-icon .sidebar-icon-dark { display: none; }
+  .docs-sidebar-icon.is-mask { background: currentColor; -webkit-mask: var(--sidebar-icon-light) center / contain no-repeat; mask: var(--sidebar-icon-light) center / contain no-repeat; }
+  :global(html[data-theme="dark"]) .docs-sidebar-icon.has-dark .sidebar-icon-light { display: none; }
+  :global(html[data-theme="dark"]) .docs-sidebar-icon.has-dark .sidebar-icon-dark { display: block; }
+  :global(html[data-theme="dark"]) .docs-sidebar-icon.is-mask { -webkit-mask-image: var(--sidebar-icon-dark); mask-image: var(--sidebar-icon-dark); }
+</style>

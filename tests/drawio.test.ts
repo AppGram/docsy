@@ -71,7 +71,7 @@ test('YAML requires accessible local exports and supports preview-only diagrams'
   const code = `import {loadDiagram,drawioHtml} from ${moduleUrl('src/lib/drawio.ts')}; console.log(drawioHtml('architecture'));`;
   assert.ok(!run(root, code).includes('download='));
   config.content.diagrams.architecture.alt = ''; write(root, 'docsy.config.yaml', dump(config));
-  assert.throws(() => run(root, code), /String must contain|accessible|at least 1/);
+  assert.throws(() => run(root, code), /content\.diagrams\.architecture\.alt:/);
 });
 test('missing, external/symlinked, disabled and oversized diagram inputs fail closed', () => {
   const { root, config } = fixture(); const outside = temp(); write(outside, 'other.svg', svg());

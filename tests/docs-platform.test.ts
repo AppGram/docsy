@@ -31,6 +31,27 @@ const run = (root: string, code: string) => execFileSync(process.execPath, ['--i
 const moduleUrl = (path: string) => JSON.stringify(new URL(`../${path}`, import.meta.url).href);
 const record = (overrides: Partial<SearchRecord> = {}): SearchRecord => ({ id: 'one', type: 'page', title: 'Guide', url: '/docs/guides/guide', group: 'Guides', body: 'A platypus lives here.', version: 'current', locale: 'en', markdownUrl: '/docs/format-md/guides/guide', jsonUrl: '/docs/agent/pages/guides/guide.json', ...overrides });
 
+test('minimal YAML retains nested defaults after the Zod 4 migration', () => {
+  const { root } = fixture();
+  const config = JSON.parse(run(root, `import {docsyConfig} from ${moduleUrl('src/config.ts')}; console.log(JSON.stringify(docsyConfig));`));
+  assert.deepEqual(config.sidebar, { iconSize: 16 });
+  assert.equal(config.theme.mode, 'light');
+  assert.equal(config.theme.colors.ink, '#111116');
+  assert.equal(config.theme.darkColors.ink, '#f5f5f5');
+  assert.equal(config.theme.code.darkTheme, 'github-dark-high-contrast');
+  assert.ok(config.theme.fonts.body);
+  assert.equal(config.content.media.enabled, true);
+  assert.equal(config.content.mdx.allowJavaScript, false);
+  assert.equal(config.content.mermaid.maxEdges, 500);
+  assert.deepEqual(config.content.snippets, {});
+  assert.deepEqual(config.content.diagrams, {});
+  assert.deepEqual(config.versions, { default: 'current', items: [{ id: 'current', label: 'Current', status: 'current' }] });
+  assert.equal(config.access.mode, 'open');
+  assert.equal(config.access.gate.loginLabel, 'Sign in to continue');
+  assert.equal(config.maintenance.enabled, false);
+  assert.deepEqual(config.ingestion.openapi.examples.languages, ['curl', 'javascript', 'python']);
+});
+
 test('full-text search finds body-only terms, normalizes accents, and requires all query terms', () => {
   assert.equal(searchRecords([record()], 'platypus')[0].id, 'one');
   assert.equal(searchRecords([record({ body: 'Pravila za plaćanje' })], 'placanje').length, 1);

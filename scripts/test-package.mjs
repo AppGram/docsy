@@ -56,6 +56,23 @@ try {
   assert.equal(JSON.parse(read(join(installedRoot, 'package.json'))).version, artifact.version);
   assert.equal(run(consumer, 'npm', ['exec', '--offline', '--no', '--', 'docsy', '--version']).trim(), artifact.version);
   checks.push('Real tarball installed into a clean consumer; npm bin and version verified; no checkout symlink');
+  run(consumer, process.execPath, ['--input-type=module', '-e', `
+    import assert from 'node:assert/strict';
+    import { createRequire } from 'node:module';
+    const require = createRequire(import.meta.resolve('@appgram/docsy/package.json'));
+    const { version } = require('zod/package.json');
+    const [major, minor, patch] = version.split('.').map(Number);
+    assert.ok(major > 4 || (major === 4 && (minor > 6 || (minor === 6 && patch >= 6))), version);
+    const { z } = require('zod');
+    let visited = 0;
+    const result = z.array(z.unknown().transform(() => { visited++; })).max(2).safeParse(Array(20000).fill(null));
+    assert.equal(result.success, false);
+    assert.equal(result.error.issues.length, 1);
+    assert.equal(result.error.issues[0].code, 'too_big');
+    assert.equal(visited, 0);
+    console.log('Installed patched Zod: ' + version);
+  `]);
+  checks.push('Installed package resolves patched Zod and rejects oversized collections before parsing elements');
 
   const input = join(workspace, 'inputs/api.yaml');
   write(input, dump({ openapi: '3.0.3', info: { title: 'Package-owned API', version: '1.0.0' }, paths: { '/v1/widgets': { get: { tags: ['widgets'], summary: 'List user widgets', responses: { 200: { description: 'Widgets', content: { 'application/json': { schema: { type: 'array', items: { type: 'object', properties: { id: { type: 'string' } } } } } } } } } } } }));
@@ -69,6 +86,9 @@ try {
   checks.push('Installed docsy bin generated the editable project, version provenance, private project manifest and opt-in deployment workflows');
 
   const configPath = join(site, 'docsy.config.yaml'), config = load(read(configPath));
+  config.sidebar = { iconSize: 18 };
+  config.navigation[0].items[0].icon = 'lucide:house';
+  config.navigation[0].items[1].icon = { src: 'assets/authors/unknown.svg', mode: 'mask' };
   config.notFound.title = 'Package 404 recovery';
   config.notFound.links = [{ label: 'Installed handbook', href: '/guides/package-handbook' }];
   const signal = 'tarball-onboarding-proof', privateSignal = 'tarball-private-proof';
@@ -96,6 +116,9 @@ try {
   try {
     const html = await (await fetch(`${server.base}/guides/package-handbook`)).text();
     assert.match(html, new RegExp(signal)); assert.match(html, /Package test writer/);
+    assert.match(html, /data-sidebar-icon="lucide:house"/); assert.match(html, /data-sidebar-icon="tabler:api"/);
+    assert.match(html, /--sidebar-icon-size:18px/); assert.match(html, /data-sidebar-icon="custom"/);
+    assert.doesNotMatch(html, /api\.iconify\.design|fonts\.googleapis/);
     assert.match(html, /data-docsy-diagram="architecture"/);
     assert.match(html, /download="architecture.drawio"/);
     assert.match(html, /download="architecture.puml"/); assert.match(html, /data-docsy-mermaid/);
@@ -142,6 +165,7 @@ try {
   } finally { await server.stop(); }
   checks.push('Actual standalone server: anonymous HTML/Markdown/JSON/search denied or filtered; authorized article and live agent query succeed');
   checks.push('Installed standalone 404 page returns 404 without exposing protected article content');
+  checks.push('Installed sidebar renders local pack icons and a custom mask, without an icon API or font service');
   assert.equal(sha256(tarball), artifact.sha256, 'Package changed during testing');
   const report = { result: 'passed', commit: process.env.GITHUB_SHA ?? execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim(), artifact, checks, node: process.version, npm: run(consumer, 'npm', ['--version']).trim() };
   write(join(output, 'package-test.json'), JSON.stringify(report, null, 2) + '\n');

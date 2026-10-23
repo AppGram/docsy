@@ -17,6 +17,8 @@ header:
   searchLabel: Search documentation
   searchPlaceholder: Search Docsy guides and reference
   llmLabel: Markdown
+sidebar:
+  iconSize: 16 # 12–24 px; omit an item's icon, or set icon: false, for text only
 notFound:
   layout: centered # centered, or docs to keep the left sidebar
   eyebrow: Page not found
@@ -538,147 +540,196 @@ navigation:
     titles: { fr: Introduction, es: Introducción }
     items:
       - title: Overview
+        icon: { src: assets/docsy-logo.svg, mode: mask }
         titles: { fr: Vue d’ensemble, es: Resumen }
         href: /
       - title: Get started
+        icon: lucide:book-open
         titles: { fr: Bien démarrer, es: Primeros pasos }
         href: /guides/getting-started
       - title: Coding agents
+        icon: lucide:terminal
         titles: { fr: Agents de code, es: Agentes de programación }
         href: /guides/tutorials/coding-agents
       - title: Documentation maintenance
+        icon: tabler:settings
         titles: { fr: Maintenance documentaire, es: Mantenimiento de la documentación }
         href: /guides/tutorials/documentation-maintenance
   - title: Content
     titles: { fr: Contenu, es: Contenido }
     items:
       - title: YAML configuration
+        icon: tabler:adjustments
         titles: { fr: Configuration YAML, es: Configuración YAML }
         href: /guides/tutorials/yaml-configuration
       - title: Authored articles
+        icon: lucide:file-text
         titles: { fr: Rédiger des articles, es: Escribir artículos }
         href: /guides/tutorials/authored-articles
       - title: Authors and edit links
+        icon: lucide:users
         titles: { fr: Auteurs et liens de modification, es: Autores y enlaces de edición }
         href: /guides/tutorials/authors-and-edit-links
       - title: Rich article components
+        icon: lucide:panels-top-left
         titles: { fr: Articles enrichis, es: Artículos enriquecidos }
         href: /guides/tutorials/rich-articles
       - title: draw.io diagrams
+        icon: lucide:workflow
         titles: { fr: Diagrammes draw.io, es: Diagramas draw.io }
         href: /guides/tutorials/drawio-diagrams
       - title: Mermaid and UML diagrams
+        icon: lucide:network
         titles: { fr: Diagrammes Mermaid et UML, es: Diagramas Mermaid y UML }
         href: /guides/tutorials/mermaid-and-uml
       - title: Native MDX articles
+        icon: lucide:file-code
         titles: { fr: Articles MDX natifs, es: Artículos MDX nativos }
         href: /guides/tutorials/native-mdx
       - title: Versions and localization
+        icon: tabler:language
         titles: { fr: Versions et langues, es: Versiones e idiomas }
         href: /guides/tutorials/versions-and-locales
       - title: Search and agent API
+        icon: lucide:search
         titles: { fr: Recherche et API pour les agents, es: Búsqueda y API para agentes }
         href: /guides/tutorials/search-and-agents
       - title: Content validation
+        icon: lucide:circle-check
         titles: { fr: Validation du contenu, es: Validación del contenido }
         href: /guides/tutorials/content-validation
   - title: Ingestion
     titles: { fr: Importation, es: Importación }
     items:
       - title: OpenAPI ingestion
+        icon: tabler:api
         titles: { fr: Importer une spécification OpenAPI, es: Importar OpenAPI }
         href: /guides/tutorials/openapi-ingestion
       - title: SDK adapters
+        icon: lucide:plug
         titles: { fr: Adaptateurs SDK, es: Adaptadores de SDK }
         href: /guides/ingestion/sdk-adapters
   - title: Customization
     titles: { fr: Personnalisation, es: Personalización }
     items:
       - title: Default UI
+        icon: lucide:palette
         titles: { fr: Interface par défaut, es: Interfaz predeterminada }
         href: /guides/customization/default-ui
   - title: Native SDK samples
     titles: { fr: SDK natifs, es: SDK nativos }
     items:
       - title: Sample guide
+        icon: lucide:book-open
         titles: { fr: Guide des exemples, es: Guía de ejemplos }
         href: /guides/ingestion/sdk-samples
       - title: Swift · DocC
+        icon: assets/sdks/swift.svg
         href: /swift-sdk
       - title: Dart · Dartdoc
+        icon: assets/sdks/dart.svg
         href: /dart-sdk
       - title: TypeScript · TypeDoc
+        icon: assets/sdks/typescript.svg
         href: /typescript-sdk
       - title: JavaScript · JSDoc
+        icon: assets/sdks/javascript.svg
         href: /javascript-sdk
       - title: Python · Sphinx
+        icon: assets/sdks/python.svg
         href: /python-sdk
       - title: Rust · rustdoc
+        icon: { src: assets/sdks/rust.svg, darkSrc: assets/sdks/rust-dark.svg }
         href: /rust-sdk
       - title: C# · DocFX
+        icon: assets/sdks/csharp.svg
         href: /dotnet-sdk
       - title: F# · DocFX
+        icon: assets/sdks/fsharp.svg
         href: /fsharp-sdk
       - title: Visual Basic · DocFX
+        icon: assets/sdks/visualbasic.svg
         href: /visualbasic-sdk
       - title: Kotlin · Dokka
+        icon: assets/sdks/kotlin.svg
         href: /kotlin-sdk
       - title: Java · Javadoc
+        icon: assets/sdks/java.svg
         href: /java-sdk
       - title: Scala · Scaladoc
+        icon: assets/sdks/scala.svg
         href: /scala-sdk
       - title: Go · go doc
+        icon: assets/sdks/go.svg
         href: /go-sdk
       - title: C · Doxygen
+        icon: assets/sdks/c.svg
         href: /c-sdk
       - title: C++ · Doxygen
+        icon: assets/sdks/cpp.svg
         href: /cpp-sdk
       - title: Objective-C · Doxygen
+        icon: assets/sdks/objectivec.svg
         href: /objectivec-sdk
       - title: PHP · phpDocumentor
+        icon: assets/sdks/php.svg
         href: /php-sdk
       - title: Ruby · YARD
+        icon: assets/sdks/ruby.svg
         href: /ruby-sdk
       - title: Elixir · ExDoc
+        icon: assets/sdks/elixir.svg
         href: /elixir-sdk
       - title: Lua · LDoc
+        icon: { src: assets/sdks/lua.svg, darkSrc: assets/sdks/lua-dark.svg }
         href: /lua-sdk
       - title: Portable metadata (manual)
+        icon: { src: assets/sdks/json.svg, darkSrc: assets/sdks/json-dark.svg }
         href: /compact-sdk
   - title: OpenAPI sample
     titles: { fr: Exemple OpenAPI, es: Ejemplo de OpenAPI }
     items:
       - title: Posts · requests
+        icon: tabler:api
         titles: { fr: Articles · requêtes, es: Publicaciones · solicitudes }
         href: /api/posts
       - title: Comments · query parameters
+        icon: lucide:message-square
         titles: { fr: Commentaires · paramètres, es: Comentarios · parámetros }
         href: /api/comments
   - title: Access and deployment
     titles: { fr: Accès et déploiement, es: Acceso y despliegue }
     items:
       - title: Lock mode
+        icon: tabler:lock
         titles: { fr: Contrôle d’accès, es: Control de acceso }
         href: /guides/tutorials/lock-mode
       - title: GitHub Pages
+        icon: tabler:brand-github
         titles: { fr: GitHub Pages, es: GitHub Pages }
         href: /guides/deployment/github-pages
       - title: Self-hosting
+        icon: lucide:server
         titles: { fr: Auto-hébergement, es: Alojamiento propio }
         href: /guides/deployment/self-hosting
   - title: Reference
     titles: { fr: Référence, es: Referencia }
     items:
       - title: Upgrade a customized site
+        icon: lucide:git-pull-request
         href: /guides/reference/upgrading
       - title: Migrate from Mintlify
+        icon: lucide:arrow-right-left
         href: /guides/tutorials/migrate-mintlify
       - title: Compatibility evidence
+        icon: lucide:clipboard-check
         href: /guides/reference/compatibility
       - title: CLI
+        icon: lucide:terminal
         titles: { fr: Ligne de commande, es: Línea de comandos }
         href: /guides/reference/cli
       - title: License
+        icon: lucide:scale
         titles: { fr: Licence, es: Licencia }
         href: /guides/reference/license
 ingestion:

@@ -6,6 +6,7 @@ import { maintenanceSchema } from '../scripts/maintenance/config.mjs';
 import { REQUEST_LANGUAGES } from './lib/request-languages';
 import { SDK_FORMATS } from './lib/sdk-formats';
 import { bundledThemes } from 'shiki';
+import { sidebarIconSchema, type SidebarIconConfig } from './lib/sidebar-icons';
 
 // Astro bundles server modules into dist during static generation, so module
 // URLs no longer point at the project. Builds and dev both run from this root.
@@ -20,7 +21,7 @@ const actionSchema = z.object({
 type NavItemInput = {
   title: string;
   href: string;
-  icon?: string;
+  icon?: SidebarIconConfig;
   titles?: Record<string, string>;
   items?: NavItemInput[];
 };
@@ -28,8 +29,8 @@ type NavItemInput = {
 const navItemSchema: z.ZodType<NavItemInput> = z.lazy(() => z.object({
   title: z.string().min(1),
   href: z.string().min(1),
-  icon: z.string().optional(),
-  titles: z.record(z.string()).optional(),
+  icon: sidebarIconSchema.optional(),
+  titles: z.record(z.string(), z.string()).optional(),
   items: z.array(navItemSchema).optional(),
 }));
 
@@ -46,7 +47,7 @@ const sdkSchema = z.object({
   overview: z.string(),
   icon: z.string().optional(),
   iconDark: z.string().optional(),
-  versions: z.record(z.string()).default({}),
+  versions: z.record(z.string(), z.string()).prefault({}),
   maxFiles: z.number().int().min(1).max(50000).default(10000),
   maxFileBytes: z.number().int().min(1024).max(100 * 1024 * 1024).default(10 * 1024 * 1024),
   maxTotalBytes: z.number().int().min(1024).max(1024 * 1024 * 1024).default(100 * 1024 * 1024),
@@ -60,7 +61,7 @@ const apiSectionSchema = z.object({
   paths: z.array(z.string()).default([]),
 });
 
-const httpUrlSchema = z.string().url().refine((value) => /^https?:\/\//i.test(value) && !/[\u0000-\u0020<>]/.test(value), 'Use an HTTP(S) URL without whitespace or markup');
+const httpUrlSchema = z.url().refine((value) => /^https?:\/\//i.test(value) && !/[\u0000-\u0020<>]/.test(value), 'Use an HTTP(S) URL without whitespace or markup');
 const authorAvatarSchema = z.string().trim().min(1).refine((value) => {
   if (/[\u0000-\u001f<>"\\]/.test(value) || value.startsWith('//')) return false;
   if (/^[a-z][a-z0-9+.-]*:/i.test(value)) return httpUrlSchema.safeParse(value).success;
@@ -123,7 +124,7 @@ const accessProviderSchema = z.discriminatedUnion('type', [
   }),
   z.object({
     type: z.literal('webhook'),
-    endpoint: z.string().url(),
+    endpoint: z.url(),
     method: z.enum(['GET', 'POST']).default('GET'),
     forwardHeaders: z.array(z.string().min(1)).default(['cookie', 'authorization']),
     pathHeader: z.string().min(1).default('x-docsy-path'),
@@ -137,7 +138,7 @@ const accessSchema = z.object({
   tiers: z.record(z.string().regex(/^[a-z0-9-]+$/), z.object({
     label: z.string().min(1),
     description: z.string().optional(),
-  })).default({}),
+  })).prefault({}),
   rules: z.array(z.object({
     pattern: z.string().startsWith('/'),
     tiers: z.array(z.string().regex(/^[a-z0-9-]+$/)).min(1),
@@ -150,8 +151,8 @@ const accessSchema = z.object({
     loginLabel: z.string().default('Sign in to continue'),
     returnToParam: z.string().min(1).default('returnTo'),
     backLabel: z.string().default('Back to public docs'),
-  }).default({}),
-}).default({});
+  }).prefault({}),
+}).prefault({});
 
 const LIGHT_THEME_COLORS = {
   ink: '#111116',
@@ -187,7 +188,7 @@ const themeColorsSchema = (defaults: typeof LIGHT_THEME_COLORS) => z.object({
   accentDark: z.string().default(defaults.accentDark),
   panel: z.string().default(defaults.panel),
   success: z.string().default(defaults.success),
-}).default({});
+}).prefault({});
 
 const configSchema = z.object({
   site: z.object({
@@ -195,7 +196,7 @@ const configSchema = z.object({
     docsLabel: z.string().default('docs'),
     title: z.string().min(1),
     description: z.string().min(1),
-    origin: z.string().url(),
+    origin: z.url(),
     basePath: z.string().regex(/^\//).default('/'),
     language: z.string().default('en'),
     homeUrl: z.string().min(1).default('/'),
@@ -203,7 +204,7 @@ const configSchema = z.object({
     logoDark: z.string().min(1).optional(),
     favicon: z.string().optional(),
     ogImage: z.string().optional(),
-    githubUrl: z.string().url().optional(),
+    githubUrl: z.url().optional(),
     twitterHandle: z.string().optional(),
   }),
   header: z.object({
@@ -211,7 +212,10 @@ const configSchema = z.object({
     searchPlaceholder: z.string().default('Search docs, SDKs, and API endpoints'),
     llmLabel: z.string().default('LLM Docs'),
     cta: actionSchema.optional(),
-  }).default({}),
+  }).prefault({}),
+  sidebar: z.object({
+    iconSize: z.number().int().min(12).max(24).default(16),
+  }).prefault({}),
   notFound: z.object({
     layout: z.enum(['centered', 'docs']).default('centered'),
     eyebrow: z.string().default('Page not found'),
@@ -225,12 +229,12 @@ const configSchema = z.object({
     image: z.object({ src: authorAvatarSchema, alt: z.string().default('') }).optional(),
     linksHeading: z.string().default('A good place to start'),
     links: z.array(recoveryActionSchema.extend({ description: z.string().optional() })).max(6).default([]),
-    translations: z.record(notFoundTranslationSchema).default({}),
-  }).default({}),
+    translations: z.record(z.string(), notFoundTranslationSchema).prefault({}),
+  }).prefault({}),
   footer: z.object({
     prefix: z.string().default('Docsy provided by'),
     label: z.string().min(1),
-    href: z.string().url(),
+    href: z.url(),
   }).optional(),
   reader: z.object({
     headingLinks: z.boolean().default(true),
@@ -240,16 +244,16 @@ const configSchema = z.object({
     editEnabled: z.boolean().default(true),
     editPlacement: z.enum(['header', 'footer']).default('footer'),
     editStyle: z.enum(['subtle', 'button']).default('subtle'),
-    editUrl: z.string().url().refine((value) => /^https?:\/\//i.test(value), 'Use an HTTP(S) source-edit URL').optional(),
-    reportUrl: z.string().url().refine((value) => /^https?:\/\//i.test(value), 'Use an HTTP(S) issue URL').optional(),
+    editUrl: z.url().refine((value) => /^https?:\/\//i.test(value), 'Use an HTTP(S) source-edit URL').optional(),
+    reportUrl: z.url().refine((value) => /^https?:\/\//i.test(value), 'Use an HTTP(S) issue URL').optional(),
     editLabel: z.string().default('Edit this page'),
     reportLabel: z.string().default('Report a problem'),
-  }).default({}),
-  redirects: z.record(z.string()).default({}),
+  }).prefault({}),
+  redirects: z.record(z.string(), z.string()).prefault({}),
   eyebrow: z.object({
     icon: z.string().min(1).default('assets/docsy-logo.svg'),
     size: z.number().int().min(8).max(32).default(14),
-  }).default({}),
+  }).prefault({}),
   theme: z.object({
     mode: z.enum(['light', 'dark']).default('light'),
     colors: themeColorsSchema(LIGHT_THEME_COLORS),
@@ -258,21 +262,21 @@ const configSchema = z.object({
     code: z.object({
       lightTheme: z.string().refine((name) => Object.hasOwn(bundledThemes, name), 'Unknown bundled syntax theme').default('github-light'),
       darkTheme: z.string().refine((name) => Object.hasOwn(bundledThemes, name), 'Unknown bundled syntax theme').default('github-dark-high-contrast'),
-    }).default({}),
+    }).prefault({}),
     fonts: z.object({
       display: z.string().default('"Aptos Display", "SF Pro Display", "Helvetica Neue", sans-serif'),
       body: z.string().default('"Aptos", "SF Pro Text", "Helvetica Neue", sans-serif'),
       label: z.string().default('"Aptos", "SF Pro Text", "Helvetica Neue", sans-serif'),
       mono: z.string().default('ui-monospace, "SF Mono", Menlo, monospace'),
-    }).default({}),
-  }).default({}),
+    }).prefault({}),
+  }).prefault({}),
   home: z.object({
     eyebrow: z.string().default('DOCUMENTATION'),
     articleLayout: z.enum(['grid', 'list']).default('grid'),
-    translations: z.record(z.object({
+    translations: z.record(z.string(), z.object({
       title: z.string().optional(), description: z.string().optional(), eyebrow: z.string().optional(),
       primaryActionLabel: z.string().optional(), secondaryActionLabel: z.string().optional(),
-    })).default({}),
+    })).prefault({}),
     title: z.string().min(1),
     description: z.string().min(1),
     primaryAction: actionSchema,
@@ -286,23 +290,23 @@ const configSchema = z.object({
     sdkHeading: z.string().default('Choose your platform'),
     sdkDescription: z.string().default('Official SDKs with full type support and identical primitives across every runtime.'),
   }),
-  authors: z.record(authorIdSchema, authorSchema).default({}),
+  authors: z.record(authorIdSchema, authorSchema).prefault({}),
   content: z.object({
     articles: z.array(articleSchema).default([]),
     media: z.object({
       enabled: z.boolean().default(true),
       images: z.boolean().default(true),
       videos: z.boolean().default(true),
-    }).default({}),
+    }).prefault({}),
     mdx: z.object({
       enabled: z.boolean().default(true),
       allowJavaScript: z.boolean().default(false),
-      components: z.record(z.string().min(1)).default({}),
-    }).default({}).superRefine((value, context) => {
-      if (!value.allowJavaScript && Object.keys(value.components).length) context.addIssue({ code: z.ZodIssueCode.custom, message: 'Custom MDX component modules execute code; explicitly enable content.mdx.allowJavaScript for trusted sources.' });
-      for (const name of Object.keys(value.components)) if (!/^[A-Z][A-Za-z0-9]*$/.test(name)) context.addIssue({ code: z.ZodIssueCode.custom, message: `Invalid MDX component name: ${name}` });
+      components: z.record(z.string(), z.string().min(1)).prefault({}),
+    }).prefault({}).superRefine((value, context) => {
+      if (!value.allowJavaScript && Object.keys(value.components).length) context.addIssue({ code: 'custom', message: 'Custom MDX component modules execute code; explicitly enable content.mdx.allowJavaScript for trusted sources.' });
+      for (const name of Object.keys(value.components)) if (!/^[A-Z][A-Za-z0-9]*$/.test(name)) context.addIssue({ code: 'custom', message: `Invalid MDX component name: ${name}` });
     }),
-    snippets: z.record(z.string().regex(/\.(?:md|markdown|mdown)$/i)).default({}),
+    snippets: z.record(z.string(), z.string().regex(/\.(?:md|markdown|mdown)$/i)).prefault({}),
     diagrams: z.record(z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9_-]*$/), z.object({
       format: z.enum(['drawio', 'plantuml']).default('drawio'),
       image: z.string().regex(/\.(?:svg|png)$/i, 'Use a local SVG or PNG diagram export'),
@@ -312,25 +316,25 @@ const configSchema = z.object({
       caption: z.string().default(''),
       background: z.enum(['light', 'dark', 'transparent']).default('light'),
     }).strict().superRefine((value, context) => {
-      if (value.source && !(value.format === 'plantuml' ? /\.(?:puml|plantuml)$/i : /\.(?:drawio|xml)$/i).test(value.source)) context.addIssue({ code: z.ZodIssueCode.custom, path: ['source'], message: 'Diagram source extension must match its format.' });
-    })).default({}),
+      if (value.source && !(value.format === 'plantuml' ? /\.(?:puml|plantuml)$/i : /\.(?:drawio|xml)$/i).test(value.source)) context.addIssue({ code: 'custom', path: ['source'], message: 'Diagram source extension must match its format.' });
+    })).prefault({}),
     mermaid: z.object({
       enabled: z.boolean().default(true),
       maxTextSize: z.number().int().min(100).max(100000).default(50000),
       maxEdges: z.number().int().min(1).max(2000).default(500),
       sourceLabel: z.string().trim().min(1).default('Diagram source'),
       errorLabel: z.string().trim().min(1).default('This diagram could not be rendered. Check its source below.'),
-    }).strict().default({}),
+    }).strict().prefault({}),
     components: z.array(z.enum(['note', 'tip', 'warning', 'danger', 'steps', 'tabs', 'accordion', 'code-group', 'include', 'card', 'frame', 'drawio', 'plantuml'])).default(['note', 'tip', 'warning', 'danger', 'steps', 'tabs', 'accordion', 'code-group', 'include', 'card', 'frame', 'drawio', 'plantuml']),
-  }).default({}),
+  }).prefault({}),
   versions: z.object({
     default: z.string().default('current'),
     items: z.array(z.object({
       id: z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/),
       label: z.string().min(1),
       status: z.enum(['current', 'beta', 'deprecated']).default('current'),
-    })).min(1).default([{ id: 'current', label: 'Current' }]),
-  }).default({}),
+    })).min(1).prefault([{ id: 'current', label: 'Current' }]),
+  }).prefault({}),
   localization: z.object({
     defaultLocale: z.string(),
     fallback: z.boolean().default(true),
@@ -339,27 +343,28 @@ const configSchema = z.object({
       label: z.string().min(1),
       dir: z.enum(['ltr', 'rtl']).default('ltr'),
     })).min(1),
-    messages: z.record(z.record(z.string())).default({}),
+    messages: z.record(z.string(), z.record(z.string(), z.string())).prefault({}),
   }).optional(),
   search: z.object({
     enabled: z.boolean().default(true),
     maxResults: z.number().int().min(1).max(50).default(30),
-  }).default({}),
+  }).prefault({}),
   agent: z.object({
     enabled: z.boolean().default(true),
     query: z.boolean().default(false),
     maxResults: z.number().int().min(1).max(50).default(10),
     maxQueryLength: z.number().int().min(16).max(2000).default(500),
-  }).default({}),
+  }).prefault({}),
   validation: z.object({
     links: z.boolean().default(true),
     api: z.boolean().default(true),
-  }).default({}),
+  }).prefault({}),
   access: accessSchema,
   maintenance: maintenanceSchema,
   navigation: z.array(z.object({
     title: z.string().min(1),
-    titles: z.record(z.string()).optional(),
+    titles: z.record(z.string(), z.string()).optional(),
+    icon: sidebarIconSchema.optional(),
     items: z.array(navItemSchema),
   })),
   ingestion: z.object({
@@ -367,15 +372,15 @@ const configSchema = z.object({
     openapi: z.object({
       enabled: z.boolean().default(true),
       source: z.string().min(1),
-      apiBaseUrl: z.string().url(),
+      apiBaseUrl: z.url(),
       guide: actionSchema.optional(),
       sections: z.array(apiSectionSchema).default([]),
-      versions: z.record(z.string()).default({}),
+      versions: z.record(z.string(), z.string()).prefault({}),
       examples: z.object({
         languages: z.array(z.enum(REQUEST_LANGUAGES)).min(1).refine((values) => new Set(values).size === values.length, 'Request languages must be unique').default(['curl', 'javascript', 'python']),
         defaults: z.enum(['required', 'all']).default('required'),
         customSamples: z.boolean().default(true),
-      }).default({}),
+      }).prefault({}),
     }),
   }),
 }).superRefine((config, context) => {
@@ -397,7 +402,7 @@ const configSchema = z.object({
     const key = `${article.version ?? '*'}:${article.locale ?? config.localization?.defaultLocale ?? config.site.language}:${article.slug}`;
     if (articleSlugs.has(key)) {
       context.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['content', 'articles', articleIndex, 'slug'],
         message: `Duplicate article slug/version/locale "${key}"`,
       });
@@ -432,7 +437,7 @@ const configSchema = z.object({
     rule.tiers.forEach((tier, tierIndex) => {
       if (!knownTiers.has(tier)) {
         context.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom',
           path: ['access', 'rules', ruleIndex, 'tiers', tierIndex],
           message: `Unknown access tier "${tier}"`,
         });

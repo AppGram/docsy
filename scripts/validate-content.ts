@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { allContexts, docsPath, docsyConfig } from '../src/config';
+import type { SidebarIconConfig } from '../src/lib/sidebar-icons';
 import { articleUrl, getArticleSources, loadArticle } from '../src/lib/article-loader';
 import { getSdkSources, loadSdk } from '../src/lib/sdk-loaders';
 import { API_SECTIONS, loadSwagger, filterEndpoints } from '../src/lib/swagger-loader';
@@ -13,6 +14,24 @@ const errors: string[] = [];
 const pages = new Map<string, { ids: Set<string>; links: string[] }>();
 const root = docsPath();
 const clean = (path: string) => path.replace(/\/+$/, '') || '/';
+const checkIcon = (icon: SidebarIconConfig | undefined, label: string) => {
+  if (!icon || (typeof icon === 'object' && 'pack' in icon)) return;
+  const sources = typeof icon === 'string' ? [icon] : [icon.src, icon.darkSrc].filter((src): src is string => Boolean(src));
+  for (const source of sources) {
+    if (/^https?:\/\//i.test(source) || /^(?:lucide|tabler):/.test(source)) continue;
+    const file = resolve(process.cwd(), 'public', decodeURIComponent(source.split(/[?#]/)[0]).replace(/^\/+/, ''));
+    if (!existsSync(file)) errors.push(`${label}: missing sidebar icon ${source}`);
+  }
+};
+const checkItemIcons = (items: typeof docsyConfig.navigation[number]['items'], label: string) => items.forEach((item, index) => {
+  const path = `${label}.${index}`;
+  checkIcon(item.icon, `${path}.icon`);
+  if (item.items) checkItemIcons(item.items, `${path}.items`);
+});
+docsyConfig.navigation.forEach((section, index) => {
+  checkIcon(section.icon, `navigation.${index}.icon`);
+  checkItemIcons(section.items, `navigation.${index}.items`);
+});
 for (const [id, diagram] of Object.entries(docsyConfig.content.diagrams)) if (docsyConfig.content.components.includes(diagram.format)) loadDiagram(id);
 for (const context of allContexts) {
   pages.set(docsPath('/', context), { ids: new Set(), links: [] });
@@ -62,7 +81,7 @@ if (docsyConfig.validation.links) {
   }
   for (const [path, page] of pages) for (const href of page.links) checkLink(href, path);
   const registered = new Set(docsyConfig.content.articles.map((article) => article.slug));
-  const checkRegistered = (items: typeof docsyConfig.navigation[number]['items']) => items.forEach((item) => { if (item.href.startsWith('/guides/') && !registered.has(item.href.slice(8))) errors.push(`navigation: unknown article ${item.href}`); if (item.items) checkRegistered(item.items); });
+  const checkRegistered = (items: typeof docsyConfig.navigation[number]['items']) => items.forEach((item) => { const path = item.href.split(/[?#]/)[0]; if (path.startsWith('/guides/') && !registered.has(path.slice(8))) errors.push(`navigation: unknown article ${item.href}`); if (item.items) checkRegistered(item.items); });
   for (const section of docsyConfig.navigation) checkRegistered(section.items);
   for (const context of allContexts) {
     const checkNav = (items: DocsNavItem[]) => items.forEach((item) => { checkLink(item.href, docsPath('/', context)); if (item.items) checkNav(item.items); });

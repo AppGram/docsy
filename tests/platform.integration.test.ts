@@ -35,7 +35,13 @@ function site() {
       { slug: 'private', title: 'Restricted guide', source: 'content/private.mdx', authors: ['secret'], editUrl: false },
       { slug: 'native', title: 'Native MDX', source: 'content/native.mdx' },
     ] },
-    navigation: [{ title: 'Guides', items: [{ title: 'Guide', titles: { fr: 'Guide français' }, href: '/guides/guide' }, { title: 'Restricted guide', href: '/guides/private' }, { title: 'API', href: '/api/widgets' }, { title: 'SDK', href: '/widget-sdk' }] }],
+    sidebar: { iconSize: 18 },
+    navigation: [{ title: 'Guides', icon: 'lucide:book-open', items: [
+      { title: 'Guide', titles: { fr: 'Guide français' }, href: '/guides/guide', icon: 'lucide:rocket', items: [{ title: 'Guide details', href: '/guides/guide#details', icon: 'tabler:list-details' }] },
+      { title: 'Restricted guide', href: '/guides/private', icon: false },
+      { title: 'API', href: '/api/widgets', icon: { pack: 'tabler', name: 'api' } },
+      { title: 'SDK', href: '/widget-sdk', icon: { src: 'assets/authors/writer.svg', darkSrc: 'assets/authors/docsy-agent.svg' } },
+    ] }],
     ingestion: { openapi: { source: 'sources/api.yaml', apiBaseUrl: 'https://api.example.test', versions: { v1: 'sources/v1.yaml' }, sections: [{ section: 'widgets', title: 'Widgets', description: 'Widgets API', paths: ['/widgets'] }] }, sdks: [{ id: 'widget', slug: 'widget-sdk', adapter: 'typedoc-lite', source: 'sources/sdk.json', versions: { v1: 'sources/sdk-v1.json' }, name: 'Widget SDK', language: 'typescript', install: 'npm install widget', overview: 'Widget API client', quickstart: { code: 'client.get("quickstartneedle");', language: 'typescript' } }] },
     access: { mode: 'open', tiers: { pro: { label: 'Pro' } }, rules: [{ pattern: '/guides/private', tiers: ['pro'] }] },
     agent: { enabled: true, query: false },
@@ -44,8 +50,8 @@ function site() {
     redirects: { '/old-guide': '/guides/guide', '/old-private': '/guides/private' },
   };
   write(root, 'content/guide.md', '# Guide body\n\nThe elusive platypusword only appears inside a paragraph.\n\n## Details\n\n:::note[Read carefully]\n::include{src="shared"}\n:::\n\n::::tabs{sync="runtime"}\n:::tab[Node]\nNode instructions.\n:::\n:::tab[Python]\nPython instructions.\n:::\n::::\n');
-  write(root, 'content/fr.md', '# Bonjour\n\nInstructions françaises.\n');
-  write(root, 'content/v1.md', '# Old behavior\n\nUse legacyfirefly for version one.\n');
+  write(root, 'content/fr.md', '# Bonjour\n\nInstructions françaises.\n\n## Details\n\nDétails du guide.\n');
+  write(root, 'content/v1.md', '# Old behavior\n\nUse legacyfirefly for version one.\n\n## Details\n\nLegacy details.\n');
   write(root, 'content/private.mdx', '## Restricted\n\n<Warning>classifiedsecretword must never leak to public retrieval.</Warning>\n\n```mermaid Private sequence\nsequenceDiagram\nReader->>Docsy: classifieddiagramneedle\n```\n\n<PlantUml src="protected" />\n');
   write(root, 'content/private.svg', read(repo, 'content/diagrams/article-review.svg'));
   write(root, 'content/private.puml', '@startuml\nReader -> Docsy: classifieddiagramneedle\n@enduml\n');
@@ -99,6 +105,14 @@ test(`generated template serves static variants and permission-aware APIs on ${r
       assert.equal(head.headers.get('content-length'), '10'); assert.equal(await head.text(), '');
       assert.match((await fetch(`${staticServer.base}/assets/sample.vtt`)).headers.get('content-type')!, /text\/vtt/);
       assert.match(body, /platypusword/);
+      assert.match(body, /data-sidebar-icon="lucide:book-open"/);
+      assert.match(body, /data-sidebar-icon="lucide:rocket"/);
+      assert.match(body, /data-sidebar-icon="tabler:api"/);
+      assert.match(body, /data-sidebar-icon="tabler:list-details"/);
+      assert.match(body, /--sidebar-icon-size:18px/);
+      assert.match(body, /class="sidebar-icon-dark"[^>]*src="\/docs\/assets\/authors\/docsy-agent.svg"/);
+      assert.match(body, /--sidebar-icon-light:url\(&quot;data:image\/svg\+xml/);
+      assert.doesNotMatch(body, /api\.iconify\.design|fonts\.googleapis|iconify-icon/);
       assert.match(body, /https:\/\/github.com\/example\/docs\/edit\/current\/en\/content\/guide.md/);
       assert.match(body, /Report a problem/);
       assert.match(body, /article-edit-button/); assert.match(body, /Fixture Writer/); assert.match(body, /Fixture Coding Agent/);
@@ -142,11 +156,13 @@ test(`generated template serves static variants and permission-aware APIs on ${r
     const fr = read(root, 'release/docs/versions/current/fr/guides/guide/index.html');
     assert.equal(read(root, 'release/404.html'), read(root, 'release/docs/404.html'));
     assert.match(fr, /lang="fr"/); assert.match(fr, /Guide français/); assert.match(fr, /Rechercher/); assert.match(fr, /hreflang="fr"/);
+    assert.match(fr, /data-sidebar-icon="lucide:rocket"/);
     const old = read(root, 'release/docs/versions/v1/fr/guides/guide/index.html');
     assert.match(old, /legacyfirefly/); assert.ok(!old.includes('Instructions françaises')); assert.match(old, /default language/);
     assert.doesNotMatch(old, /class="article-edit-button"|Fixture Writer/);
     assert.match(old, /Auteur inconnu/); assert.match(old, /--author-placeholder:url\([^)]*\/docs\/assets\/authors\/unknown.svg/);
     assert.match(read(root, 'release/docs/versions/current/ar/guides/guide/index.html'), /dir="rtl"/);
+    assert.match(read(root, 'release/docs/versions/current/ar/guides/guide/index.html'), /data-sidebar-icon="lucide:rocket"/);
     assert.match(read(root, 'release/docs/guides/guide/index.html'), /docsy-tabs/);
     assert.match(read(root, 'release/docs/versions/v1/en/widget-sdk/index.html'), /Legacy SDK client/);
     assert.match(read(root, 'release/docs/widget-sdk/index.html'), /quickstartneedle/);
@@ -198,6 +214,9 @@ test(`generated template serves static variants and permission-aware APIs on ${r
     config.localization.fallback = true; save();
 
     // A malformed source and broken links must stop the exact generated CLI.
+    config.navigation[0].items[0].icon = 'assets/missing-icon.svg'; save();
+    assert.throws(() => command(root, 'scripts/docsy.mjs', 'validate'), /navigation.0.items.0.icon: missing sidebar icon/);
+    config.navigation[0].items[0].icon = 'lucide:rocket'; save();
     write(root, 'content/guide.md', '## Known\n\n[missing](../absent)\n');
     assert.throws(() => command(root, 'scripts/docsy.mjs', 'validate'), /broken link/);
     write(root, 'content/guide.md', '## Known\n\n[missing](#absent)\n');
@@ -220,7 +239,9 @@ test(`generated template serves static variants and permission-aware APIs on ${r
     try {
       const auth = { 'x-docsy-tiers': 'pro' };
       const mediaPage = await fetch(`${server.base}/guides/guide`);
-      assert.match(await mediaPage.text(), /<dialog[^>]*data-images="false"[^>]*data-videos="true"/);
+      const mediaHtml = await mediaPage.text();
+      assert.match(mediaHtml, /<dialog[^>]*data-images="false"[^>]*data-videos="true"/);
+      assert.match(mediaHtml, /data-sidebar-icon="lucide:rocket"/); assert.match(mediaHtml, /data-sidebar-icon="tabler:api"/);
       for (const path of ['/search-index.json', '/agent/index.json', '/llms.txt', '/llms-full.txt']) {
         const response = await fetch(`${server.base}${path}`);
         assert.match(response.headers.get('cache-control') ?? '', /private.*no-store/);

@@ -6,6 +6,7 @@ import { execFileSync } from 'node:child_process';
 import { cpSync, mkdirSync, mkdtempSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
+import { createRequire } from 'node:module';
 import { dump, load } from 'js-yaml';
 import { z as v3 } from 'zod/v3';
 import { z as v4 } from 'zod/v4';
@@ -19,7 +20,9 @@ const read = (path) => readFileSync(join(project, path), 'utf8');
 const git = (...args) => execFileSync('git', args, { cwd: project, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 const hash = (bytes) => createHash('sha256').update(bytes).digest('hex');
 // Prove the actual behavior before asking an agent to explain it. Both shipped
-// API families come from the lockfile's real zod@3.25.76 package.
+// API families come from the installed package, including its legacy v3 export.
+// Historical checked-in evidence retains the version used for that earlier run.
+const zodPackage = `zod@${createRequire(import.meta.url)('zod/package.json').version}`;
 const oldError = v3.string().safeParse(42).error;
 const newError = v4.string().safeParse(42).error;
 assert.ok(Array.isArray(oldError.errors)); assert.equal(newError.errors, undefined); assert.ok(Array.isArray(newError.issues));
@@ -40,12 +43,12 @@ const beforeSource = readFileSync(resolve(root, 'node_modules/zod/src/v3/ZodErro
 const afterSource = readFileSync(resolve(root, 'node_modules/zod/src/v4/classic/errors.ts'));
 write('sources/zod-error.ts', beforeSource);
 cpSync(resolve(root, 'node_modules/zod/LICENSE'), join(project, 'sources/ZOD-LICENSE'));
-write('sources/upstream.json', JSON.stringify({ package: 'zod@3.25.76', api: 'v3', originalPath: 'src/v3/ZodError.ts', sha256: hash(beforeSource) }, null, 2));
+write('sources/upstream.json', JSON.stringify({ package: zodPackage, api: 'legacy v3 compatibility export', originalPath: 'src/v3/ZodError.ts', sha256: hash(beforeSource) }, null, 2));
 git('init', '-b', 'main'); git('config', 'user.name', 'Docsy Private Integration'); git('config', 'user.email', 'docsy@example.test'); git('add', '.'); git('commit', '-m', 'Document actual Zod v3 error behavior');
 const base = git('rev-parse', 'HEAD');
 write('sources/zod-error.ts', afterSource);
 write('sources/zod-core-errors.ts', readFileSync(resolve(root, 'node_modules/zod/src/v4/core/errors.ts')));
-write('sources/upstream.json', JSON.stringify({ package: 'zod@3.25.76', api: 'v4 compatibility export', originalPath: 'src/v4/classic/errors.ts', sha256: hash(afterSource), observed: 'error.errors is undefined; error.issues is an array' }, null, 2));
+write('sources/upstream.json', JSON.stringify({ package: zodPackage, api: 'v4', originalPath: 'src/v4/classic/errors.ts', sha256: hash(afterSource), observed: 'error.errors is undefined; error.issues is an array' }, null, 2));
 git('add', '.'); git('commit', '-m', 'Adopt real bundled Zod v4 error contract');
 const plan = planMaintenance(project, { base });
 assert.ok(plan.affectedArticles.some((entry) => entry.path === 'content/errors.md'));
@@ -54,5 +57,5 @@ runMaintenance(project, plan);
 assert.ok(read('.docsy/maintenance/validated.patch').includes('issues'));
 assert.ok(read(config.maintenance.breakingChangesFile || 'content/maintenance/breaking-changes.md').includes('issues'));
 assert.equal(JSON.parse(read('.docsy/maintenance/preview.json')).available, true);
-write('.docsy/maintenance/real-case.json', JSON.stringify({ published: false, remotePrCreated: false, project, package: 'zod@3.25.76', before: { path: 'src/v3/ZodError.ts', sha256: hash(beforeSource) }, after: { path: 'src/v4/classic/errors.ts', sha256: hash(afterSource) }, base, head: plan.head, actualRuntimeExamplePassed: true, renderedPreview: 'release/docs', review: '.docsy/maintenance/pr-body.md' }, null, 2));
+write('.docsy/maintenance/real-case.json', JSON.stringify({ published: false, remotePrCreated: false, project, package: zodPackage, before: { path: 'src/v3/ZodError.ts', sha256: hash(beforeSource) }, after: { path: 'src/v4/classic/errors.ts', sha256: hash(afterSource) }, base, head: plan.head, actualRuntimeExamplePassed: true, renderedPreview: 'release/docs', review: '.docsy/maintenance/pr-body.md' }, null, 2));
 console.log(`Real source → agent update → runtime assertion → validated build → review bundle passed. Nothing published. Review ${project}/.docsy/maintenance/pr-body.md`);

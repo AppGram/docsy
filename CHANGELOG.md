@@ -1,5 +1,12 @@
 # Changes
 
+## 0.4.5
+
+- YAML sidebar icons from locally bundled Lucide/Tabler packs or custom image assets, with dark variants, theme-aware masks, group/child icons and configurable sizing.
+- Validate pack names and custom asset paths; keep icon catalogues and rendering code off the browser.
+- Upgrade Zod to the patched 4.6.7 release for GHSA-mrhx-c7xc-m3w5, migrate schemas without changing nested YAML defaults, and add early-rejection security regressions for oversized collections.
+- Update the OpenAPI validator's transitive fast-uri dependency to 3.1.9, addressing URI normalization advisories without changing the validator's major version.
+
 ## 0.4.4
 
 - YAML-configurable, theme-aware 404 pages with centered/sidebar layouts, optional illustration, search and recovery links, plus locale copy overrides.

@@ -22,6 +22,7 @@ npm run validate
 | --- | --- |
 | `site` | Product identity, canonical origin, mount path, logo, and metadata |
 | `header` | Search copy, Markdown label, and an optional call to action |
+| `sidebar` | Navigation icon size; choose icons per group, item or child with `icon` |
 | `notFound` | 404 layout, copy, optional image, search and recovery links |
 | `eyebrow` | Page marker: custom SVG/image, original triangle, or none, plus icon size |
 | `theme` | Light or dark mode, colors, and system font stacks |
@@ -100,6 +101,47 @@ To maintain separate configurations without copying source code, select one at b
 ```bash
 DOCSY_CONFIG=docsy.enterprise.yaml npm run build
 ```
+
+## Sidebar icons: packs or your own assets
+
+Use a bundled **Lucide** or **Tabler** icon by its exact name, or bring your own image. Icons work on section headings, navigation links and their children. Items without `icon` stay text-only; `icon: false` explicitly disables an icon.
+
+```yaml
+sidebar:
+  iconSize: 16 # integer, 12–24 pixels
+
+navigation:
+  - title: Guides
+    icon: lucide:book-open # optional group icon
+    items:
+      - title: Getting started
+        href: /guides/getting-started
+        icon: lucide:rocket
+        items:
+          - title: Details
+            href: /guides/getting-started#details
+            icon: tabler:list-details
+      - title: API
+        href: /api/users
+        icon: { pack: tabler, name: api } # equivalent to tabler:api
+      - title: Branded guide
+        href: /guides/brand
+        icon:
+          src: assets/my-mark.svg # public/assets/my-mark.svg
+          darkSrc: assets/my-mark-dark.svg # optional contrasting variant
+          mode: image # preserve original colors (default)
+      - title: Monochrome guide
+        href: /guides/another-guide
+        icon: { src: assets/my-symbol.svg, mode: mask }
+```
+
+Register the referenced articles/API sections as usual; the example navigation is not a replacement for your site's content. The existing `icon: assets/my-mark.svg` shorthand still works. SVG, PNG, JPEG, WebP, AVIF, GIF and ICO assets are accepted. Local paths are relative to `public/` and Docsy adds `site.basePath`; do not put the base path in the YAML. Prefer local assets. Explicit HTTP(S) image URLs also work, but then the reader's browser contacts that host; cross-origin masks additionally depend on that host's CORS policy.
+
+Pack icons and custom `mode: mask` icons inherit the sidebar text color, including hover, active and dark-mode states. Custom `mode: image` preserves the image's own colors; use `darkSrc` for marks that would otherwise disappear on dark backgrounds. Decorative icons are hidden from assistive technology; the visible link text remains the accessible name. No icon font is used.
+
+Browse names in the [Lucide catalogue](https://lucide.dev/icons/) or [Tabler catalogue](https://tabler.io/icons). Docsy ships pinned local snapshots of both packs, including aliases—not a live connection to the catalogues. A name added upstream after that snapshot requires a package update or your own SVG. Other packs are not automatically downloaded: export an icon as an asset and use `src`. Only the icons you select are emitted into page markup as inert SVG masks; the full catalogues stay on the build/server side. The browser does not contact Iconify or a CDN. See `public/assets/icons/` for the accompanying license notices.
+
+Unknown pack names, missing icon names, unsafe URLs and missing local image files fail validation with their YAML paths. Run `npm run validate` after changing icons. Icons and sizes are shared across version/language contexts, while the existing `titles` translations continue to control labels.
 
 ## Configure the 404 page
 

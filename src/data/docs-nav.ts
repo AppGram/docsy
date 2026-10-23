@@ -1,28 +1,36 @@
 import { assetPath, defaultContext, docsPath, docsyConfig, parseDocsPath, type DocsContext } from '../config';
 import { findArticle } from '../lib/article-loader';
+import { resolveSidebarIcon, type SidebarIconView } from '../lib/sidebar-icons';
 
 export type DocsNavItem = {
   title: string;
   href: string;
-  icon?: string;
+  icon?: SidebarIconView;
   items?: DocsNavItem[];
 };
 
 export type DocsNavSection = {
   title: string;
+  icon?: SidebarIconView;
   items: DocsNavItem[];
+};
+
+const isAvailable = (href: string, context: DocsContext): boolean => {
+  const path = href.split(/[?#]/)[0];
+  return !path.startsWith('/guides/') || Boolean(findArticle(path.slice(8), context));
 };
 
 const normalizeItem = (item: (typeof docsyConfig.navigation)[number]['items'][number], context: DocsContext): DocsNavItem => ({
   title: item.titles?.[context.locale] ?? item.title,
   href: docsPath(item.href, context),
-  icon: item.icon ? assetPath(item.icon) : undefined,
-  items: item.items?.filter((child) => !child.href.startsWith('/guides/') || findArticle(child.href.slice(8), context)).map((child) => normalizeItem(child, context)),
+  icon: resolveSidebarIcon(item.icon, assetPath),
+  items: item.items?.filter((child) => isAvailable(child.href, context)).map((child) => normalizeItem(child, context)),
 });
 
 export const getDocsNav = (context: DocsContext = defaultContext): DocsNavSection[] => docsyConfig.navigation.map((section) => ({
   title: section.titles?.[context.locale] ?? section.title,
-  items: section.items.filter((item) => !item.href.startsWith('/guides/') || findArticle(item.href.slice(8), context)).map((item) => normalizeItem(item, context)),
+  icon: resolveSidebarIcon(section.icon, assetPath),
+  items: section.items.filter((item) => isAvailable(item.href, context)).map((item) => normalizeItem(item, context)),
 })).filter((section) => section.items.length);
 export const docsNav = getDocsNav();
 

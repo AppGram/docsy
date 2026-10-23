@@ -22,7 +22,7 @@ export const maintenanceSchema = z.object({
     command: z.array(z.string().min(1).refine((value) => !/[\x00\r\n]/.test(value), 'Command arguments must not contain control characters.')).min(1).max(30),
     timeoutMs: z.number().int().min(100).max(120_000).default(30_000),
   })).max(20).default([]),
-}).default({});
+}).prefault({});
 
 export const matchesGlob = (path, pattern) => {
   let expression = '^';

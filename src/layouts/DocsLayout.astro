@@ -7,6 +7,7 @@ import '../styles/media-viewer.css';
 import '../styles/heading-links.css';
 import '../styles/article-credits.css';
 import MediaViewer from '../components/docs/MediaViewer.astro';
+import SidebarIcon from '../components/docs/SidebarIcon.astro';
 import { getDocsNav, isNavItemActive } from '../data/docs-nav';
 import ContextSwitcher from '../components/docs/ContextSwitcher.astro';
 import SEO from '../components/SEO.astro';
@@ -264,7 +265,7 @@ const themeStyle = [
         <nav aria-label={message(context, 'documentation')}>
           {docsNav.map((section) => (
             <div class="docs-sidebar-section">
-              <p class="docs-sidebar-title">{section.title}</p>
+              <p class="docs-sidebar-title"><SidebarIcon icon={section.icon} />{section.title}</p>
               <ul>
                 {section.items.map((item) => {
                   const active = isNavItemActive(item, pathname);
@@ -274,7 +275,7 @@ const themeStyle = [
                         href={item.href}
                         class:list={['docs-sidebar-link', active && 'is-active']}
                       >
-                        {item.icon && <img class="docs-sidebar-icon" src={item.icon} alt="" width="16" height="16" />}
+                        <SidebarIcon icon={item.icon} />
                         <span>{item.title}</span>
                       </a>
                       {item.items && active && (
@@ -285,7 +286,7 @@ const themeStyle = [
                                 href={sub.href}
                                 class:list={['docs-sidebar-link is-sub', sub.href === pathname && 'is-active']}
                               >
-                                {sub.title}
+                                <SidebarIcon icon={sub.icon} /><span>{sub.title}</span>
                               </a>
                             </li>
                           ))}
@@ -905,6 +906,9 @@ const themeStyle = [
       }
 
       .docs-sidebar-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
         margin: 0 8px 8px;
         color: var(--soft-muted);
         font-family: var(--font-display);
@@ -947,14 +951,6 @@ const themeStyle = [
       .docs-sidebar-link.is-sub {
         padding-inline-start: 12px;
         font-size: 13px;
-      }
-
-      .docs-sidebar-icon {
-        width: 16px;
-        height: 16px;
-        display: block;
-        object-fit: contain;
-        flex-shrink: 0;
       }
 
       .docs-sidebar-sub {

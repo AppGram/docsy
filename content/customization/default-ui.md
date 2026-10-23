@@ -1,5 +1,7 @@
 Every generated project starts with Docsy's default interface: responsive sidebar navigation with remembered scroll position, search, Markdown export controls, content cards, API and SDK layouts, and an on-page heading rail. The interface is normal Astro source in the generated repository.
 
+Sidebar icons are also YAML-configurable: choose `icon: lucide:book-open` or `icon: tabler:api`, or use your own image with an optional dark-mode variant. [Configure sidebar icons](/guides/tutorials/yaml-configuration#sidebar-icons-packs-or-your-own-assets).
+
 ## Configure branding in YAML
 
 Routine brand changes belong in `docsy.config.yaml`:
