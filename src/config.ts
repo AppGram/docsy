@@ -66,6 +66,19 @@ const authorAvatarSchema = z.string().trim().min(1).refine((value) => {
   if (/^[a-z][a-z0-9+.-]*:/i.test(value)) return httpUrlSchema.safeParse(value).success;
   return !/^[^/]*:/.test(value);
 }, 'Use a local asset or HTTP(S) avatar URL');
+const recoveryHrefSchema = z.string().trim().min(1).refine((value) => {
+  let decoded: string;
+  try { decoded = decodeURIComponent(value); } catch { return false; }
+  if (/[\u0000-\u0020<>"\\]/.test(decoded) || decoded.startsWith('//')) return false;
+  if (value.startsWith('/')) return !decoded.split(/[/?#]/).includes('..');
+  return httpUrlSchema.safeParse(value).success;
+}, 'Use a docs-root path beginning with / or an HTTP(S) URL');
+const recoveryActionSchema = z.object({ label: z.string().min(1), href: recoveryHrefSchema });
+const notFoundTranslationSchema = z.object({
+  eyebrow: z.string().optional(), title: z.string().min(1).optional(), description: z.string().optional(),
+  searchLabel: z.string().min(1).optional(), primaryActionLabel: z.string().min(1).optional(),
+  secondaryActionLabel: z.string().min(1).optional(), linksHeading: z.string().optional(),
+});
 const authorIdSchema = z.string().regex(/^[a-z0-9][a-z0-9_-]*$/);
 const authorIdsSchema = z.array(authorIdSchema).refine((ids) => new Set(ids).size === ids.length, 'Author references must be unique').default([]);
 const articleDateSchema = z.preprocess((value) => value instanceof Date && Number.isFinite(value.getTime()) ? value.toISOString().slice(0, 10) : value,
@@ -198,6 +211,21 @@ const configSchema = z.object({
     searchPlaceholder: z.string().default('Search docs, SDKs, and API endpoints'),
     llmLabel: z.string().default('LLM Docs'),
     cta: actionSchema.optional(),
+  }).default({}),
+  notFound: z.object({
+    layout: z.enum(['centered', 'docs']).default('centered'),
+    eyebrow: z.string().default('Page not found'),
+    title: z.string().min(1).default('This page isn’t here.'),
+    description: z.string().default('The link may have changed, or the page may have moved. Let’s get you back to the documentation.'),
+    showCode: z.boolean().default(true),
+    showSearch: z.boolean().default(true),
+    searchLabel: z.string().min(1).default('Search documentation'),
+    primaryAction: recoveryActionSchema.default({ label: 'Back to docs', href: '/' }),
+    secondaryAction: recoveryActionSchema.optional(),
+    image: z.object({ src: authorAvatarSchema, alt: z.string().default('') }).optional(),
+    linksHeading: z.string().default('A good place to start'),
+    links: z.array(recoveryActionSchema.extend({ description: z.string().optional() })).max(6).default([]),
+    translations: z.record(notFoundTranslationSchema).default({}),
   }).default({}),
   footer: z.object({
     prefix: z.string().default('Docsy provided by'),
@@ -357,7 +385,7 @@ const configSchema = z.object({
   if (Object.keys(aliases).length !== Object.keys(config.redirects).length) context.addIssue({ code: 'custom', path: ['redirects'], message: 'Redirect aliases must be unique after trailing-slash normalization.' });
   for (const [from, to] of Object.entries(config.redirects)) {
     if (!route(from) || !route(to) || from === '/' || from.replace(/\/$/, '') === to.replace(/\/$/, '')) context.addIssue({ code: 'custom', path: ['redirects', from], message: 'Redirects require distinct, local canonical paths (no query, fragment or traversal).' });
-    if (/^\/(?:assets|_astro|agent|format-md)(?:\/|$)|^\/(?:search-index\.json|llms\.txt|llms-full\.txt|locked)\/?$/.test(from)) context.addIssue({ code: 'custom', path: ['redirects', from], message: 'Redirects cannot shadow asset, gate or machine-readable routes.' });
+    if (/^\/(?:assets|_astro|agent|format-md)(?:\/|$)|^\/(?:search-index\.json|llms\.txt|llms-full\.txt|locked|404(?:\.html)?)\/?$/.test(from)) context.addIssue({ code: 'custom', path: ['redirects', from], message: 'Redirects cannot shadow asset, gate, error or machine-readable routes.' });
     const visited = new Set([canonical(from)]); let next: string | undefined = canonical(to);
     while (next && aliases[next]) {
       if (visited.has(next)) { context.addIssue({ code: 'custom', path: ['redirects', from], message: 'Redirect cycle detected.' }); break; }

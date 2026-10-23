@@ -17,7 +17,7 @@ export async function getStaticPaths() {
 
 const source = (Astro.props as { source?: ArticleConfig }).source
   ?? findArticle(Astro.params.slug ?? '');
-if (!source) return Astro.redirect(docsPath(), 302);
+if (!source) return Astro.rewrite(docsPath('/404'));
 const article = (Astro.props as { article?: ArticleDoc }).article ?? await loadArticle(source);
 const toc = article.headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
 ---

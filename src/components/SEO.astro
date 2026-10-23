@@ -89,7 +89,7 @@ const jsonLd = (value: unknown) => JSON.stringify(value).replace(/</g, '\\u003c'
 
 <title>{title}</title>
 <meta name="description" content={description} />
-<link rel="canonical" href={canonicalUrl} />
+{!noindex && <link rel="canonical" href={canonicalUrl} />}
 {noindex && <meta name="robots" content="noindex, nofollow" />}
 
 <link rel="icon" href={assetPath(docsyConfig.site.favicon ?? docsyConfig.site.logo)} />

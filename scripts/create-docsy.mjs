@@ -363,6 +363,17 @@ const makeConfig = ({ projectName, description, basePath, accessMode, apiBase, c
       icon: 'assets/docsy-logo.svg',
       size: 14,
     },
+    notFound: {
+      layout: 'centered',
+      eyebrow: 'Page not found',
+      title: 'This page isn’t here.',
+      description: 'The link may have changed, or the page may have moved. Let’s get you back to the documentation.',
+      showCode: true,
+      showSearch: true,
+      searchLabel: 'Search documentation',
+      primaryAction: { label: 'Back to docs', href: '/' },
+      links: [{ label: 'Getting started', href: '/guides/getting-started' }],
+    },
     theme: {
       mode: 'light',
       colors: {

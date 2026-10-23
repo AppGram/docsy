@@ -5,7 +5,7 @@ import { API_SECTIONS, filterEndpoints, loadSwagger } from '../../lib/swagger-lo
 export const prerender = !isServer;
 export function getStaticPaths() { return API_SECTIONS.map((section) => ({ params: { section: section.section } })); }
 const section = API_SECTIONS.find((item) => item.section === Astro.params.section);
-if (!section) return Astro.redirect(docsPath(), 302);
+if (!section) return Astro.rewrite(docsPath('/404'));
 const spec = await loadSwagger();
 ---
 <APIReferenceView section={section} endpoints={filterEndpoints(spec, section)} apiVersion={spec?.info?.version} />

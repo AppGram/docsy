@@ -1,5 +1,11 @@
 # Changes
 
+## 0.4.4
+
+- YAML-configurable, theme-aware 404 pages with centered/sidebar layouts, optional illustration, search and recovery links, plus locale copy overrides.
+- Missing runtime article/API/SDK routes now return a real 404 instead of redirecting to the overview. Static previews serve the branded error document with status 404.
+- Keep 404 recovery links usable when translations are unavailable, document static-host error routing, and exclude generated bundles from source validation.
+
 ## 0.4.3
 
 - Render Mermaid fences in Markdown/MDX, including UML class, sequence and state diagrams, with local assets, existing fonts, theme switching, copyable source and fullscreen zoom/pan.

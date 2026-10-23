@@ -1,5 +1,5 @@
 import { defineMiddleware } from 'astro:middleware';
-import { docsPath, docsyConfig, isServer } from './config';
+import { defaultContext, docsPath, docsyConfig, isServer, parseDocsPath } from './config';
 import {
   accessPathForRequest,
   evaluateAccess,
@@ -34,9 +34,11 @@ const privateResponse = (response: Response): Response => {
 };
 
 export const onRequest = defineMiddleware(async (context, next) => {
+  // Preserve the initial recognized context across Astro's 404 rewrites.
+  if (isServer) context.locals.docsyNotFoundContext ??= parseDocsPath(context.url.pathname)?.context ?? defaultContext;
   if (!isServer || context.isPrerendered) return next();
   const relativePath = relativeDocsPath(context.url.pathname);
-  if (relativePath === null || isPublicAsset(relativePath) || relativePath === '/locked') return next();
+  if (relativePath === null || isPublicAsset(relativePath) || relativePath === '/locked' || relativePath === '/404' || relativePath === '/404.html') return next();
 
   // Resolve explicit aliases before broad SDK/article routes claim the request.
   // Authorization follows the destination, so aliases cannot bypass its gate.

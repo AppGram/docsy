@@ -25,6 +25,7 @@ function site() {
   const config: any = {
     site: { name: 'Test Docs', title: 'Test Docs', description: 'Integration docs', origin: 'https://docs.example.test', basePath: '/docs', homeUrl: '/docs/', logo: 'assets/docsy-logo.png', logoDark: 'assets/docsy-logo-dark.png' },
     home: { title: 'Integration docs', description: 'Versions, articles and agent retrieval', primaryAction: { label: 'Read', href: '/guides/guide' }, translations: { fr: { title: 'Documentation française' } } },
+    notFound: { title: 'The fixture page is missing.', description: 'Try another fixture page.', links: [{ label: 'Guide', href: '/guides/guide' }], translations: { fr: { title: 'Page introuvable', primaryActionLabel: 'Accueil' } } },
     versions: { default: 'current', items: [{ id: 'current', label: 'Current' }, { id: 'v1', label: 'Version 1', status: 'deprecated' }] },
     localization: { defaultLocale: 'en', fallback: true, locales: [{ code: 'en', label: 'English' }, { code: 'fr', label: 'Français' }, { code: 'ar', label: 'العربية', dir: 'rtl' }], messages: { fr: { language: 'Langue', guides: 'Guides', onThisPage: 'Sur cette page', searchLabel: 'Rechercher', unknownAuthor: 'Auteur inconnu' } } },
     content: { diagrams: { protected: { format: 'plantuml', image: 'content/private.svg', source: 'content/private.puml', alt: 'classifieddiagramneedle UML review' } }, snippets: { shared: 'content/shared.md' }, articles: [
@@ -120,7 +121,16 @@ test(`generated template serves static variants and permission-aware APIs on ${r
       const markdown = await fetch(`${staticServer.base}/format-md/guides/guide`);
       assert.match(markdown.headers.get('content-type')!, /text\/markdown/);
       assert.match(await markdown.text(), /platypusword/);
-      assert.equal((await fetch(`${staticServer.base}/not-a-document`)).status, 404);
+      const missing = await fetch(`${staticServer.base}/guides/not-a-document?secret=never-render-this`);
+      assert.equal(missing.status, 404); assert.match(missing.headers.get('content-type')!, /text\/html/);
+      const missingHtml = await missing.text();
+      assert.match(missingHtml, /The fixture page is missing/); assert.match(missingHtml, /noindex/);
+      assert.match(missingHtml, /href="\/docs"/); assert.match(missingHtml, /href="\/docs\/guides\/guide"/);
+      assert.match(missingHtml, /data-not-found-search/); assert.doesNotMatch(missingHtml, /id="docs-sidebar"|never-render-this/);
+      const missingHead = await fetch(`${staticServer.base}/not-a-document`, { method: 'HEAD' });
+      assert.equal(missingHead.status, 404); assert.equal(await missingHead.text(), '');
+      const missingAsset = await fetch(`${staticServer.base}/assets/no-file.png`);
+      assert.equal(missingAsset.status, 404); assert.doesNotMatch(await missingAsset.text(), /not-found-title/);
       const mdx = await fetch(`${staticServer.base}/guides/native`);
       assert.equal(mdx.status, 200); const unknown = await mdx.text(); assert.match(unknown, /docsy-tabs/);
       assert.match(unknown, /Unknown author/); assert.match(unknown, /class="article-author-placeholder"/);
@@ -130,6 +140,7 @@ test(`generated template serves static variants and permission-aware APIs on ${r
       assert.deepEqual((await unknownJson.json()).authorship.authors, []);
     } finally { await staticServer.stop(); }
     const fr = read(root, 'release/docs/versions/current/fr/guides/guide/index.html');
+    assert.equal(read(root, 'release/404.html'), read(root, 'release/docs/404.html'));
     assert.match(fr, /lang="fr"/); assert.match(fr, /Guide français/); assert.match(fr, /Rechercher/); assert.match(fr, /hreflang="fr"/);
     const old = read(root, 'release/docs/versions/v1/fr/guides/guide/index.html');
     assert.match(old, /legacyfirefly/); assert.ok(!old.includes('Instructions françaises')); assert.match(old, /default language/);
@@ -155,10 +166,16 @@ test(`generated template serves static variants and permission-aware APIs on ${r
     assert.equal(JSON.parse(read(root, 'release/docs/agent/query.json')).queryAvailable, false);
 
     config.content.media = { enabled: false };
+    config.notFound.layout = 'docs'; config.notFound.showCode = false; config.notFound.showSearch = false;
+    config.notFound.image = { src: 'assets/authors/writer.svg', alt: 'A fixture illustration' };
     config.reader.showByline = false;
     config.reader.editPlacement = 'header'; config.reader.editStyle = 'button';
     config.authors.writer.name = 'Fixture Writer </script><script data-injected>bad()</script>';
     config.localization.fallback = false; save(); command(root, 'scripts/docsy.mjs', 'build');
+    const custom404 = read(root, 'dist/404.html');
+    assert.match(custom404, /id="docs-sidebar"/); assert.match(custom404, /data-not-found-layout="docs"/);
+    assert.match(custom404, /class="not-found-image"[^>]*src="\/docs\/assets\/authors\/writer.svg"/);
+    assert.doesNotMatch(custom404, /<p[^>]*class="not-found-code"|<button[^>]*data-not-found-search/);
     assert.ok(!read(root, 'release/docs/guides/guide/index.html').includes('<dialog class="docs-media-viewer"'));
     const hiddenCredits = read(root, 'release/docs/guides/guide/index.html');
     assert.ok(!hiddenCredits.includes('<div class="article-credits"'));
@@ -235,6 +252,17 @@ test(`generated template serves static variants and permission-aware APIs on ${r
       response = await fetch(`${server.base}/old-private/`, { redirect: 'manual' }); assert.equal(response.status, 302); assert.match(response.headers.get('location')!, /\/docs\/locked/);
       response = await fetch(`${server.base}/old-private/`, { redirect: 'manual', headers: auth }); assert.equal(response.status, 301); assert.equal(response.headers.get('location'), '/docs/guides/private');
       response = await fetch(`${server.base}/agent/pages/not-a-document.json`); assert.equal(response.status, 404);
+      assert.doesNotMatch(await response.text(), /not-found-title/);
+      for (const path of ['/not-a-sdk', '/guides/not-a-document', '/api/not-a-section', '/nested/missing', '/versions/missing/en/guides/missing']) {
+        const missing = await fetch(`${server.base}${path}`, { redirect: 'manual' });
+        assert.equal(missing.status, 404, `${path} must not redirect or return 200`);
+        assert.match(await missing.text(), /The fixture page is missing/);
+      }
+      const missingFrench = await fetch(`${server.base}/versions/current/fr/guides/missing`);
+      assert.equal(missingFrench.status, 404); const missingFrenchHtml = await missingFrench.text();
+      assert.match(missingFrenchHtml, /lang="fr"/); assert.match(missingFrenchHtml, /Page introuvable/);
+      assert.match(missingFrenchHtml, /href="\/docs\/versions\/current\/fr"/);
+      assert.doesNotMatch(missingFrenchHtml, /classifiedsecretword|classifieddiagramneedle|PrivateAuthorIdentity/);
     } finally { await server.stop(); }
 
     // agent.query also enables the runtime with public docs, independently of lock mode.

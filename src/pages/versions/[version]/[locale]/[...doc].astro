@@ -20,14 +20,14 @@ export function getStaticPaths() {
   ].map((doc) => ({ params: { ...context, doc, version: context.version, locale: context.locale } })));
 }
 const context = allContexts.find((item) => item.version === Astro.params.version && item.locale === Astro.params.locale);
-if (!context) return new Response('Not found', { status: 404 });
+if (!context) return Astro.rewrite(docsPath('/404'));
 const path = `/${Astro.params.doc ?? ''}`;
 if (isDefaultContext(context)) return Astro.redirect(docsPath(path), 301);
 const source = path.startsWith('/guides/') ? findArticle(path.slice(8), context) : undefined;
 const article = source ? await loadArticle(source) : undefined;
 const section = path.startsWith('/api/') ? API_SECTIONS.find((item) => item.section === path.slice(5)) : undefined;
 const sdk = getSdkSources().find((item) => `/${item.slug}` === path);
-if (path !== '/' && !article && !section && !sdk) return new Response('Not found', { status: 404 });
+if (path !== '/' && !article && !section && !sdk) return Astro.rewrite(docsPath('/404'));
 const spec = section ? await loadSwagger(context.version) : null;
 const home = { ...docsyConfig.home, ...docsyConfig.home.translations[context.locale] };
 ---

@@ -69,6 +69,8 @@ try {
   checks.push('Installed docsy bin generated the editable project, version provenance, private project manifest and opt-in deployment workflows');
 
   const configPath = join(site, 'docsy.config.yaml'), config = load(read(configPath));
+  config.notFound.title = 'Package 404 recovery';
+  config.notFound.links = [{ label: 'Installed handbook', href: '/guides/package-handbook' }];
   const signal = 'tarball-onboarding-proof', privateSignal = 'tarball-private-proof';
   write(join(site, 'content/package-handbook.mdx'), `## Bring your own content\n\n<Note title="Installed from the tarball">${signal}</Note>\n\n<Drawio src="architecture" />\n\n<PlantUml src="uml" />\n\n\`\`\`mermaid Tarball sequence\nsequenceDiagram\nReader->>Docsy: Read installed docs\n\`\`\`\n\n\`\`\`typescript\nconst tarball = true;\n\`\`\`\n`);
   write(join(site, 'content/architecture.svg'), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 80"><rect width="160" height="80" fill="white"/><text x="10" y="40">Docsy architecture</text></svg>');
@@ -106,9 +108,15 @@ try {
     assert.match(JSON.stringify(json), /sequenceDiagram/); assert.match(JSON.stringify(json), /Editable PlantUML/);
     assert.match(await (await fetch(`${server.base}/format-md/guides/package-handbook`)).text(), new RegExp(signal));
     const css = html.match(/href="([^"]+\.css)"/); assert.ok(css); assert.equal((await fetch(new URL(css[1], server.base))).status, 200);
+    const missing = await fetch(`${server.base}/guides/package-missing`, { redirect: 'manual' });
+    assert.equal(missing.status, 404); assert.match(missing.headers.get('content-type'), /text\/html/);
+    const missingHtml = await missing.text(); assert.match(missingHtml, /Package 404 recovery/);
+    assert.match(missingHtml, /href="\/handbook\/guides\/package-handbook"/); assert.match(missingHtml, /noindex/);
+    assert.doesNotMatch(search, /Package 404 recovery/);
   } finally { await server.stop(); }
   checks.push('Actual static server: article, generated API, local avatar/CSS, full-text search and Markdown/JSON exports');
   checks.push('Installed draw.io component renders its SVG and exact source download; agent exports retain the description without binary payloads');
+  checks.push('Installed static 404 page honors YAML copy and mounted recovery links, returns 404, and stays out of search');
 
   run(site, 'npm', ['run', 'docsy', '--', 'create', join(workspace, 'second'), '--yes', '--no-install']);
   assert.equal(JSON.parse(read(join(workspace, 'second/.docsy/template.json'))).templateVersion, artifact.version);
@@ -128,8 +136,12 @@ try {
     const allowed = await fetch(`${server.base}/agent/pages/guides/private.json`, { headers: auth }); assert.equal(allowed.status, 200); assert.match((await allowed.json()).markdown, new RegExp(privateSignal));
     assert.equal((await (await fetch(`${server.base}/agent/query.json?q=${privateSignal}`)).json()).count, 0);
     assert.ok((await (await fetch(`${server.base}/agent/query.json?q=${privateSignal}`, { headers: auth })).json()).count > 0);
+    const missing = await fetch(`${server.base}/api/package-missing`, { redirect: 'manual' });
+    assert.equal(missing.status, 404); const missingHtml = await missing.text();
+    assert.match(missingHtml, /Package 404 recovery/); assert.doesNotMatch(missingHtml, new RegExp(privateSignal));
   } finally { await server.stop(); }
   checks.push('Actual standalone server: anonymous HTML/Markdown/JSON/search denied or filtered; authorized article and live agent query succeed');
+  checks.push('Installed standalone 404 page returns 404 without exposing protected article content');
   assert.equal(sha256(tarball), artifact.sha256, 'Package changed during testing');
   const report = { result: 'passed', commit: process.env.GITHUB_SHA ?? execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim(), artifact, checks, node: process.version, npm: run(consumer, 'npm', ['--version']).trim() };
   write(join(output, 'package-test.json'), JSON.stringify(report, null, 2) + '\n');

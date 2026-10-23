@@ -56,6 +56,21 @@ if (existsSync(serverEntry)) {
     if (existsSync(file) && statSync(file).isDirectory()) file = join(file, 'index.html');
 
     if (!existsSync(file) || !statSync(file).isFile()) {
+      const errorPage = join(staticRoot, '404.html');
+      const isDocument = !/\.[^/]+$/.test(pathname) && !/\/(?:agent|format-md)(?:\/|$)/.test(pathname);
+      if (isDocument && existsSync(errorPage)) {
+        response.writeHead(404, {
+          'Content-Type': 'text/html; charset=utf-8',
+          'X-Content-Type-Options': 'nosniff',
+          'Content-Length': statSync(errorPage).size,
+          'Cache-Control': 'no-store',
+        });
+        if (request.method === 'HEAD') { response.end(); return; }
+        const stream = createReadStream(errorPage);
+        response.once('close', () => stream.destroy());
+        stream.on('error', () => response.destroy()).pipe(response);
+        return;
+      }
       response.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }).end('Not found');
       return;
     }

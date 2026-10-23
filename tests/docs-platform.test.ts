@@ -46,6 +46,38 @@ test('YAML heading copy controls default on and can be disabled', () => {
   config.reader = { headingLinks: false }; write(root, 'docsy.config.yaml', dump(config));
   assert.equal(JSON.parse(run(root, read)), false);
 });
+test('YAML 404 defaults, layout, image and translated copy are configurable', () => {
+  const { root, config } = fixture();
+  const read = `import {docsyConfig} from ${moduleUrl('src/config.ts')}; console.log(JSON.stringify(docsyConfig.notFound));`;
+  const defaults = JSON.parse(run(root, read));
+  assert.equal(defaults.layout, 'centered'); assert.equal(defaults.showCode, true); assert.equal(defaults.showSearch, true);
+  assert.deepEqual(defaults.primaryAction, { label: 'Back to docs', href: '/' }); assert.deepEqual(defaults.links, []);
+  config.notFound = { layout: 'docs', title: 'Lost?', showCode: false, showSearch: false, image: { src: 'assets/error.svg', alt: 'Custom art' }, secondaryAction: { label: 'Support', href: 'https://example.test/support' }, translations: { fr: { title: 'Page introuvable', primaryActionLabel: 'Accueil' } } };
+  write(root, 'docsy.config.yaml', dump(config)); const custom = JSON.parse(run(root, read));
+  assert.equal(custom.layout, 'docs'); assert.equal(custom.showCode, false); assert.equal(custom.showSearch, false);
+  assert.equal(custom.image.src, 'assets/error.svg'); assert.equal(custom.translations.fr.title, 'Page introuvable');
+  config.notFound.layout = 'random'; write(root, 'docsy.config.yaml', dump(config));
+  assert.throws(() => run(root, read), /notFound.layout/);
+});
+test('404 actions reject executable/protocol-relative URLs and bound the recovery list', () => {
+  const { root, config } = fixture();
+  const read = `import ${moduleUrl('src/config.ts')};`;
+  for (const href of ['javascript:alert(1)', 'data:text/html,bad', '//evil.test', '/\\evil.test', '/bad\npath', '/%5c%5cevil.test', '/%2fexample.test', '/%2e%2e/outside']) {
+    config.notFound = { primaryAction: { label: 'Unsafe', href } }; write(root, 'docsy.config.yaml', dump(config));
+    assert.throws(() => run(root, read), /notFound.primaryAction.href/);
+  }
+  config.notFound = { image: { src: 'javascript:alert(1)' } }; write(root, 'docsy.config.yaml', dump(config));
+  assert.throws(() => run(root, read), /notFound.image.src/);
+  config.notFound = { links: Array.from({ length: 7 }, () => ({ label: 'Home', href: '/' })) }; write(root, 'docsy.config.yaml', dump(config));
+  assert.throws(() => run(root, read), /notFound.links/);
+  config.notFound = {}; config.redirects = { '/404': '/guides/guide' }; write(root, 'docsy.config.yaml', dump(config));
+  assert.throws(() => run(root, read), /cannot shadow/);
+});
+test('404 recovery links retain available contexts and fall back for untranslated articles', () => {
+  const { root } = fixture({ localization: { defaultLocale: 'en', fallback: false, locales: [{ code: 'en', label: 'English' }, { code: 'fr', label: 'Français' }] } });
+  const code = `import {notFoundHref} from ${moduleUrl('src/lib/not-found.ts')}; const context={version:'current',locale:'fr'}; console.log(JSON.stringify([notFoundHref('/guides/guide#details',context),notFoundHref('/',context),notFoundHref('HTTPS://support.example.test',context)]));`;
+  assert.deepEqual(JSON.parse(run(root, code)), ['/docs/guides/guide#details', '/docs/versions/current/fr', 'HTTPS://support.example.test']);
+});
 test('YAML media viewer defaults and individual switches are validated', () => {
   const { root, config } = fixture();
   const read = `import {docsyConfig} from ${moduleUrl('src/config.ts')}; console.log(JSON.stringify(docsyConfig.content.media));`;

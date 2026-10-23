@@ -21,6 +21,7 @@ interface Props {
   description?: string;
   eyebrow?: string;
   wide?: boolean;
+  navigation?: boolean;
   image?: string;
   imageAlt?: string;
   type?: 'website' | 'article' | 'product';
@@ -38,6 +39,7 @@ const {
   description = docsyConfig.site.description,
   eyebrow,
   wide = false,
+  navigation = true,
   image,
   imageAlt,
   type,
@@ -243,7 +245,7 @@ const themeStyle = [
           {docsyConfig.header.cta && <a class="docs-topbar-cta" href={docsPath(docsyConfig.header.cta.href)}>{docsyConfig.header.cta.label}</a>}
         </div>
 
-        <button
+        {navigation && <button
           type="button"
           class="docs-mobile-toggle"
           id="docs-mobile-toggle"
@@ -253,12 +255,12 @@ const themeStyle = [
           data-close-label={message(context, 'closeNavigation')}
         >
           <span></span><span></span><span></span>
-        </button>
+        </button>}
       </div>
     </header>
 
-    <div class:list={['docs-shell', wide && 'is-wide']}>
-      <aside class="docs-sidebar" id="docs-sidebar">
+    <div class:list={['docs-shell', wide && 'is-wide', !navigation && 'is-centered']}>
+      {navigation && <aside class="docs-sidebar" id="docs-sidebar">
         <nav aria-label={message(context, 'documentation')}>
           {docsNav.map((section) => (
             <div class="docs-sidebar-section">
@@ -296,7 +298,7 @@ const themeStyle = [
             </div>
           ))}
         </nav>
-      </aside>
+      </aside>}
 
       <main class="docs-content">
         {currentDocument && <ContextSwitcher context={context} />}
@@ -973,6 +975,18 @@ const themeStyle = [
         padding: 40px 0 96px;
         min-width: 0;
         max-width: 820px;
+      }
+
+      .docs-shell.is-centered {
+        display: block;
+        max-width: 1400px;
+      }
+
+      .docs-shell.is-centered .docs-content {
+        max-width: 760px;
+        margin: 0 auto;
+        padding-top: clamp(48px, 9vh, 100px);
+        min-height: calc(100svh - 140px);
       }
 
       /* Guarantee no direct child of the docs-content escapes horizontally.

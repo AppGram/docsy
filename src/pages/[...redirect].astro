@@ -6,6 +6,6 @@ export function getStaticPaths() {
 }
 const from = `/${(Astro.params.redirect ?? '').replace(/^\/+|\/+$/g, '')}`;
 const target = docsyConfig.redirects[from] ?? docsyConfig.redirects[`${from}/`];
-if (!target) return new Response('Not found', { status: 404 });
+if (!target) return Astro.rewrite(docsPath('/404'));
 return Astro.redirect(docsPath(target), 301);
 ---

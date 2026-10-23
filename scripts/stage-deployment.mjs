@@ -22,6 +22,9 @@ mkdirSync(target, { recursive: true });
 cpSync(resolve(root, 'dist'), target, { recursive: true });
 
 if (segment) {
+  // Static hosts select the error document at their web root, while its
+  // absolute asset/recovery URLs still include the configured docs mount.
+  if (existsSync(resolve(target, '404.html'))) cpSync(resolve(target, '404.html'), resolve(release, '404.html'));
   writeFileSync(resolve(release, 'index.html'), `<!doctype html>
 <html lang="en">
   <head>

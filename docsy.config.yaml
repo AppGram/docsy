@@ -17,6 +17,42 @@ header:
   searchLabel: Search documentation
   searchPlaceholder: Search Docsy guides and reference
   llmLabel: Markdown
+notFound:
+  layout: centered # centered, or docs to keep the left sidebar
+  eyebrow: Page not found
+  title: This page isn’t here.
+  description: The link may have changed, or the page may have moved. Let’s get you back to the documentation.
+  showCode: true
+  showSearch: true
+  searchLabel: Search documentation
+  primaryAction:
+    label: Back to docs
+    href: /
+  # Optional secondaryAction: { label: Contact us, href: https://example.com/support }
+  # Optional image: { src: assets/not-found.svg, alt: A custom illustration }
+  linksHeading: A good place to start
+  links:
+    - label: Getting started
+      href: /guides/getting-started
+      description: Create your own documentation portal.
+    - label: YAML configuration
+      href: /guides/tutorials/yaml-configuration
+      description: Make Docsy yours, one setting at a time.
+  translations:
+    es:
+      eyebrow: Página no encontrada
+      title: Esta página no está aquí.
+      description: Puede que el enlace haya cambiado o que la página se haya movido. Vuelve a la documentación o utiliza la búsqueda.
+      searchLabel: Buscar en la documentación
+      primaryActionLabel: Volver a la documentación
+      linksHeading: Un buen lugar para empezar
+    fr:
+      eyebrow: Page introuvable
+      title: Cette page est introuvable.
+      description: Le lien a peut-être changé ou la page a été déplacée. Retrouvez la documentation ou utilisez la recherche.
+      searchLabel: Rechercher dans la documentation
+      primaryActionLabel: Retour à la documentation
+      linksHeading: Un bon point de départ
 footer:
   prefix: Docsy provided by
   label: AppGram

@@ -1,0 +1,71 @@
+---
+import DocsLayout from '../layouts/DocsLayout.astro';
+import { assetPath, defaultContext, docsyConfig, isServer, parseDocsPath } from '../config';
+import { notFoundHref } from '../lib/not-found';
+
+export const prerender = !isServer;
+Astro.response.status = 404;
+const context = Astro.locals.docsyNotFoundContext ?? parseDocsPath(Astro.originPathname)?.context ?? defaultContext;
+const settings = docsyConfig.notFound;
+const copy = { ...settings, ...settings.translations[context.locale] };
+const showSearch = settings.showSearch && docsyConfig.search.enabled;
+---
+
+<DocsLayout context={context} title={`${copy.title} — ${docsyConfig.site.name}`} description={copy.description} navigation={settings.layout === 'docs'} noindex>
+  <section class="not-found" aria-labelledby="not-found-title" data-not-found-layout={settings.layout}>
+    {settings.image && <img class="not-found-image" src={assetPath(settings.image.src)} alt={settings.image.alt} />}
+    {settings.showCode && <p class="not-found-code" aria-hidden="true">404</p>}
+    {copy.eyebrow && <p class="not-found-eyebrow">{copy.eyebrow}</p>}
+    <h1 id="not-found-title">{copy.title}</h1>
+    {copy.description && <p class="not-found-description">{copy.description}</p>}
+    <div class="not-found-actions">
+      <a class="button button-dark" href={notFoundHref(settings.primaryAction.href, context)}>{copy.primaryActionLabel ?? settings.primaryAction.label}<span aria-hidden="true">&rarr;</span></a>
+      {settings.secondaryAction && <a class="not-found-secondary" href={notFoundHref(settings.secondaryAction.href, context)}>{copy.secondaryActionLabel ?? settings.secondaryAction.label}</a>}
+      {showSearch && <button class="not-found-search" type="button" data-not-found-search>
+        <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.5" /><path d="m13 13 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg>
+        {copy.searchLabel}
+      </button>}
+    </div>
+    {settings.links.length > 0 && <nav class="not-found-links" aria-label={copy.linksHeading || copy.title}>
+      {copy.linksHeading && <h2>{copy.linksHeading}</h2>}
+      <ul>{settings.links.map((link) => <li><a href={notFoundHref(link.href, context)}>
+        <span><strong>{link.label}</strong>{link.description && <span class="not-found-link-description">{link.description}</span>}</span>
+        <span class="not-found-link-arrow" aria-hidden="true">&rarr;</span>
+      </a></li>)}</ul>
+    </nav>}
+  </section>
+</DocsLayout>
+
+<script>
+  document.querySelector('[data-not-found-search]')?.addEventListener('click', () => {
+    document.getElementById('docs-search-trigger')?.click();
+  });
+</script>
+
+<style>
+  .not-found { padding-block: 12px 24px; }
+  .not-found-image { display: block; max-width: min(100%, 360px); max-height: 200px; object-fit: contain; margin-bottom: 32px; }
+  .not-found .not-found-code { margin: 0 0 24px; color: var(--muted); font: 500 clamp(80px, 12vw, 120px)/1 var(--font-display); }
+  .not-found .not-found-eyebrow { margin: 0 0 14px; color: var(--muted); font-size: 14px; }
+  .not-found h1 { max-width: 640px; text-wrap: balance; }
+  .not-found .not-found-description { max-width: 510px; margin: 20px 0 0; color: var(--muted); font-size: 17px; line-height: 1.7; }
+  .not-found-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 14px 22px; margin-top: 30px; }
+  .not-found .button { height: auto; min-height: 42px; padding: 10px 18px; gap: 18px; text-align: start; }
+  .not-found-search { display: inline-flex; align-items: center; gap: 9px; min-height: 42px; padding: 8px 0; background: transparent; border: 0; color: var(--muted); font: inherit; font-size: 14px; cursor: pointer; text-align: start; }
+  .not-found .not-found-secondary { color: var(--ink); font-size: 14px; text-decoration: underline; text-underline-offset: 4px; }
+  .not-found-search:hover { color: var(--ink); }
+  .not-found :is(a, button):focus-visible { outline: 2px solid var(--ink); outline-offset: 5px; border-radius: 4px; }
+  .not-found-links { margin-top: 52px; max-width: 580px; }
+  .not-found-links h2 { margin: 0 0 14px; color: var(--muted); font-size: 13px; font-weight: 500; }
+  .not-found-links ul { list-style: none; margin: 0; padding: 0; }
+  .not-found-links li { margin: 0; border-top: 1px solid var(--line); }
+  .not-found-links a { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 18px 0; color: var(--ink); text-decoration: none; }
+  .not-found-links strong { display: block; font-size: 14px; font-weight: 550; }
+  .not-found-link-description { display: block; margin-top: 5px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+  .not-found-link-arrow { flex-shrink: 0; color: var(--muted); }
+  .not-found-links a:hover .not-found-link-arrow { color: var(--ink); }
+  @media (max-width: 600px) {
+    .not-found .not-found-description { font-size: 16px; }
+    .not-found-links { margin-top: 36px; }
+  }
+</style>

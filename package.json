@@ -1,6 +1,6 @@
 {
   "name": "@appgram/docsy",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "private": false,
   "description": "Documentation built for humans and coding agents. Self-host Markdown, OpenAPI, and SDK docs with editable Astro source.",
   "license": "Elastic-2.0",

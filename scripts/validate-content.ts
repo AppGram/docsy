@@ -7,6 +7,7 @@ import { API_SECTIONS, loadSwagger, filterEndpoints } from '../src/lib/swagger-l
 import { extractHtml } from '../src/lib/html-content';
 import { getDocsNav, type DocsNavItem } from '../src/data/docs-nav';
 import { loadDiagram } from '../src/lib/drawio';
+import { notFoundHref } from '../src/lib/not-found';
 
 const errors: string[] = [];
 const pages = new Map<string, { ids: Set<string>; links: string[] }>();
@@ -31,6 +32,7 @@ for (const context of allContexts) {
   }
 }
 pages.set(docsPath('/locked'), { ids: new Set(), links: [] });
+pages.set(docsPath('/404.html'), { ids: new Set(['not-found-title']), links: [] });
 for (const [from, to] of Object.entries(docsyConfig.redirects)) {
   const path = docsPath(from);
   if (pages.has(path)) errors.push(`redirects: ${from} collides with a generated page`);
@@ -53,6 +55,11 @@ const checkLink = (href: string, from: string) => {
   if (url.hash && !target.ids.has(decodeURIComponent(url.hash.slice(1)))) errors.push(`${from}: broken anchor ${href}`);
 };
 if (docsyConfig.validation.links) {
+  for (const context of allContexts) {
+    for (const action of [docsyConfig.notFound.primaryAction, docsyConfig.notFound.secondaryAction, ...docsyConfig.notFound.links]) {
+      if (action) checkLink(notFoundHref(action.href, context), docsPath('/404.html'));
+    }
+  }
   for (const [path, page] of pages) for (const href of page.links) checkLink(href, path);
   const registered = new Set(docsyConfig.content.articles.map((article) => article.slug));
   const checkRegistered = (items: typeof docsyConfig.navigation[number]['items']) => items.forEach((item) => { if (item.href.startsWith('/guides/') && !registered.has(item.href.slice(8))) errors.push(`navigation: unknown article ${item.href}`); if (item.items) checkRegistered(item.items); });

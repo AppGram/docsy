@@ -5,6 +5,6 @@ import { getSdkSources } from '../lib/sdk-loaders';
 export const prerender = !isServer;
 export function getStaticPaths() { return getSdkSources().map((source) => ({ params: { sdk: source.slug } })); }
 const source = getSdkSources().find((item) => item.slug === Astro.params.sdk);
-if (!source) return Astro.redirect(docsPath(), 302);
+if (!source) return Astro.rewrite(docsPath('/404'));
 ---
 <SDKReferenceView source={source} />
