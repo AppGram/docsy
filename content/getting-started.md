@@ -22,7 +22,7 @@ Open `http://localhost:4321/docsy/`. Changes to `docsy.config.yaml`, Markdown ar
 Create your own site with the versioned npm CLI:
 
 ```bash
-npm exec --package @appgram/docsy@0.4.2 -- create-docsy my-docs --yes --ci
+npm exec --package @appgram/docsy@0.4.3 -- create-docsy my-docs --yes --ci
 cd my-docs
 npm run dev
 ```

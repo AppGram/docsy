@@ -20,7 +20,10 @@ const readLocal = (source: string): Buffer => {
 };
 const parseXml = (source: string) => {
   // Accept the standard SVG doctype, without resolving or loading its DTD.
-  const xml = source.replace(/<!DOCTYPE\s+svg\s+PUBLIC\s+"-\/\/W3C\/\/DTD SVG 1\.1\/\/EN"\s+"https?:\/\/www\.w3\.org\/Graphics\/SVG\/1\.1\/DTD\/svg11\.dtd"\s*>/i, '');
+  const xml = source.replace(/<!DOCTYPE\s+svg\s+PUBLIC\s+"-\/\/W3C\/\/DTD SVG 1\.1\/\/EN"\s+"https?:\/\/www\.w3\.org\/Graphics\/SVG\/1\.1\/DTD\/svg11\.dtd"\s*>/i, '')
+    // PlantUML 1.2026 adds inert version/compressed-source metadata. These
+    // processing instructions are not elements and never resolve resources.
+    .replace(/<\?plantuml(?:-src)?\s+[A-Za-z0-9_.+~\-\s]+\?>/g, '');
   if (/<!\s*(?:DOCTYPE|ENTITY)|<\?xml-stylesheet/i.test(xml)) throw new Error('Diagram XML must not contain entities, custom DTDs or stylesheets.');
   SyntaxValidator.validate(xml, { multipleRoots: false });
   return new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '@', ignoreDeclaration: true, parseTagValue: false }).parse(xml);
@@ -86,13 +89,15 @@ export function diagramDescription(id: string): string {
   if (!Object.hasOwn(docsyConfig.content.diagrams, id)) throw new Error(`Unknown draw.io diagram: ${id}`);
   const config = docsyConfig.content.diagrams[id];
   if (!config) throw new Error(`Unknown draw.io diagram: ${id}`);
-  return `Diagram: ${config.alt}${config.caption ? `\n\n${config.caption}` : ''}${config.source ? '\n\nEditable draw.io source is available from the article’s diagram card.' : ''}`;
+  return `Diagram: ${config.alt}${config.caption ? `\n\n${config.caption}` : ''}${config.source ? `\n\nEditable ${config.format === 'plantuml' ? 'PlantUML' : 'draw.io'} source is available from the article’s diagram card.` : ''}`;
 }
 export function loadDiagram(id: string) {
-  if (!docsyConfig.content.components.includes('drawio')) throw new Error('Article component drawio is disabled in YAML.');
   if (!Object.hasOwn(docsyConfig.content.diagrams, id)) throw new Error(`Unknown draw.io diagram: ${id}`);
   const config = docsyConfig.content.diagrams[id];
   if (!config) throw new Error(`Unknown draw.io diagram: ${id}`);
+  const component = config.format;
+  const label = config.format === 'plantuml' ? 'PlantUML' : 'draw.io';
+  if (!docsyConfig.content.components.includes(component)) throw new Error(`Article component ${component} is disabled in YAML.`);
   try {
     const bytes = readLocal(config.image);
     const svg = extname(config.image).toLowerCase() === '.svg';
@@ -100,20 +105,30 @@ export function loadDiagram(id: string) {
     let source: { url: string; filename: string } | undefined;
     if (config.source) {
       const bytes = readLocal(config.source);
-      const xml = parseXml(bytes.toString('utf8'));
-      if (!xml.mxfile && !xml.mxGraphModel) throw new Error('Source must be a native draw.io mxfile or mxGraphModel.');
+      if (config.format === 'plantuml') {
+        // Download only: never invoke preprocessors, includes, Java or a remote
+        // PlantUML service while rendering an article.
+        if (!/^\s*@startuml\b[\s\S]*\n\s*@enduml\s*$/i.test(bytes.toString('utf8'))) throw new Error('PlantUML source must contain @startuml and @enduml.');
+      } else {
+        const xml = parseXml(bytes.toString('utf8'));
+        if (!xml.mxfile && !xml.mxGraphModel) throw new Error('Source must be a native draw.io mxfile or mxGraphModel.');
+      }
       source = { url: `data:application/octet-stream;base64,${bytes.toString('base64')}`, filename: basename(config.source) };
     }
     return { ...config, ...dimensions, imageUrl: `data:image/${svg ? 'svg+xml' : 'png'};base64,${bytes.toString('base64')}`, source };
-  } catch (error) { throw new Error(`Could not load draw.io diagram "${id}": ${error instanceof Error ? error.message : error}`); }
+  } catch (error) { throw new Error(`Could not load ${label} diagram "${id}": ${error instanceof Error ? error.message : error}`); }
 }
-export const Drawio = ({ src }: { src: string }) => {
+const Diagram = ({ src, format }: { src: string; format: 'drawio' | 'plantuml' }) => {
   const diagram = loadDiagram(src);
+  if (diagram.format !== format) throw new Error(`Diagram "${src}" uses format ${diagram.format}; use the matching ${diagram.format} article component.`);
   return h('figure', { className: 'docsy-diagram', 'data-docsy-diagram': src, 'data-diagram-background': diagram.background, 'data-diagram-description': diagramDescription(src) },
     h('div', { className: 'docsy-diagram-preview' }, h('img', { src: diagram.imageUrl, alt: diagram.alt, width: diagram.width, height: diagram.height, loading: 'lazy', decoding: 'async', 'data-docsy-media': 'true', 'data-docsy-embedded-image': 'true', 'data-media-background': diagram.background })),
     h('figcaption', null, h('span', { 'data-diagram-caption': true }, diagram.caption || diagram.alt), diagram.source ? h('a', { href: diagram.source.url, download: diagram.source.filename, className: 'docsy-diagram-source', title: diagram.source.filename, 'aria-label': `${diagram.sourceLabel}: ${diagram.source.filename}` }, diagram.sourceLabel, h('span', { 'aria-hidden': true }, ' ↓')) : null));
 };
+export const Drawio = ({ src }: { src: string }) => h(Diagram, { src, format: 'drawio' });
+export const PlantUml = ({ src }: { src: string }) => h(Diagram, { src, format: 'plantuml' });
 export const drawioHtml = (src: string): string => renderToStaticMarkup(h(Drawio, { src }));
+export const plantumlHtml = (src: string): string => renderToStaticMarkup(h(PlantUml, { src }));
 
 // Agent exports describe diagrams without embedding megabytes of image/source data.
 export function diagramExportTree(tree: any): any {

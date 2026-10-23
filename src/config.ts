@@ -276,14 +276,24 @@ const configSchema = z.object({
     }),
     snippets: z.record(z.string().regex(/\.(?:md|markdown|mdown)$/i)).default({}),
     diagrams: z.record(z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9_-]*$/), z.object({
-      image: z.string().regex(/\.(?:svg|png)$/i, 'Use a local draw.io SVG or PNG export'),
-      source: z.string().regex(/\.(?:drawio|xml)$/i, 'Use a local .drawio or .xml source').optional(),
+      format: z.enum(['drawio', 'plantuml']).default('drawio'),
+      image: z.string().regex(/\.(?:svg|png)$/i, 'Use a local SVG or PNG diagram export'),
+      source: z.string().regex(/\.(?:drawio|xml|puml|plantuml)$/i, 'Use a local .drawio, .xml, .puml or .plantuml source').optional(),
       sourceLabel: z.string().trim().min(1).default('Download source'),
       alt: z.string().trim().min(1),
       caption: z.string().default(''),
       background: z.enum(['light', 'dark', 'transparent']).default('light'),
-    }).strict()).default({}),
-    components: z.array(z.enum(['note', 'tip', 'warning', 'danger', 'steps', 'tabs', 'accordion', 'code-group', 'include', 'card', 'frame', 'drawio'])).default(['note', 'tip', 'warning', 'danger', 'steps', 'tabs', 'accordion', 'code-group', 'include', 'card', 'frame', 'drawio']),
+    }).strict().superRefine((value, context) => {
+      if (value.source && !(value.format === 'plantuml' ? /\.(?:puml|plantuml)$/i : /\.(?:drawio|xml)$/i).test(value.source)) context.addIssue({ code: z.ZodIssueCode.custom, path: ['source'], message: 'Diagram source extension must match its format.' });
+    })).default({}),
+    mermaid: z.object({
+      enabled: z.boolean().default(true),
+      maxTextSize: z.number().int().min(100).max(100000).default(50000),
+      maxEdges: z.number().int().min(1).max(2000).default(500),
+      sourceLabel: z.string().trim().min(1).default('Diagram source'),
+      errorLabel: z.string().trim().min(1).default('This diagram could not be rendered. Check its source below.'),
+    }).strict().default({}),
+    components: z.array(z.enum(['note', 'tip', 'warning', 'danger', 'steps', 'tabs', 'accordion', 'code-group', 'include', 'card', 'frame', 'drawio', 'plantuml'])).default(['note', 'tip', 'warning', 'danger', 'steps', 'tabs', 'accordion', 'code-group', 'include', 'card', 'frame', 'drawio', 'plantuml']),
   }).default({}),
   versions: z.object({
     default: z.string().default('current'),

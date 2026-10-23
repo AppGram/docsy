@@ -5,7 +5,7 @@ import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkStringify from 'remark-stringify';
 import { docsyConfig } from '../config';
-import { diagramDescription, drawioHtml } from './drawio';
+import { diagramDescription, drawioHtml, plantumlHtml } from './drawio';
 
 type Node = { type: string; name?: string; value?: string; children?: Node[]; attributes?: Record<string, string>; data?: Record<string, any>; [key: string]: any };
 const text = (value: string): Node => ({ type: 'text', value });
@@ -51,12 +51,12 @@ export const richComponents = () => (tree: Node) => {
   const visit = (node: Node, parent?: Node) => {
     if (node.type.endsWith('Directive')) {
       const name = node.name!;
-      const known = ['note', 'tip', 'warning', 'danger', 'steps', 'tabs', 'tab', 'accordion', 'code-group', 'drawio'];
+      const known = ['note', 'tip', 'warning', 'danger', 'steps', 'tabs', 'tab', 'accordion', 'code-group', 'drawio', 'plantuml'];
       if (!known.includes(name)) throw new Error(`Unknown article component: ${name}`);
       if (name !== 'tab' && !docsyConfig.content.components.includes(name as any)) throw new Error(`Article component ${name} is disabled in YAML.`);
-      if (name === 'drawio') {
-        if (node.type !== 'leafDirective' || !node.attributes?.src || node.children?.length) throw new Error('Use ::drawio{src="registered-diagram"} as a standalone diagram.');
-        node.type = 'html'; node.value = drawioHtml(node.attributes.src);
+      if (name === 'drawio' || name === 'plantuml') {
+        if (node.type !== 'leafDirective' || !node.attributes?.src || node.children?.length) throw new Error(`Use ::${name}{src="registered-diagram"} as a standalone diagram.`);
+        node.type = 'html'; node.value = (name === 'drawio' ? drawioHtml : plantumlHtml)(node.attributes.src);
         delete node.children; delete node.name; delete node.attributes; delete node.data;
         return;
       }
@@ -103,7 +103,7 @@ export function plainMarkdown(markdown: string): string {
     const visit = (node: Node) => {
       node.children?.forEach(visit);
       if (!node.type.endsWith('Directive')) return;
-      if (node.name === 'drawio') {
+      if (node.name === 'drawio' || node.name === 'plantuml') {
         node.type = 'paragraph'; node.children = [text(diagramDescription(node.attributes?.src ?? ''))];
         delete node.name; delete node.attributes; delete node.data;
         return;

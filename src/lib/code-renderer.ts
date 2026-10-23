@@ -5,6 +5,7 @@ import { toHtml } from 'hast-util-to-html';
 import type { Element, ElementContent, Root, Text } from 'hast';
 import { codeLanguage } from './code-languages';
 import { docsyConfig } from '../config';
+import { validateMermaidSource } from './mermaid-policy';
 
 const text = (value: string): Text => ({ type: 'text', value });
 const el = (tagName: string, properties: Element['properties'] = {}, children: ElementContent[] = []): Element => ({ type: 'element', tagName, properties, children });
@@ -72,7 +73,20 @@ export const highlightArticles = () => async (tree: Root) => {
       if (code) {
         const classes = code.properties.className;
         const language = (Array.isArray(classes) ? classes : String(classes || '').split(' ')).find((name) => String(name).startsWith('language-'));
-        parent.children[index] = await codeCard(value(code), language ? String(language).slice(9) : 'text', String((code.data as { meta?: string } | undefined)?.meta || code.properties.dataTitle || 'Code example'));
+        const name = language ? String(language).slice(9) : 'text';
+        const source = value(code);
+        const title = String((code.data as { meta?: string } | undefined)?.meta || code.properties.dataTitle || (name === 'mermaid' ? 'Mermaid diagram' : 'Code example'));
+        const card = await codeCard(source, name, title);
+        if (name.toLowerCase() === 'mermaid' && docsyConfig.content.mermaid.enabled) {
+          const settings = docsyConfig.content.mermaid;
+          validateMermaidSource(source, settings.maxTextSize);
+          parent.children[index] = el('figure', { className: ['docsy-mermaid'], dataDocsyMermaid: true, dataMaxTextSize: settings.maxTextSize, dataMaxEdges: settings.maxEdges }, [
+            el('div', { className: ['docsy-diagram-preview'], dataMermaidPreview: true, hidden: true }),
+            el('figcaption', { dataDiagramCaption: true }, [text(title)]),
+            el('p', { className: ['docsy-mermaid-error'], dataMermaidError: true, role: 'status', hidden: true }, [text(settings.errorLabel)]),
+            el('details', { className: ['docsy-mermaid-source'], open: true }, [el('summary', {}, [text(settings.sourceLabel)]), card]),
+          ]);
+        } else parent.children[index] = card;
       } else await visit(node);
     }));
   };

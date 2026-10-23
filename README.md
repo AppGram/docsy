@@ -189,6 +189,7 @@ Read the [Docsy documentation portal](https://appgram.github.io/docsy/) or brows
 | [Write authored documentation](content/tutorials/authored-articles.md) | Markdown articles, YAML registration, navigation, search, exports, and permissions |
 | [Rich article components](content/tutorials/rich-articles.md) | Callouts, steps, tabs, code groups, accordions, and reusable snippets |
 | [draw.io diagrams](content/tutorials/drawio-diagrams.md) | SVG/PNG previews, fullscreen inspection, and editable-source downloads |
+| [Mermaid and UML diagrams](content/tutorials/mermaid-and-uml.md) | Mermaid fences, UML class/sequence/state diagrams, and PlantUML exports |
 | [Native MDX articles](content/tutorials/native-mdx.mdx) | YAML registration, themed JSX, trusted component modules, search and agent exports |
 | [Full-text search and agent JSON API](content/tutorials/search-and-agents.md) | Static retrieval exports, the optional server query endpoint, and permission filtering |
 | [Versions and localization](content/tutorials/versions-and-locales.md) | Stable context URLs, translated UI/navigation, fallbacks, and versioned ingestion |
@@ -210,7 +211,7 @@ Read the [Docsy documentation portal](https://appgram.github.io/docsy/) or brows
 Use Node 22.22 or newer. Create your own documentation site:
 
 ```bash
-npm exec --package @appgram/docsy@0.4.2 -- create-docsy my-docs --yes --ci
+npm exec --package @appgram/docsy@0.4.3 -- create-docsy my-docs --yes --ci
 cd my-docs
 npm run dev
 ```
@@ -233,10 +234,10 @@ The portal uses the default light interface and renders every registered Markdow
 Generate a source-owned project from the versioned CLI:
 
 ```bash
-npm exec --package @appgram/docsy@0.4.2 -- create-docsy my-docs --yes --ci
+npm exec --package @appgram/docsy@0.4.3 -- create-docsy my-docs --yes --ci
 ```
 
-Add `--openapi ./my-api.yaml` to bring your own API, or edit the generated Markdown/YAML directly. From a repository checkout, `npm run release:pack` also builds a local tarball and prints an equivalent `npm exec --package "/absolute/path/appgram-docsy-0.4.2.tgz" -- create-docsy ...` command. Packing never publishes anything.
+Add `--openapi ./my-api.yaml` to bring your own API, or edit the generated Markdown/YAML directly. From a repository checkout, `npm run release:pack` also builds a local tarball and prints an equivalent `npm exec --package "/absolute/path/appgram-docsy-0.4.3.tgz" -- create-docsy ...` command. Packing never publishes anything.
 
 Run `npm run test:package` to test the actual packed CLI. It installs the archive in a clean consumer without checkout dependency links, generates a project using your own OpenAPI and MDX, validates/builds it, and tests both static and locked serving. The result and archive checksum are saved under `.docsy/packages/release/`. This command never publishes anything.
 
@@ -490,6 +491,22 @@ content:
 ```
 
 Embed it with `::drawio{src="architecture"}` in Markdown or `<Drawio src="architecture" />` in MDX. The existing viewer provides fullscreen zoom/pan. The optional source download stays inside the article’s access boundary; no third-party viewer, editor, or font service is loaded. Raw `.drawio` XML is downloaded, not automatically rendered. See [the live example and export guidance](content/tutorials/drawio-diagrams.md).
+
+### Mermaid and UML diagrams
+
+Use `mermaid` code fences in Markdown or MDX for flowcharts and UML class, sequence and state diagrams. The locally bundled renderer follows the site's fonts and light/dark palette, provides fullscreen zoom/pan, and preserves copyable notation for readers and coding agents. No CDN or public rendering service is used.
+
+````markdown
+```mermaid Client request
+sequenceDiagram
+  Client->>API: Request documentation
+  API-->>Client: Authorized response
+```
+````
+
+Configure `content.mermaid.enabled`, `maxTextSize`, `maxEdges`, `sourceLabel` and `errorLabel` through YAML. Disabling Mermaid leaves ordinary code fences. Rendering is browser-side; syntax errors keep the source visible. Renderer configuration directives and external resources/fonts are not permitted inside diagram source.
+
+PlantUML SVG/PNG exports are supported through `content.diagrams` with `format: plantuml`, an `image`, optional `.puml`/`.plantuml` `source`, accessible `alt`, and optional `caption`/`background`. Embed with `::plantuml{src="id"}` or `<PlantUml src="id" />`. Preview and source stay behind the article's access rules. Raw PlantUML is not executed; re-export after changing its source. See [the examples and configuration guide](content/tutorials/mermaid-and-uml.md).
 
 ## OpenAPI ingestion
 

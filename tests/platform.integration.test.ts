@@ -27,7 +27,7 @@ function site() {
     home: { title: 'Integration docs', description: 'Versions, articles and agent retrieval', primaryAction: { label: 'Read', href: '/guides/guide' }, translations: { fr: { title: 'Documentation française' } } },
     versions: { default: 'current', items: [{ id: 'current', label: 'Current' }, { id: 'v1', label: 'Version 1', status: 'deprecated' }] },
     localization: { defaultLocale: 'en', fallback: true, locales: [{ code: 'en', label: 'English' }, { code: 'fr', label: 'Français' }, { code: 'ar', label: 'العربية', dir: 'rtl' }], messages: { fr: { language: 'Langue', guides: 'Guides', onThisPage: 'Sur cette page', searchLabel: 'Rechercher', unknownAuthor: 'Auteur inconnu' } } },
-    content: { snippets: { shared: 'content/shared.md' }, articles: [
+    content: { diagrams: { protected: { format: 'plantuml', image: 'content/private.svg', source: 'content/private.puml', alt: 'classifieddiagramneedle UML review' } }, snippets: { shared: 'content/shared.md' }, articles: [
       { slug: 'guide', title: 'Guide', source: 'content/guide.md', authors: ['writer'], contributors: ['agent'], reviewedBy: ['writer'], updatedAt: '2026-10-19', reviewedAt: '2026-10-19', provenance: { agent: 'agent', model: 'fixture-model', referenceUrl: 'https://github.com/example/docs/pull/1' } },
       { slug: 'guide', title: 'Guide français', locale: 'fr', source: 'content/fr.md', authors: ['writer'], updatedAt: '2026-10-18' },
       { slug: 'guide', title: 'Old guide', version: 'v1', source: 'content/v1.md', editUrl: false },
@@ -45,7 +45,9 @@ function site() {
   write(root, 'content/guide.md', '# Guide body\n\nThe elusive platypusword only appears inside a paragraph.\n\n## Details\n\n:::note[Read carefully]\n::include{src="shared"}\n:::\n\n::::tabs{sync="runtime"}\n:::tab[Node]\nNode instructions.\n:::\n:::tab[Python]\nPython instructions.\n:::\n::::\n');
   write(root, 'content/fr.md', '# Bonjour\n\nInstructions françaises.\n');
   write(root, 'content/v1.md', '# Old behavior\n\nUse legacyfirefly for version one.\n');
-  write(root, 'content/private.mdx', '## Restricted\n\n<Warning>classifiedsecretword must never leak to public retrieval.</Warning>\n');
+  write(root, 'content/private.mdx', '## Restricted\n\n<Warning>classifiedsecretword must never leak to public retrieval.</Warning>\n\n```mermaid Private sequence\nsequenceDiagram\nReader->>Docsy: classifieddiagramneedle\n```\n\n<PlantUml src="protected" />\n');
+  write(root, 'content/private.svg', read(repo, 'content/diagrams/article-review.svg'));
+  write(root, 'content/private.puml', '@startuml\nReader -> Docsy: classifieddiagramneedle\n@enduml\n');
   write(root, 'content/native.mdx', '## Native components\n\n<Tabs>\n<Tab title="Node">mdxquokkaneedle stays searchable.</Tab>\n<Tab title="Bun">Bun works too.</Tab>\n</Tabs>\n\n```ts\nconst native = true;\n```');
   write(root, 'content/shared.md', 'Shared reusable instructions.\n');
   write(root, 'public/assets/sample.mp4', '0123456789');
@@ -192,7 +194,7 @@ test(`generated template serves static variants and permission-aware APIs on ${r
     config.content.mdx = { allowJavaScript: true, components: { Status: 'content/Status.tsx' } };
     write(root, 'content/Status.tsx', 'export default function Status() { return <strong>Trusted component output</strong>; }');
     write(root, 'content/secret.ts', 'export const label = "classifiedsecretword";');
-    write(root, 'content/private.mdx', 'import { label } from "./secret.ts"\n\n## Restricted\n\n<Status />\n\n<Warning>{label} must never leak to public retrieval.</Warning>');
+    write(root, 'content/private.mdx', 'import { label } from "./secret.ts"\n\n## Restricted\n\n<Status />\n\n<Warning>{label} must never leak to public retrieval.</Warning>\n\n```mermaid Private sequence\nsequenceDiagram\nReader->>Docsy: classifieddiagramneedle\n```\n\n<PlantUml src="protected" />\n');
     save();
     command(root, 'scripts/docsy.mjs', 'build');
     assert.ok(existsSync(join(root, 'dist/server/entry.mjs')));
@@ -207,6 +209,7 @@ test(`generated template serves static variants and permission-aware APIs on ${r
         assert.match(response.headers.get('cache-control') ?? '', /private.*no-store/);
         const body = await response.text();
         assert.ok(!body.includes('classifiedsecretword'), `Leak in ${path}`);
+        assert.ok(!body.includes('classifieddiagramneedle'), `Diagram leak in ${path}`);
         assert.ok(!body.includes('Restricted guide'), `Private metadata leak in ${path}`);
         assert.ok(!body.includes('PrivateAuthorIdentity'), `Private authorship leak in ${path}`);
       }
@@ -220,7 +223,9 @@ test(`generated template serves static variants and permission-aware APIs on ${r
         response = await fetch(`${server.base}/agent/pages/${key}.json`); assert.equal(response.status, 404);
         response = await fetch(`${server.base}/agent/pages/${key}.json`, { headers: auth }); assert.equal(response.status, 200); assert.ok((await response.json()).markdown.includes('classifiedsecretword'));
         response = await fetch(`${server.base}/format-md/${key}`); assert.equal(response.status, 401);
-        response = await fetch(`${server.base}/${key}`, { headers: auth }); assert.equal(response.status, 200); assert.match(await response.text(), /Trusted component output/);
+        response = await fetch(`${server.base}/${key}`, { headers: auth }); assert.equal(response.status, 200);
+        const authorizedHtml = await response.text();
+        assert.match(authorizedHtml, /Trusted component output/); assert.match(authorizedHtml, /data-docsy-mermaid/); assert.match(authorizedHtml, /download="private.puml"/);
       }
       response = await fetch(`${server.base}/guides/private`, { redirect: 'manual' }); assert.equal(response.status, 302);
       response = await fetch(`${server.base}/guides/private`, { headers: { accept: 'text/markdown' } }); assert.equal(response.status, 401);

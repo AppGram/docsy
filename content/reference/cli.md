@@ -23,7 +23,7 @@ Mintlify migration preserves native `.mdx` sources by default. Add `--format mar
 
 ## Generate a project
 
-Use `npm exec --package @appgram/docsy@0.4.2 -- create-docsy my-docs --yes --ci` for the versioned npm CLI. In a template checkout, `npm run release:pack` prints an equivalent local-tarball creation command. `npm run create -- <directory>` is also available **in the template checkout**; generated sites use `npm run docsy -- create <directory>` when another project is needed. `npm run test:package` tests installation of the real tarball, not a dependency symlink to this checkout. Generation, packing and testing never publish a package.
+Use `npm exec --package @appgram/docsy@0.4.3 -- create-docsy my-docs --yes --ci` for the versioned npm CLI. In a template checkout, `npm run release:pack` prints an equivalent local-tarball creation command. `npm run create -- <directory>` is also available **in the template checkout**; generated sites use `npm run docsy -- create <directory>` when another project is needed. `npm run test:package` tests installation of the real tarball, not a dependency symlink to this checkout. Generation, packing and testing never publish a package.
 
 ```text
 docsy create <directory> [options]

@@ -8,6 +8,17 @@
 .article-body .docsy-diagram figcaption { display: flex; align-items: baseline; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; margin-top: 10px; color: var(--muted); font-size: 13px; line-height: 1.6; }
 .article-body .docsy-diagram-source { flex-shrink: 0; color: var(--ink); font: inherit; text-decoration: none; }
 .article-body .docsy-diagram-source:hover { text-decoration: underline; text-underline-offset: 3px; }
+.article-body .docsy-mermaid { margin: 28px 0; }
+.docsy-mermaid .docsy-diagram-preview { padding: 24px; background: var(--paper); }
+.docsy-mermaid .docsy-diagram-preview img { width: auto; max-width: 100%; margin-inline: auto; }
+.article-body .docsy-mermaid figcaption { margin-top: 10px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+.article-body .docsy-mermaid-source { margin-top: 10px; color: var(--muted); }
+.docsy-mermaid-source summary { width: fit-content; padding: 4px 0; cursor: pointer; font-size: 13px; }
+.docsy-mermaid-source summary:hover { color: var(--ink); }
+.docsy-mermaid-source .cb { margin-top: 12px; }
+.article-body .docsy-mermaid-error { color: var(--ink); padding: 12px 16px; border-inline-start: 2px solid var(--muted); }
+.docsy-mermaid-measure { position: absolute; inset-inline-start: -100000px; top: 0; visibility: hidden; width: 1200px; pointer-events: none; }
+@media (max-width: 640px) { .docsy-mermaid .docsy-diagram-preview { padding: 14px; } }
 .docs-media-trigger, .docs-media-inline { position: relative; display: inline-block; max-width: 100%; vertical-align: middle; }
 .docs-media-trigger { padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--ink); cursor: zoom-in; font: inherit; line-height: 0; text-align: inherit; }
 .docs-media-trigger > img, .docs-media-trigger > picture > img { display: block; max-width: 100%; height: auto; border-radius: inherit; }

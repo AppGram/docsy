@@ -87,6 +87,16 @@ Use `content.components` to enable the corresponding groups: `note`, `tip`, `war
 
 ## Declarative by default
 
+Mermaid fences also work in declarative MDX, including UML notation:
+
+```mermaid MDX article flow
+flowchart LR
+  Article[MDX article] --> Validate[Validate]
+  Validate --> Preview[Reader preview]
+```
+
+Registered PlantUML exports need no imports: use `<PlantUml src="article-review" />`. See [Mermaid and UML diagrams](/guides/tutorials/mermaid-and-uml) for YAML, sequence/class/state examples and the export boundary.
+
 With `allowJavaScript: false`, Docsy accepts built-in components, a bounded set of ordinary HTML tags, quoted attributes, and literal values such as `cols={2}`. It rejects imports/exports, function calls, variable expressions, attribute spreads, event handlers and executable HTML. Unknown components fail instead of dropping their content. JSX must be valid MDX: close tags, and use JSX comments (`{/* comment */}`), not HTML comments.
 
 This is a restricted authoring mode, not a sandbox for arbitrary JavaScript. Imported source is parsed and checked without executing it.

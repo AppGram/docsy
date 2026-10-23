@@ -10,7 +10,7 @@ export const mdxComponents = {
   Note: 'note', Info: 'note', Tip: 'tip', Check: 'tip', Warning: 'warning', Danger: 'danger',
   Tabs: 'tabs', Tab: 'tabs', Steps: 'steps', Step: 'steps',
   Accordion: 'accordion', AccordionGroup: 'accordion', CodeGroup: 'code-group',
-  Card: 'card', CardGroup: 'card', Frame: 'frame', Drawio: 'drawio',
+  Card: 'card', CardGroup: 'card', Frame: 'frame', Drawio: 'drawio', PlantUml: 'plantuml',
 };
 const htmlTags = new Set('a p div span strong em b i u s del br hr ul ol li blockquote pre code h1 h2 h3 h4 h5 h6 table thead tbody tr th td img figure figcaption details summary kbd sub sup video source track'.split(' '));
 const attributes = new Set('title href src alt width height id className target rel open start colSpan rowSpan align loading decoding role aria-label aria-hidden controls poster preload playsInline muted loop type srcLang kind label default data-docsy-media'.split(' '));
@@ -44,9 +44,9 @@ export function validateMdx(source, { label = 'MDX', allowJavaScript = false, co
   const tree = mdxParser.parse(source);
   const visit = (node, parent) => {
     if (node.name && Object.hasOwn(mdxComponents, node.name) && !components.includes(mdxComponents[node.name])) fail(label, node, `Article component ${mdxComponents[node.name]} is disabled in YAML.`);
-    if (node.name === 'Drawio') {
-      if (!node.attributes?.some((attribute) => attribute.name === 'src' && typeof attribute.value === 'string' && attribute.value.trim())) fail(label, node, 'Drawio requires a quoted src matching content.diagrams.');
-      if (node.children?.some((child) => child.type !== 'text' || child.value.trim())) fail(label, node, 'Drawio is a standalone diagram and cannot contain article content.');
+    if (['Drawio', 'PlantUml'].includes(node.name)) {
+      if (!node.attributes?.some((attribute) => attribute.name === 'src' && typeof attribute.value === 'string' && attribute.value.trim())) fail(label, node, `${node.name} requires a quoted src matching content.diagrams.`);
+      if (node.children?.some((child) => child.type !== 'text' || child.value.trim())) fail(label, node, `${node.name} is a standalone diagram and cannot contain article content.`);
     }
     if (!allowJavaScript) {
       if (node.type === 'mdxjsEsm') fail(label, node, 'Unsupported MDX import/export in declarative mode. Review the source, then explicitly enable content.mdx.allowJavaScript only for trusted code.');

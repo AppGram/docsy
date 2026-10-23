@@ -119,6 +119,12 @@ Use SVG or PNG exports for technical architecture diagrams. Register the preview
 
 See [draw.io diagrams](/guides/tutorials/drawio-diagrams) for a working example, YAML, source downloads, and supported export boundaries.
 
+## Mermaid and UML diagrams
+
+Use `mermaid` fences in Markdown or MDX for flowcharts and UML class, sequence and state diagrams. The local renderer follows the site's fonts and active palette, and diagrams open in the fullscreen zoom/pan viewer. Source stays available to readers and coding agents.
+
+PlantUML SVG/PNG exports support optional editable `.puml` downloads through `::plantuml{src="id"}` or `<PlantUml src="id" />`. Raw PlantUML is not executed or sent to a remote renderer. See [Mermaid and UML diagrams](/guides/tutorials/mermaid-and-uml) for working examples and YAML configuration.
+
 ## Images and videos
 
 Article images open in a fullscreen viewer when clicked. Videos keep their native inline controls and get an **Expand video** button. The viewer follows the portal's light/dark theme and offers image zoom, captions, previous/next controls, and an original-file link. Escape closes it and returns focus to the trigger. Opening a video pauses the inline player and preserves its time position without starting audio automatically.

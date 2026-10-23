@@ -1,0 +1,21 @@
+@startuml
+skinparam defaultFontName Helvetica Neue
+skinparam backgroundColor #FFFFFF
+skinparam sequenceArrowColor #404040
+skinparam participantBackgroundColor #F5F5F5
+skinparam participantBorderColor #737373
+skinparam participantFontColor #171717
+skinparam sequenceLifeLineBorderColor #737373
+skinparam sequenceMessageAlign center
+hide footbox
+title Review a documentation change
+actor Author
+participant Docsy
+participant Reviewer
+Author -> Docsy: Update Markdown and YAML
+activate Docsy
+Docsy -> Docsy: Validate articles and references
+Docsy -> Reviewer: Produce a reviewable preview
+Reviewer --> Author: Approve or request changes
+deactivate Docsy
+@enduml

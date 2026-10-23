@@ -12,7 +12,7 @@ const errors: string[] = [];
 const pages = new Map<string, { ids: Set<string>; links: string[] }>();
 const root = docsPath();
 const clean = (path: string) => path.replace(/\/+$/, '') || '/';
-if (docsyConfig.content.components.includes('drawio')) for (const id of Object.keys(docsyConfig.content.diagrams)) loadDiagram(id);
+for (const [id, diagram] of Object.entries(docsyConfig.content.diagrams)) if (docsyConfig.content.components.includes(diagram.format)) loadDiagram(id);
 for (const context of allContexts) {
   pages.set(docsPath('/', context), { ids: new Set(), links: [] });
   for (const article of getArticleSources(context)) {

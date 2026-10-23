@@ -1,6 +1,6 @@
 import { Children, createElement as h, isValidElement, type ReactNode, type ReactElement } from 'react';
 import { docsPath, docsyConfig } from '../config';
-import { Drawio } from './drawio';
+import { Drawio, PlantUml } from './drawio';
 
 type Props = { children?: ReactNode; title?: string; label?: string; name?: string; sync?: string; group?: string; href?: string; cols?: number; defaultOpen?: boolean; [key: string]: any };
 const title = (value: ReactNode) => h('p', { className: 'docsy-component-title' }, value);
@@ -26,7 +26,7 @@ export const mdxHref = (href?: string) => {
   return href?.startsWith('/') && !href.startsWith('//') && !(base && (href === base || href.startsWith(`${base}/`))) ? docsPath(href) : href;
 };
 export const builtInMdxComponents = {
-  Drawio,
+  Drawio, PlantUml,
   Note: callout('note'), Info: callout('note'), Tip: callout('tip'), Check: callout('tip'), Warning: callout('warning'), Danger: callout('danger'),
   Tabs, Tab,
   Steps: ({ children }: Props) => h('div', { className: 'docsy-steps' }, h('ol', { role: 'list' }, children)),

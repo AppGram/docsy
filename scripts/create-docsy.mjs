@@ -397,7 +397,8 @@ const makeConfig = ({ projectName, description, basePath, accessMode, apiBase, c
     content: {
       media: { enabled: true, images: true, videos: true },
       mdx: { enabled: true, allowJavaScript: false, components: {} },
-      components: ['note', 'tip', 'warning', 'danger', 'steps', 'tabs', 'accordion', 'code-group', 'include', 'card', 'frame', 'drawio'],
+      components: ['note', 'tip', 'warning', 'danger', 'steps', 'tabs', 'accordion', 'code-group', 'include', 'card', 'frame', 'drawio', 'plantuml'],
+      mermaid: { enabled: true, maxTextSize: 50000, maxEdges: 500 },
       diagrams: {},
       snippets: {},
       articles: [

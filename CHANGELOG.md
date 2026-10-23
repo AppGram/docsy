@@ -1,5 +1,12 @@
 # Changes
 
+## 0.4.3
+
+- Render Mermaid fences in Markdown/MDX, including UML class, sequence and state diagrams, with local assets, existing fonts, theme switching, copyable source and fullscreen zoom/pan.
+- Add YAML-configurable Mermaid enablement and resource limits; reject diagram-local configuration and external resources/fonts.
+- Support protected PlantUML SVG/PNG exports with optional `.puml`/`.plantuml` downloads. Raw PlantUML is not executed or sent to a remote service.
+- Add a diagram tutorial and real PlantUML-generated example, with article, permission-filtering and package-install regression coverage.
+
 ## 0.4.2
 
 - Subtle article-footer edit links by default, with independent YAML placement (`header`/`footer`) and style (`subtle`/`button`) options.

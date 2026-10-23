@@ -240,7 +240,18 @@ authors:
     provider: OpenAI
     avatar: assets/authors/docsy-agent.svg
 content:
+  mermaid:
+    enabled: true
+    maxTextSize: 50000
+    maxEdges: 500
   diagrams:
+    article-review:
+      format: plantuml
+      image: content/diagrams/article-review.svg
+      source: content/diagrams/article-review.puml
+      alt: Author submits documentation to Docsy for validation and a reviewer decides whether to approve it.
+      caption: A PlantUML sequence diagram with downloadable source.
+      background: light
     documentation-pipeline:
       image: content/diagrams/documentation-pipeline.drawio.svg
       source: content/diagrams/documentation-pipeline.drawio
@@ -260,6 +271,12 @@ content:
     publicationFr: content/snippets/publishing-checklist.fr.md
     publicacionEs: content/snippets/publishing-checklist.es.md
   articles:
+    - slug: tutorials/mermaid-and-uml
+      source: content/tutorials/mermaid-and-uml.md
+      authors: [nedimf, appgram]
+      title: Mermaid and UML diagrams
+      description: Write Mermaid flowcharts and UML in Markdown or MDX, or embed protected PlantUML exports with editable source downloads.
+      eyebrow: TUTORIAL
     - slug: tutorials/drawio-diagrams
       source: content/tutorials/drawio-diagrams.md
       authors: [nedimf, appgram]
@@ -514,6 +531,9 @@ navigation:
       - title: draw.io diagrams
         titles: { fr: Diagrammes draw.io, es: Diagramas draw.io }
         href: /guides/tutorials/drawio-diagrams
+      - title: Mermaid and UML diagrams
+        titles: { fr: Diagrammes Mermaid et UML, es: Diagramas Mermaid y UML }
+        href: /guides/tutorials/mermaid-and-uml
       - title: Native MDX articles
         titles: { fr: Articles MDX natifs, es: Artículos MDX nativos }
         href: /guides/tutorials/native-mdx
