@@ -3,7 +3,7 @@ import { getSdkSources, loadSdk } from './sdk-loaders';
 import { docsPath, docsyConfig, parseDocsPath, type ApiSectionConfig, type DocsContext } from '../config';
 import { loadSwagger, filterEndpoints, API_SECTIONS, type NormalizedEndpoint } from './swagger-loader';
 import { articleMarkdownExport, findArticle } from './article-loader';
-import { getDocsNav } from '../data/docs-nav';
+import { getDocsNav, type DocsNavItem } from '../data/docs-nav';
 import { canReadUrl } from './agent-access';
 
 const codeFence = (lang: string, body: string) => `\`\`\`${lang}\n${body}\n\`\`\``;
@@ -138,7 +138,14 @@ export const generateMarkdown = async (path: string, origin: string, tiers: stri
   if (relative === '/') {
     const home = { ...docsyConfig.home, ...docsyConfig.home.translations[context.locale] };
     const prefix = `# ${home.title}\n\n${home.description}\n`;
-    return `${prefix}\n## Sections\n\n${getDocsNav(context).flatMap((group) => group.items).filter((item) => canReadUrl(item.href, tiers)).map((item) => `- [${item.title}](${item.href})`).join('\n')}\n`;
+    const list = (items: DocsNavItem[], depth = 0): string[] => items.flatMap((item) => {
+      const readable = canReadUrl(item.href, tiers);
+      return [
+        ...(readable ? [`${'  '.repeat(depth)}- [${item.title}](${item.href})`] : []),
+        ...list(item.items ?? [], depth + (readable ? 1 : 0)),
+      ];
+    });
+    return `${prefix}\n## Sections\n\n${list(getDocsNav(context).flatMap((group) => group.items)).join('\n')}\n`;
   }
 
   const article = relative.startsWith('/guides/') ? findArticle(relative.slice(8), context) : undefined;

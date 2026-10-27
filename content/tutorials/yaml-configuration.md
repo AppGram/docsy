@@ -102,6 +102,12 @@ To maintain separate configurations without copying source code, select one at b
 DOCSY_CONFIG=docsy.enterprise.yaml npm run build
 ```
 
+## Deeply nested navigation
+
+**Available since Docsy 0.4.6.** [Nested documentation tutorial](../nested-documentation).
+
+Each navigation item can contain another `items` list, recursively. Use nested `content.articles[].slug` values for nested URLs, and explicit navigation to choose the tree and order. Branches expand to the current page, remain keyboard-operable, and keep long labels readable at deep levels. Icons and translated `titles` work at every level. See [authored articles](../authored-articles#deep-documentation-trees) for a complete YAML example and the distinction between source folders, URL nesting and sidebar nesting.
+
 ## Sidebar icons: packs or your own assets
 
 Use a bundled **Lucide** or **Tabler** icon by its exact name, or bring your own image. Icons work on section headings, navigation links and their children. Items without `icon` stay text-only; `icon: false` explicitly disables an icon.

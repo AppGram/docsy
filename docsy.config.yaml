@@ -361,6 +361,13 @@ content:
       updatedAt: '2026-10-19'
       provenance:
         agent: docsy-agent
+    - slug: tutorials/nested-documentation
+      source: content/tutorials/nested-documentation.md
+      authors: [nedimf, appgram]
+      title: Deeply nested documentation
+      description: Build recursive YAML navigation and nested Markdown or MDX routes, available since Docsy 0.4.6.
+      eyebrow: AUTHORING
+      updatedAt: '2026-10-27'
     - slug: tutorials/openapi-ingestion
       source: content/tutorials/openapi-ingestion.md
       authors: [nedimf, appgram]
@@ -570,6 +577,10 @@ navigation:
         icon: lucide:users
         titles: { fr: Auteurs et liens de modification, es: Autores y enlaces de edición }
         href: /guides/tutorials/authors-and-edit-links
+      - title: Nested documentation
+        icon: lucide:folder-tree
+        titles: { fr: Documentation imbriquée, es: Documentación anidada }
+        href: /guides/tutorials/nested-documentation
       - title: Rich article components
         icon: lucide:panels-top-left
         titles: { fr: Articles enrichis, es: Artículos enriquecidos }

@@ -77,7 +77,7 @@ Preserve the existing UI and access rules.
 Run npm run validate and npm run build, then summarize the diff.
 ```
 
-Use `/format-md/...` exports when an agent needs to fetch documentation over HTTP. The Markdown menu exposes the current page's export; `?format=md` opens its Markdown view in the browser. Your chosen coding agent works with the repository, and you review and publish its changes through your normal Git workflow.
+Use `/format-md/...` exports when an agent needs to fetch documentation over HTTP. Canonical export URLs end in `.md` since **0.4.6**, avoiding static-file collisions between parent and child pages. Follow the Markdown menu or each record's `markdownUrl`; `?format=md` opens its Markdown view in the browser. Your chosen coding agent works with the repository, and you review and publish its changes through your normal Git workflow.
 
 See [Work with coding agents](content/tutorials/coding-agents.md) for both reading and authoring workflows.
 
@@ -133,6 +133,7 @@ Both are the same generated OpenAPI page. Switching `theme.mode` and the YAML co
 - YAML-selected OpenAPI request examples in 24 language/client targets, synchronized language selection, and custom `x-codeSamples` overrides.
 - Generated API pages, navigation, search data, curl examples, response examples, and Markdown exports.
 - First-class Markdown and MDX articles, including themed JSX components and explicitly opt-in trusted React imports.
+- Deeply nested documentation since **0.4.6**: recursive YAML navigation, collapsible branches, automatic ancestor expansion and collision-free Markdown exports for parent/child pages. [Setup and upgrade notes](content/tutorials/nested-documentation.md).
 - Theme-aware callouts, numbered steps, synchronized tabs, code groups, accordions, and reusable Markdown snippets.
 - Full-text section search across article bodies, examples, API parameters, and SDK symbols.
 - Local, build-time syntax highlighting across articles, SDK declarations/examples, and API requests/responses, with language-logo badges and YAML-selectable light/dark palettes. No highlighter CDN or browser runtime is needed.
@@ -187,6 +188,7 @@ Read the [Docsy documentation portal](https://appgram.github.io/docsy/) or brows
 | [Maintain documentation automatically](content/tutorials/documentation-maintenance.md) | Detect affected docs, correct stale examples, explain breaking changes, and open validated draft PRs |
 | [Configure Docsy with YAML](content/tutorials/yaml-configuration.md) | The configuration lifecycle, top-level sections, paths, and environment values |
 | [Write authored documentation](content/tutorials/authored-articles.md) | Markdown articles, YAML registration, navigation, search, exports, and permissions |
+| [Deeply nested documentation](content/tutorials/nested-documentation.md) | Recursive navigation, nested Markdown/MDX routes, exports and upgrade notes; available since 0.4.6 |
 | [Rich article components](content/tutorials/rich-articles.md) | Callouts, steps, tabs, code groups, accordions, and reusable snippets |
 | [draw.io diagrams](content/tutorials/drawio-diagrams.md) | SVG/PNG previews, fullscreen inspection, and editable-source downloads |
 | [Mermaid and UML diagrams](content/tutorials/mermaid-and-uml.md) | Mermaid fences, UML class/sequence/state diagrams, and PlantUML exports |
@@ -211,7 +213,7 @@ Read the [Docsy documentation portal](https://appgram.github.io/docsy/) or brows
 Use Node 22.22 or newer. Create your own documentation site:
 
 ```bash
-npm exec --package @appgram/docsy@0.4.5 -- create-docsy my-docs --yes --ci
+npm exec --package @appgram/docsy@0.4.6 -- create-docsy my-docs --yes --ci
 cd my-docs
 npm run dev
 ```
@@ -234,10 +236,10 @@ The portal uses the default light interface and renders every registered Markdow
 Generate a source-owned project from the versioned CLI:
 
 ```bash
-npm exec --package @appgram/docsy@0.4.5 -- create-docsy my-docs --yes --ci
+npm exec --package @appgram/docsy@0.4.6 -- create-docsy my-docs --yes --ci
 ```
 
-Add `--openapi ./my-api.yaml` to bring your own API, or edit the generated Markdown/YAML directly. From a repository checkout, `npm run release:pack` also builds a local tarball and prints an equivalent `npm exec --package "/absolute/path/appgram-docsy-0.4.5.tgz" -- create-docsy ...` command. Packing never publishes anything.
+Add `--openapi ./my-api.yaml` to bring your own API, or edit the generated Markdown/YAML directly. From a repository checkout, `npm run release:pack` also builds a local tarball and prints an equivalent `npm exec --package "/absolute/path/appgram-docsy-0.4.6.tgz" -- create-docsy ...` command. Packing never publishes anything.
 
 Run `npm run test:package` to test the actual packed CLI. It installs the archive in a clean consumer without checkout dependency links, generates a project using your own OpenAPI and MDX, validates/builds it, and tests both static and locked serving. The result and archive checksum are saved under `.docsy/packages/release/`. This command never publishes anything.
 

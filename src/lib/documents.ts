@@ -3,6 +3,7 @@ import { articleRoute, getArticleSources } from './article-loader';
 import { getSdkSources } from './sdk-loaders';
 import { API_SECTIONS } from './swagger-loader';
 export type DocumentRoute = { key: string; path: string; route: string; context: DocsContext };
+export const markdownPath = (key: string) => docsPath(`/format-md/${key}.md`);
 export const documentKey = (path: string) => {
   const relative = (docsPath() === '/' ? path : path.slice(docsPath().length)).replace(/^\/+/, '');
   return parseDocsPath(path)?.path === '/' ? `${relative ? `${relative}/` : ''}index` : relative;

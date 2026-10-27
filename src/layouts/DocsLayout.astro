@@ -8,12 +8,13 @@ import '../styles/heading-links.css';
 import '../styles/article-credits.css';
 import MediaViewer from '../components/docs/MediaViewer.astro';
 import SidebarIcon from '../components/docs/SidebarIcon.astro';
-import { getDocsNav, isNavItemActive } from '../data/docs-nav';
+import SidebarItems from '../components/docs/SidebarItems.astro';
+import { getDocsNav } from '../data/docs-nav';
 import ContextSwitcher from '../components/docs/ContextSwitcher.astro';
 import SEO from '../components/SEO.astro';
 import { assetPath, defaultContext, docsPath, docsyConfig, isDefaultContext, locales, parseDocsPath, type DocsContext } from '../config';
 import { findArticle } from '../lib/article-loader';
-import { documentKey, getDocuments } from '../lib/documents';
+import { documentKey, getDocuments, markdownPath } from '../lib/documents';
 import { message } from '../lib/messages';
 
 interface Props {
@@ -102,7 +103,7 @@ const themeStyle = [
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    {currentDocument && <link rel="alternate" type="text/markdown" href={docsPath(`/format-md/${exportKey}`)} />}
+    {currentDocument && <link rel="alternate" type="text/markdown" href={markdownPath(exportKey)} />}
     {currentDocument && docsyConfig.agent.enabled && <link rel="alternate" type="application/json" href={docsPath(`/agent/pages/${exportKey}.json`)} />}
     {currentDocument && locales.filter((locale) => !relativePath.startsWith('/guides/') || findArticle(relativePath.slice(8), { ...context, locale: locale.code })).map((locale) => <link rel="alternate" hreflang={locale.code} href={new URL(docsPath(relativePath, { ...context, locale: locale.code }), docsyConfig.site.origin).href} />)}
     <script>
@@ -153,6 +154,7 @@ const themeStyle = [
     data-docs-base={docsPath()}
     data-search-index={docsPath('/search-index.json')}
     data-markdown-base={docsPath('/format-md')}
+    data-markdown-url={currentDocument ? markdownPath(exportKey) : undefined}
   >
     <header class="docs-topbar">
       <div class="docs-topbar-inner">
@@ -266,36 +268,7 @@ const themeStyle = [
           {docsNav.map((section) => (
             <div class="docs-sidebar-section">
               <p class="docs-sidebar-title"><SidebarIcon icon={section.icon} />{section.title}</p>
-              <ul>
-                {section.items.map((item) => {
-                  const active = isNavItemActive(item, pathname);
-                  return (
-                    <li>
-                      <a
-                        href={item.href}
-                        class:list={['docs-sidebar-link', active && 'is-active']}
-                      >
-                        <SidebarIcon icon={item.icon} />
-                        <span>{item.title}</span>
-                      </a>
-                      {item.items && active && (
-                        <ul class="docs-sidebar-sub">
-                          {item.items.map((sub) => (
-                            <li>
-                              <a
-                                href={sub.href}
-                                class:list={['docs-sidebar-link is-sub', sub.href === pathname && 'is-active']}
-                              >
-                                <SidebarIcon icon={sub.icon} /><span>{sub.title}</span>
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
+              <SidebarItems items={section.items} pathname={pathname} />
             </div>
           ))}
         </nav>
@@ -435,7 +408,7 @@ const themeStyle = [
         const markdownBase = document.body.dataset.markdownBase || `${base}/format-md`;
         const path = window.location.pathname.slice(base.length).replace(/^\/+/, '');
         try {
-          const res = await fetch(`${markdownBase}/${path}`);
+          const res = await fetch(document.body.dataset.markdownUrl || `${markdownBase}/${path || 'index'}.md`);
           const text = await res.text();
           document.title = `Markdown — ${path}`;
           document.body.innerHTML = '';
@@ -470,7 +443,7 @@ const themeStyle = [
           const base = document.body.dataset.docsBase || '';
           const markdownBase = document.body.dataset.markdownBase || `${base}/format-md`;
           const path = window.location.pathname.slice(base.length).replace(/^\/+/, '');
-          return `${window.location.origin}${markdownBase}/${path}`;
+          return `${window.location.origin}${document.body.dataset.markdownUrl || `${markdownBase}/${path || 'index'}.md`}`;
         };
 
         const refresh = () => {
@@ -929,7 +902,9 @@ const themeStyle = [
         align-items: center;
         gap: 8px;
         width: 100%;
+        min-width: 0;
         padding: 6px 10px;
+        padding-inline-start: calc(10px + var(--sidebar-indent, 0px));
         border-radius: 7px;
         color: var(--muted);
         font-size: 13.5px;
@@ -949,16 +924,38 @@ const themeStyle = [
       }
 
       .docs-sidebar-link.is-sub {
-        padding-inline-start: 12px;
         font-size: 13px;
       }
 
       .docs-sidebar-sub {
-        margin: 4px 0 !important;
-        margin-inline-start: 22px !important;
-        padding-inline-start: 10px !important;
-        border-inline-start: 1px solid var(--line);
+        margin: 2px 0 !important;
       }
+
+      .docs-sidebar-text {
+        min-width: 0;
+        overflow-wrap: anywhere;
+      }
+
+      .docs-sidebar-link.is-active-ancestor {
+        color: var(--ink);
+      }
+
+      .docs-sidebar-row {
+        display: flex;
+        align-items: stretch;
+        list-style: none;
+        border-radius: 7px;
+        cursor: pointer;
+      }
+
+      .docs-sidebar-row::-webkit-details-marker { display: none; }
+      .docs-sidebar-row::marker { content: ''; }
+      .docs-sidebar-row .docs-sidebar-link { flex: 1; width: auto; }
+      .docs-sidebar-row:focus-visible { outline: 2px solid var(--violet); outline-offset: 2px; }
+      .docs-sidebar-chevron { display: grid; place-items: center; width: 30px; flex-shrink: 0; color: var(--soft-muted); }
+      .docs-sidebar-row:hover .docs-sidebar-chevron { color: var(--ink); }
+      html[dir="rtl"] .docs-sidebar-chevron svg { transform: rotate(180deg); }
+      .docs-sidebar-branch[open] > .docs-sidebar-row .docs-sidebar-chevron svg { transform: rotate(90deg); }
 
       /*
        * Also no overflow here, for the same Safari reason as .docs-shell: the

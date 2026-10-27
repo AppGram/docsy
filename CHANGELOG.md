@@ -1,5 +1,11 @@
 # Changes
 
+## 0.4.6
+
+- Render YAML sidebar navigation recursively instead of stopping at two levels, with keyboard-operable collapsible branches, automatic ancestor expansion, current-page highlighting and bounded indentation.
+- Include nested links in the overview's Markdown export, with access checks at every level. Add ten-level static/runtime/version/locale coverage and 32-level YAML regressions without relaxing parser safety limits.
+- Use collision-free `.md` export URLs for parent/child documents on static hosts. Preserve non-conflicting extensionless aliases and apply the same access rules to canonical, legacy and encoded export paths.
+
 ## 0.4.5
 
 - YAML sidebar icons from locally bundled Lucide/Tabler packs or custom image assets, with dark variants, theme-aware masks, group/child icons and configurable sizing.

@@ -59,8 +59,11 @@ export const relativeDocsPath = (pathname: string): string | null => {
 export const accessPathForRequest = (relativePath: string): string => {
   const markdownMatch = relativePath.match(/^\/format-md\/(.+)$/);
   const jsonMatch = relativePath.match(/^\/agent\/pages\/(.+)\.json$/);
-  const target = markdownMatch?.[1] ?? jsonMatch?.[1];
-  if (!target) return relativePath;
+  const rawTarget = markdownMatch?.[1] ?? jsonMatch?.[1];
+  if (!rawTarget) return relativePath;
+  let target: string;
+  try { target = decodeURIComponent(rawTarget).replace(/\/+$/, ''); } catch { return relativePath; }
+  if (markdownMatch) target = target.replace(/\.md$/, '');
   if (target === 'index') return '/';
   return /^versions\/[^/]+\/[^/]+\/index$/.test(target) ? `/${target.slice(0, -6)}` : `/${target}`;
 };

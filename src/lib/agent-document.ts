@@ -1,5 +1,5 @@
 import { docsyConfig, docsPath } from '../config';
-import { getDocuments, type DocumentRoute } from './documents';
+import { getDocuments, markdownPath, type DocumentRoute } from './documents';
 import { generateMarkdown } from './markdown-export';
 import { findArticle } from './article-loader';
 import { articleAuthorship } from './authorship';
@@ -12,7 +12,7 @@ export async function readAgentDocument(document: DocumentRoute, tiers: string[]
   return {
     schemaVersion: 1, title: markdown.match(/^#\s+(.+)/m)?.[1] ?? document.route,
     url: new URL(document.path, docsyConfig.site.origin).href,
-    markdownUrl: new URL(docsPath(`/format-md/${document.key}`), docsyConfig.site.origin).href,
+    markdownUrl: new URL(markdownPath(document.key), docsyConfig.site.origin).href,
     jsonUrl: new URL(docsPath(`/agent/pages/${document.key}.json`), docsyConfig.site.origin).href,
     ...document.context, markdown,
     ...(article ? { contentLocale, isFallback: contentLocale !== document.context.locale, authorship: articleAuthorship(article), editUrl: readerLinks({ config: article }, document.context).edit } : {}),

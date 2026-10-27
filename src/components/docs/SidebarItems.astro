@@ -1,0 +1,24 @@
+---
+import { isNavItemActive, isNavItemCurrent, type DocsNavItem } from '../../data/docs-nav';
+import SidebarIcon from './SidebarIcon.astro';
+interface Props { items: DocsNavItem[]; pathname: string; depth?: number }
+const { items, pathname, depth = 0 } = Astro.props;
+---
+<ul class:list={['docs-sidebar-items', depth > 0 && 'docs-sidebar-sub']} data-sidebar-depth={depth} style={`--sidebar-indent:${Math.min(depth, 5) * 12}px`}>
+  {items.map((item) => {
+    const active = isNavItemActive(item, pathname);
+    const current = isNavItemCurrent(item, pathname);
+    const link = <a href={item.href} class:list={['docs-sidebar-link', depth > 0 && 'is-sub', current && 'is-active', active && !current && 'is-active-ancestor']} aria-current={current ? 'page' : undefined}>
+      <SidebarIcon icon={item.icon} /><span class="docs-sidebar-text">{item.title}</span>
+    </a>;
+    return <li>
+      {item.items?.length ? <details class="docs-sidebar-branch" open={active}>
+        <summary class="docs-sidebar-row">
+          {link}
+          <span class="docs-sidebar-chevron" aria-hidden="true"><svg viewBox="0 0 16 16" width="14" height="14"><path d="m6 4 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+        </summary>
+        <Astro.self items={item.items} pathname={pathname} depth={depth + 1} />
+      </details> : link}
+    </li>;
+  })}
+</ul>

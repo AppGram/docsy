@@ -60,17 +60,43 @@ That article is served at `/guides/platform/security/authentication` underneath 
 Registration creates the route. Navigation is explicit so you control grouping and order:
 
 ```yaml
+content:
+  articles:
+    - { slug: platform, title: Platform, source: content/platform/index.md }
+    - { slug: platform/security, title: Security, source: content/platform/security/index.md }
+    - { slug: platform/security/authentication, title: Authentication, source: content/platform/security/authentication/index.mdx }
+    - { slug: platform/security/authentication/tokens/rotation, title: Token rotation, source: content/platform/security/authentication/tokens/rotation.mdx }
+
 navigation:
   - title: Platform
     items:
-      - title: Security
-        href: /guides/platform/security/authentication
+      - title: Overview
+        href: /guides/platform
         items:
-          - title: Authentication
-            href: /guides/platform/security/authentication
+          - title: Security
+            href: /guides/platform/security
+            icon: lucide:shield
+            items:
+              - title: Authentication
+                href: /guides/platform/security/authentication
+                items:
+                  - title: Token rotation
+                    href: /guides/platform/security/authentication/tokens/rotation
 ```
 
 Navigation entries do not create pages by themselves. Their `href` must point to an authored article, API section, SDK page, or Astro route that exists.
+
+### Deep documentation trees
+
+**Available since Docsy 0.4.6.** Earlier versions accepted nested slugs and recursive YAML, but the sidebar only rendered two levels. See the [nested documentation tutorial](../nested-documentation) for setup and upgrade notes.
+
+Repeat `items` at any level; the sidebar is recursive, not limited to children or grandchildren. Each branch can be expanded or collapsed with its chevron or keyboard. Opening a deep URL expands its ancestors automatically; only the current page is highlighted. Indentation stops growing after five steps so very deep titles still fit the sidebar, without flattening or dropping the underlying tree.
+
+Source folders, URL segments and navigation nesting are independent. A source may live many directories down, a slug may contain many `/` segments, and a sidebar parent does not have to share its children's URL prefix. Include `site.basePath` only in site configuration, not in these `href` values. Register every linked parent page too; intermediate URL segments do not need pages unless you link to them.
+
+Nested Markdown and MDX pages retain full-text search, heading links, Markdown/JSON exports, version/language routing and lock-mode rules. The overview's Markdown export includes the nested link hierarchy and filters restricted links at every level. Docsy has regression coverage for ten-level rendered sites and 32-level YAML navigation. The YAML parser's nesting safety limit remains enabled; normal browser, URL and filesystem limits also apply.
+
+Canonical Markdown exports end in `.md`, for example `/format-md/guides/platform.md` and `/format-md/guides/platform/security.md`. This avoids static-file collisions when both a parent and its descendants are documents. Use the Markdown menu or each search/JSON record's `markdownUrl`. Existing extensionless exports remain available at runtime and for static pages that are not parents of another export.
 
 ## Credit writers and let readers correct a page
 

@@ -102,7 +102,19 @@ try {
   write(join(site, 'content/private.md'), `## Internal contract\n\n${privateSignal}\n`);
   config.authors = { writer: { name: 'Package test writer', avatar: 'assets/authors/unknown.svg' } };
   config.content.articles.push({ slug: 'package-handbook', source: 'content/package-handbook.mdx', title: 'Package handbook', authors: ['writer'] }, { slug: 'private', source: 'content/private.md', title: 'Internal contract' });
-  config.navigation[0].items.push({ title: 'Package handbook', href: '/guides/package-handbook' });
+  const nestedSlugs = Array.from({ length: 10 }, (_, level) => ['package-handbook', ...Array.from({ length: level }, (_, i) => `part-${i + 1}`)].join('/'));
+  const nestedLeaf = nestedSlugs.at(-1), nestedSignal = 'tarball-nested-proof';
+  let nestedNav;
+  for (let i = nestedSlugs.length - 1; i >= 0; i--) {
+    const slug = nestedSlugs[i];
+    if (i > 0) {
+      const source = `content/${slug}/index.mdx`;
+      write(join(site, source), `## Nested content\n\n<Note>${i === 9 ? nestedSignal : 'Nested parent article.'}</Note>\n`);
+      config.content.articles.push({ slug, source, title: `Package level ${i + 1}` });
+    }
+    nestedNav = { title: `Package level ${i + 1}`, href: `/guides/${slug}`, ...(nestedNav ? { items: [nestedNav] } : {}) };
+  }
+  config.navigation[0].items.push(nestedNav);
   write(configPath, dump(config));
   run(site, 'npm', ['install', '--ignore-scripts', '--no-audit', '--no-fund']);
   assert.ok(!lstatSync(join(site, 'node_modules')).isSymbolicLink());
@@ -129,7 +141,20 @@ try {
     const json = await (await fetch(`${server.base}/agent/pages/guides/package-handbook.json`)).json(); assert.equal(json.authorship.authors[0].name, 'Package test writer');
     assert.match(JSON.stringify(json), /Tarball diagram preview/); assert.ok(!JSON.stringify(json).includes('base64,'));
     assert.match(JSON.stringify(json), /sequenceDiagram/); assert.match(JSON.stringify(json), /Editable PlantUML/);
-    assert.match(await (await fetch(`${server.base}/format-md/guides/package-handbook`)).text(), new RegExp(signal));
+    assert.match(await (await fetch(`${server.base}/format-md/guides/package-handbook.md`)).text(), new RegExp(signal));
+    assert.equal((await fetch(`${server.base}/format-md/guides/package-handbook`)).status, 404);
+    for (const slug of nestedSlugs) {
+      const markdown = await fetch(`${server.base}/format-md/guides/${slug}.md`);
+      assert.equal(markdown.status, 200, slug);
+      assert.match(await markdown.text(), /Bring your own content|Nested content/);
+    }
+    const nestedHtml = await (await fetch(`${server.base}/guides/${nestedLeaf}`)).text();
+    assert.match(nestedHtml, /data-sidebar-depth="9"/); assert.match(nestedHtml, new RegExp(nestedSignal));
+    assert.equal((nestedHtml.match(/aria-current="page"/g) ?? []).length, 1);
+    const nestedJson = await (await fetch(`${server.base}/agent/pages/guides/${nestedLeaf}.json`)).json();
+    assert.ok(nestedJson.markdownUrl.endsWith(`${nestedLeaf}.md`));
+    const nestedMarkdown = await fetch(new URL(new URL(nestedJson.markdownUrl).pathname, server.base));
+    assert.equal(nestedMarkdown.status, 200); assert.match(await nestedMarkdown.text(), new RegExp(nestedSignal));
     const css = html.match(/href="([^"]+\.css)"/); assert.ok(css); assert.equal((await fetch(new URL(css[1], server.base))).status, 200);
     const missing = await fetch(`${server.base}/guides/package-missing`, { redirect: 'manual' });
     assert.equal(missing.status, 404); assert.match(missing.headers.get('content-type'), /text\/html/);
@@ -140,13 +165,14 @@ try {
   checks.push('Actual static server: article, generated API, local avatar/CSS, full-text search and Markdown/JSON exports');
   checks.push('Installed draw.io component renders its SVG and exact source download; agent exports retain the description without binary payloads');
   checks.push('Installed static 404 page honors YAML copy and mounted recovery links, returns 404, and stays out of search');
+  checks.push('Installed ten-level navigation renders the deepest MDX page with one current link; every parent and child has a collision-free .md export');
 
   run(site, 'npm', ['run', 'docsy', '--', 'create', join(workspace, 'second'), '--yes', '--no-install']);
   assert.equal(JSON.parse(read(join(workspace, 'second/.docsy/template.json'))).templateVersion, artifact.version);
   checks.push('A generated site can generate a second site without the original checkout or losing its template version');
 
   config.access.mode = 'locked'; config.agent.query = true;
-  config.access.rules = [{ pattern: '/guides/private', tiers: ['enterprise'] }];
+  config.access.rules = [{ pattern: '/guides/private', tiers: ['enterprise'] }, { pattern: `/guides/${nestedLeaf}`, tiers: ['enterprise'] }];
   write(configPath, dump(config));
   run(site, 'npm', ['run', 'build']);
   server = await serve();
@@ -155,6 +181,10 @@ try {
     assert.equal((await fetch(`${server.base}/guides/private`, { redirect: 'manual' })).status, 302);
     assert.equal((await fetch(`${server.base}/agent/pages/guides/private.json`)).status, 404);
     assert.equal((await fetch(`${server.base}/format-md/guides/private`)).status, 401);
+    assert.equal((await fetch(`${server.base}/format-md/guides/${nestedLeaf}.md`)).status, 401);
+    assert.equal((await fetch(`${server.base}/agent/pages/guides/${nestedLeaf}.json`)).status, 404);
+    assert.match(await (await fetch(`${server.base}/format-md/guides/${nestedLeaf}.md`, { headers: auth })).text(), new RegExp(nestedSignal));
+    assert.doesNotMatch(await (await fetch(`${server.base}/format-md/index.md`)).text(), new RegExp(nestedLeaf));
     assert.doesNotMatch(await (await fetch(`${server.base}/search-index.json`)).text(), new RegExp(privateSignal));
     const allowed = await fetch(`${server.base}/agent/pages/guides/private.json`, { headers: auth }); assert.equal(allowed.status, 200); assert.match((await allowed.json()).markdown, new RegExp(privateSignal));
     assert.equal((await (await fetch(`${server.base}/agent/query.json?q=${privateSignal}`)).json()).count, 0);
@@ -165,6 +195,7 @@ try {
   } finally { await server.stop(); }
   checks.push('Actual standalone server: anonymous HTML/Markdown/JSON/search denied or filtered; authorized article and live agent query succeed');
   checks.push('Installed standalone 404 page returns 404 without exposing protected article content');
+  checks.push('Installed nested canonical Markdown and JSON exports enforce the same runtime tiers and filter locked links from the overview');
   checks.push('Installed sidebar renders local pack icons and a custom mask, without an icon API or font service');
   assert.equal(sha256(tarball), artifact.sha256, 'Package changed during testing');
   const report = { result: 'passed', commit: process.env.GITHUB_SHA ?? execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim(), artifact, checks, node: process.version, npm: run(consumer, 'npm', ['--version']).trim() };

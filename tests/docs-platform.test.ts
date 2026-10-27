@@ -31,6 +31,34 @@ const run = (root: string, code: string) => execFileSync(process.execPath, ['--i
 const moduleUrl = (path: string) => JSON.stringify(new URL(`../${path}`, import.meta.url).href);
 const record = (overrides: Partial<SearchRecord> = {}): SearchRecord => ({ id: 'one', type: 'page', title: 'Guide', url: '/docs/guides/guide', group: 'Guides', body: 'A platypus lives here.', version: 'current', locale: 'en', markdownUrl: '/docs/format-md/guides/guide', jsonUrl: '/docs/agent/pages/guides/guide.json', ...overrides });
 
+test('recursive YAML preserves 32 navigation levels, localized labels and icons within parser safety limits', () => {
+  const { root, config } = fixture();
+  let item: any = { title: 'Level 32', titles: { fr: 'Niveau 32' }, href: '/guides/guide', icon: 'lucide:book-open' };
+  for (let i = 31; i > 0; i--) item = { title: `Level ${i}`, titles: { fr: `Niveau ${i}` }, href: '/guides/guide', items: [item] };
+  config.navigation = [{ title: 'Deep docs', items: [item] }];
+  write(root, 'docsy.config.yaml', dump(config));
+  const nav = JSON.parse(run(root, `import {getDocsNav} from ${moduleUrl('src/data/docs-nav.ts')}; console.log(JSON.stringify(getDocsNav({version:'current',locale:'fr'})));`));
+  let current = nav[0].items[0];
+  for (let i = 1; i <= 32; i++) {
+    assert.equal(current.title, `Niveau ${i}`);
+    assert.equal(current.href, '/docs/versions/current/fr/guides/guide');
+    if (i < 32) current = current.items[0];
+  }
+  assert.equal(current.icon.reference, 'lucide:book-open');
+});
+
+test('nested overview Markdown keeps readable descendants without leaking locked ancestor labels', () => {
+  const { root, config } = fixture();
+  config.content.articles.push({ slug: 'secret', title: 'Private root', source: 'content/guide.md' }, { slug: 'secret/deep', title: 'Private leaf', source: 'content/guide.md' });
+  config.navigation = [{ title: 'Tree', items: [{ title: 'Private root', href: '/guides/secret', items: [{ title: 'Public descendant', href: '/guides/guide', items: [{ title: 'Private leaf', href: '/guides/secret/deep' }] }] }] }];
+  config.access = { mode: 'locked', tiers: { pro: { label: 'Pro' } }, rules: [{ pattern: '/guides/secret', tiers: ['pro'] }, { pattern: '/guides/secret/deep', tiers: ['pro'] }] };
+  write(root, 'docsy.config.yaml', dump(config));
+  const read = (tiers: string[]) => JSON.parse(run(root, `import {generateMarkdown} from ${moduleUrl('src/lib/markdown-export.ts')}; console.log(JSON.stringify(await generateMarkdown('/docs','https://docs.example.test',${JSON.stringify(tiers)})));`));
+  assert.match(read([]), /^- \[Public descendant\]/m);
+  assert.doesNotMatch(read([]), /Private root|Private leaf|\/guides\/secret/);
+  assert.match(read(['pro']), /^    - \[Private leaf\]\(\/docs\/guides\/secret\/deep\)$/m);
+});
+
 test('minimal YAML retains nested defaults after the Zod 4 migration', () => {
   const { root } = fixture();
   const config = JSON.parse(run(root, `import {docsyConfig} from ${moduleUrl('src/config.ts')}; console.log(JSON.stringify(docsyConfig));`));

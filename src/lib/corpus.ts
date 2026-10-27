@@ -3,7 +3,7 @@ import { articleRoute, articleUrl, getArticleSources, loadArticle } from './arti
 import { getSdkSources, loadSdk } from './sdk-loaders';
 import { API_SECTIONS, filterEndpoints, loadSwagger } from './swagger-loader';
 import { htmlSections } from './html-content';
-import { documentKey } from './documents';
+import { documentKey, markdownPath } from './documents';
 import type { SearchRecord } from './search';
 import { articleAuthorship } from './authorship';
 
@@ -16,7 +16,7 @@ export function buildCorpus(): Promise<SearchRecord[]> {
 async function collect(): Promise<SearchRecord[]> {
   const records: SearchRecord[] = [];
   for (const context of allContexts) {
-    const links = (route: string) => { const key = documentKey(docsPath(route, context)); return { markdownUrl: docsPath(`/format-md/${key}`), jsonUrl: docsPath(`/agent/pages/${key}.json`) }; };
+    const links = (route: string) => { const key = documentKey(docsPath(route, context)); return { markdownUrl: markdownPath(key), jsonUrl: docsPath(`/agent/pages/${key}.json`) }; };
     for (const source of getArticleSources(context)) {
       const article = await loadArticle(source);
       const url = articleUrl(source, context);

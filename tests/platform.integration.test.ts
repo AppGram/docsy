@@ -13,6 +13,8 @@ const repo = process.cwd();
 const runtime = process.env.DOCSY_TEST_RUNTIME || 'node';
 assert.ok(['node', 'bun'].includes(runtime), 'DOCSY_TEST_RUNTIME must be node or bun');
 const runtimeExecutable = runtime === 'bun' ? 'bun' : process.execPath;
+const nestedSlugs = Array.from({ length: 10 }, (_, index) => `nested/${Array.from({ length: index + 1 }, (_, level) => `level-${level + 1}`).join('/')}`);
+const nestedLeaf = nestedSlugs.at(-1)!;
 const write = (root: string, path: string, value: string) => { mkdirSync(dirname(join(root, path)), { recursive: true }); writeFileSync(join(root, path), value); };
 const read = (root: string, path: string) => readFileSync(join(root, path), 'utf8');
 const command = (root: string, ...args: string[]) => execFileSync(process.execPath, args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, DOCSY_CONFIG: 'docsy.config.yaml' }, timeout: 90_000 });
@@ -65,6 +67,17 @@ function site() {
   write(root, 'sources/api.yaml', dump(spec)); write(root, 'sources/v1.yaml', dump({ ...spec, info: { title: 'Widgets', version: '1' } }));
   const sdk = (summary: string) => ({ modules: [{ types: [{ kind: 'class', name: 'WidgetClient', description: { summary } }] }], navigation: { categories: [{ title: 'Classes', items: ['WidgetClient'] }] } });
   write(root, 'sources/sdk.json', JSON.stringify(sdk('Modern client'))); write(root, 'sources/sdk-v1.json', JSON.stringify(sdk('Legacy SDK client')));
+  let branch: any;
+  for (let i = nestedSlugs.length - 1; i >= 0; i--) {
+    const slug = nestedSlugs[i], source = `content/${slug}/index.${i === 9 ? 'mdx' : 'md'}`;
+    config.content.articles.push({ slug, source, title: `Nested level ${i + 1}` });
+    write(root, source, `## Deep section\n\n${i === 9 ? '<Note>nestedquokkaproof reaches the deepest MDX page.</Note>' : 'A nested Markdown article.'}\n`);
+    branch = { title: `Nested level ${i + 1}`, titles: { fr: `Niveau ${i + 1}` }, href: `/guides/${slug}`, icon: 'lucide:book-open', ...(branch ? { items: [branch] } : {}) };
+  }
+  config.navigation[0].items.push(branch);
+  config.content.articles.push({ slug: nestedLeaf, version: 'v1', source: 'content/nested-v1.md', title: 'Legacy nested page' });
+  write(root, 'content/nested-v1.md', '## Deep section\n\nnestedlegacyproof uses the version-one contract.\n');
+  config.access.rules.push({ pattern: `/guides/${nestedLeaf}`, tiers: ['pro'] });
   const save = () => write(root, 'docsy.config.yaml', dump(config)); save();
   return { parent, root, config, save };
 }
@@ -93,6 +106,23 @@ test(`generated template serves static variants and permission-aware APIs on ${r
     assert.ok(existsSync(join(root, 'Dockerfile.bun')));
     const staticServer = await serve(root);
     try {
+      const deep = await fetch(`${staticServer.base}/guides/${nestedLeaf}/`);
+      assert.equal(deep.status, 200);
+      const deepHtml = await deep.text(); assert.match(deepHtml, /nestedquokkaproof/);
+      assert.match(deepHtml, /data-sidebar-depth="9"/);
+      const sidebar = deepHtml.match(/<aside[^>]*id="docs-sidebar"[^>]*>([\s\S]*?)<\/aside>/)![1];
+      assert.equal((sidebar.match(/aria-current="page"/g) ?? []).length, 1);
+      assert.equal((sidebar.match(/<details[^>]*\bopen(?:\s|=|>)/g) ?? []).length, 9);
+      for (const slug of nestedSlugs) {
+        const markdown = await fetch(`${staticServer.base}/format-md/guides/${slug}.md`);
+        assert.equal(markdown.status, 200); assert.match(await markdown.text(), /Deep section/);
+      }
+      assert.match(deepHtml, new RegExp(`href="/docs/format-md/guides/${nestedLeaf}\\.md"`));
+      assert.match(await (await fetch(`${staticServer.base}/format-md/index`)).text(), new RegExp(nestedLeaf));
+      const translated = await (await fetch(`${staticServer.base}/versions/current/fr/guides/${nestedLeaf}/`)).text();
+      assert.match(translated, /Niveau 10/); assert.match(translated, /aria-current="page"/);
+      const legacy = await (await fetch(`${staticServer.base}/agent/pages/versions/v1/fr/guides/${nestedLeaf}.json`)).json();
+      assert.equal(legacy.version, 'v1'); assert.equal(legacy.isFallback, true); assert.match(legacy.markdown, /nestedlegacyproof/);
       const response = await fetch(`${staticServer.base}/guides/guide`);
       assert.equal(response.status, 200);
       const body = await response.text();
@@ -169,6 +199,7 @@ test(`generated template serves static variants and permission-aware APIs on ${r
     assert.match(read(root, 'release/docs/format-md/widget-sdk'), /## Quickstart/);
     assert.match(read(root, 'release/docs/versions/v1/en/api/widgets/index.html'), /v1/);
     const index = JSON.parse(read(root, 'release/docs/search-index.json'));
+    assert.ok(index.entries.some((entry: any) => entry.url.split('#')[0].endsWith(`/guides/${nestedLeaf}`) && entry.body.includes('nestedquokkaproof')));
     assert.ok(index.entries.some((entry: any) => entry.body.includes('platypusword')));
     assert.ok(index.entries.some((entry: any) => entry.body.includes('mdxquokkaneedle')));
     assert.match(read(root, 'release/docs/format-md/guides/native'), /mdxquokkaneedle/);
@@ -238,6 +269,20 @@ test(`generated template serves static variants and permission-aware APIs on ${r
     let server = await serve(root);
     try {
       const auth = { 'x-docsy-tiers': 'pro' };
+      assert.equal((await fetch(`${server.base}/guides/${nestedLeaf}`, { redirect: 'manual' })).status, 302);
+      assert.equal((await fetch(`${server.base}/format-md/guides/${nestedLeaf}`)).status, 401);
+      for (const key of [`guides/${nestedLeaf}.md`, `guides/${nestedLeaf}.md/`, `versions/v1/fr/guides/${nestedLeaf}.md`, `guides/${nestedLeaf.replace('nested', '%6eested')}%2emd`]) {
+        assert.equal((await fetch(`${server.base}/format-md/${key}`)).status, 401, key);
+      }
+      assert.equal((await fetch(`${server.base}/agent/pages/guides/${nestedLeaf}.json`)).status, 404);
+      const deep = await fetch(`${server.base}/guides/${nestedLeaf}`, { headers: auth });
+      assert.equal(deep.status, 200); assert.match(await deep.text(), /nestedquokkaproof/);
+      const allowedDeep = await (await fetch(`${server.base}/agent/pages/guides/${nestedLeaf}.json`, { headers: auth })).json();
+      assert.match(allowedDeep.markdown, /nestedquokkaproof/);
+      assert.ok(allowedDeep.markdownUrl.endsWith(`${nestedLeaf}.md`));
+      assert.match(await (await fetch(allowedDeep.markdownUrl.replace('https://docs.example.test/docs', server.base), { headers: auth })).text(), /nestedquokkaproof/);
+      assert.doesNotMatch(await (await fetch(`${server.base}/format-md/index`)).text(), new RegExp(nestedLeaf));
+      assert.equal((await (await fetch(`${server.base}/agent/query.json?q=nestedquokkaproof`)).json()).count, 0);
       const mediaPage = await fetch(`${server.base}/guides/guide`);
       const mediaHtml = await mediaPage.text();
       assert.match(mediaHtml, /<dialog[^>]*data-images="false"[^>]*data-videos="true"/);

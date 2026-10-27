@@ -34,9 +34,14 @@ export const getDocsNav = (context: DocsContext = defaultContext): DocsNavSectio
 })).filter((section) => section.items.length);
 export const docsNav = getDocsNav();
 
+const navPath = (href: string): string => href.split(/[?#]/)[0].replace(/\/+$/, '') || '/';
+
+export const isNavItemCurrent = (item: DocsNavItem, pathname: string): boolean =>
+  !item.href.includes('#') && navPath(item.href) === navPath(pathname);
+
 export const isNavItemActive = (item: DocsNavItem, pathname: string): boolean => {
-  const cleanPath = pathname.replace(/\/$/, '') || '/';
-  const cleanHref = item.href.replace(/\/$/, '') || '/';
+  const cleanPath = navPath(pathname);
+  const cleanHref = navPath(item.href);
   if (cleanHref === cleanPath) return true;
   if (item.items?.some((sub) => isNavItemActive(sub, cleanPath))) return true;
   if (parseDocsPath(cleanHref)?.path !== '/' && cleanPath.startsWith(`${cleanHref}/`)) return true;
