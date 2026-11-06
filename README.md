@@ -10,9 +10,9 @@
 
 <p align="center"><strong>Your documentation. Your source. Your infrastructure.</strong><br />Built for humans and coding agents.</p>
 
-<p align="center"><a href="https://appgram.github.io/docsy/">Documentation</a> · <a href="content/getting-started.md">Getting started</a> · <a href="https://github.com/AppGram/docsy/issues">Issues</a></p>
+<p align="center"><a href="https://appgram.github.io/docsy/">Documentation</a> · <a href="content/getting-started.md">Getting started</a> · <a href="#host-on-appgram">Host on AppGram</a> · <a href="https://github.com/AppGram/docsy/issues">Issues</a></p>
 
-Docsy by AppGram turns Markdown, MDX, OpenAPI, and native SDK documentation into a self-hosted portal with source you own. Readers get searchable guides and reference pages. Coding agents get Markdown/JSON exports, YAML configuration, and local validation. No hosted control plane is required.
+Docsy by AppGram turns Markdown, MDX, OpenAPI, and native SDK documentation into a self-hosted portal with source you own. Readers get searchable guides and reference pages. Coding agents get Markdown/JSON exports, YAML configuration, and local validation. No hosted control plane is required, and if you would rather not run servers, [AppGram can host it for you](#host-on-appgram).
 
 Product copy, navigation, visual tokens, ingestion, and access rules live in `docsy.config.yaml`. The generated Astro components and CSS stay in your repository, alongside `AGENTS.md` and `DOCSY_BRIEF.md` to guide your coding agent.
 
@@ -201,6 +201,7 @@ Read the [Docsy documentation portal](https://appgram.github.io/docsy/) or brows
 | [Customize the default UI](content/customization/default-ui.md) | YAML brand tokens and the source-owned Astro interface |
 | [Protect documentation by tier](content/tutorials/lock-mode.md) | Ordered access rules, trusted headers, webhooks, and locked deployment |
 | [Deploy to GitHub Pages](content/deployment/github-pages.md) | Static Pages configuration and the included Actions workflow |
+| [Host on AppGram](content/deployment/appgram.md) | One-command deploys, rollbacks, custom domains and organization-only docs |
 | [Self-host Docsy](content/deployment/self-hosting.md) | Static, Node, and Docker deployment shapes |
 | [Understand the Docsy license](content/reference/license.md) | What ELv2 permits, what it prohibits, and how it applies to generated sites |
 | [CLI reference](content/reference/cli.md) | Project generation, validation, building, and production startup |
@@ -662,6 +663,24 @@ Start with YAML for branding and stable tokens. Edit source when the request is 
 | SDK normalization | `src/lib/sdk-loaders.ts` |
 
 Generated projects include a customization brief for coding agents. Its rule is deliberate: preserve the working reference interface by default, use YAML for configuration, and touch Astro/CSS only for an explicitly requested UI change.
+
+## Host on AppGram
+
+Don't want to run a server? Deploy to [AppGram](https://appgram.dev) and your docs go live at `/developers` on your project's portal, for example `https://acme.appgram.page/developers/`, and on your custom domain.
+
+```bash
+export APPGRAM_API_KEY=ag_...   # key with the help_center:manage scope
+npm run deploy -- --project <projectId>
+```
+
+- **Included on every AppGram plan.** One docs site per project, no extra charge. Self-hosting stays free.
+- **Only changed files upload.** Files are content-addressed, so a one-page edit uploads one page.
+- **Rollbacks.** AppGram keeps your last 20 deploys; switch back from the dashboard.
+- **Custom domains and TLS** come from your AppGram portal, nothing to configure.
+- **Organization-only docs.** Switch a site to organization-only and readers sign in with their AppGram account first. Useful for internal or partner docs.
+- **Deploy on push** with the GitHub Actions workflow in the guide.
+
+Hosting serves open-mode sites. A site with `access.mode: locked` or `agent.query: true` needs its own server; self-host those as below. [Full guide: Host on AppGram](content/deployment/appgram.md).
 
 ## Self-hosting
 
