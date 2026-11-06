@@ -4,6 +4,7 @@
 
 - Add `docsy deploy` to publish an open-mode site to AppGram-hosted docs at `<portal>/developers`: builds with `site.basePath: /developers` through a temporary config copy, hashes `release/developers/`, uploads only missing files (concurrency 8, retries on network/5xx errors), finalizes and prints the live URL. Locked mode and `agent.query` are refused. No new dependencies.
 - Generated sites get a `deploy` npm script and ignore `.docsy/deploy/`.
+- Layout copy buttons fall back to `execCommand('copy')` when the Clipboard API is refused (sandboxed hosted pages, strict browser policies); a regression test keeps every storage access guarded.
 - New "Host on AppGram" guide with a GitHub Actions example.
 
 ## 0.4.6
