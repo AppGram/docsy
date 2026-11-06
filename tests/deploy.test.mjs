@@ -189,12 +189,14 @@ test('a symlink in public/ is refused before building', async () => {
   assert.equal(built, false);
 });
 
-test('hidden files in the output are refused, .well-known is allowed', () => {
+test('hidden files in the output are skipped, .well-known is kept', () => {
   const root = project();
   write(root, 'release/developers/.well-known/security.txt', 'Contact: x');
   assert.ok(buildManifest(join(root, 'release/developers')).files.some((f) => f.path === '.well-known/security.txt'));
   write(root, 'release/developers/.env', 'SECRET=1');
-  assert.throws(() => buildManifest(join(root, 'release/developers')), /Refusing hidden file in build output: .env/);
+  write(root, 'release/developers/.git/config', 'token');
+  const paths = buildManifest(join(root, 'release/developers')).files.map((f) => f.path);
+  assert.ok(!paths.some((p) => p.startsWith('.env') || p.startsWith('.git')));
 });
 
 test('a non-https API URL is refused and API calls never follow redirects', async () => {

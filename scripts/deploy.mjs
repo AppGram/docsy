@@ -109,8 +109,8 @@ export const deployConfig = (rawText, { origin } = {}) => {
   return dump(config, { lineWidth: -1, noRefs: true });
 };
 
-// Dotfiles (.env, .git, editor files) are never meant to be published;
-// .well-known is the one exception.
+// Dotfiles (.env, .git, .nojekyll, editor files) are never published, only
+// skipped; .well-known is the one exception.
 const isHidden = (name) => name.startsWith('.') && name !== '.well-known';
 
 const walk = (dir, prefix, out, where = 'build output') => {
@@ -119,7 +119,7 @@ const walk = (dir, prefix, out, where = 'build output') => {
     const path = prefix ? `${prefix}/${name}` : name;
     const stat = lstatSync(absolute);
     if (stat.isSymbolicLink()) throw new Error(`Refusing symlink in ${where}: ${path}`);
-    if (isHidden(name)) throw new Error(`Refusing hidden file in ${where}: ${path}`);
+    if (isHidden(name)) continue;
     if (stat.isDirectory()) walk(absolute, path, out);
     else if (stat.isFile()) out.push({ path, absolute, size: stat.size });
   }
