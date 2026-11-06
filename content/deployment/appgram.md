@@ -1,7 +1,7 @@
 AppGram can host an open-mode Docsy site for you. It is served under `/developers` on your project's AppGram portal, for example `https://acme.appgram.page/developers/`, and on the project's verified custom domain. Hosting is included on every AppGram plan, one docs site per project. Self-hosting stays free and works exactly as before.
 
 :::note[Open mode only]
-Hosted docs are static. A site with `access.mode: locked` or `agent.query: true` needs a Node server, so `docsy deploy` refuses it before uploading anything. Permission-gated hosted docs are coming; until then deploy in open mode or [self-host](/guides/deployment/self-hosting) locked mode.
+Hosted docs are static. A site with `access.mode: locked` or `agent.query: true` needs a Node server, so `docsy deploy` refuses it before uploading anything. Deploy in open mode, or [self-host](/guides/deployment/self-hosting) locked mode. To keep hosted docs private, set the site to organization-only in the dashboard: readers then sign in with their AppGram account.
 :::
 
 ## What you need
