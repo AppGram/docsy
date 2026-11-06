@@ -4,6 +4,7 @@ dist/
 /release/
 .env
 .docsy/maintenance/
+.docsy/deploy/
 .docsy/generators/
 .docsy/packages/
 .docsy/cache/

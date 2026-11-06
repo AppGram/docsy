@@ -37,6 +37,7 @@ Usage:
   docsy validate
   docsy build
   docsy preview
+  docsy deploy --project <projectId> [--no-build] [--message <text>] [--no-activate]
   docsy doctor
   docsy upgrade --from <fresh-generated-project>
   docsy migrate mintlify --source <local-export> --out <new-directory>
@@ -48,6 +49,7 @@ Commands:
   validate  Validate YAML and type-check the generated site
   build     Validate, build, and stage production output
   preview   Serve the staged static build or locked Node build
+  deploy    Build for /developers and publish to AppGram-hosted docs (needs APPGRAM_API_KEY)
   maintain  Detect documentation impact, run the coding agent, and validate a draft PR
   doctor    Check local prerequisites and explain the path to a live URL
   upgrade   Report upstream changes/conflicts; never overwrite customized files
@@ -75,6 +77,9 @@ if (command === '--version' || command === '-v' || command === 'version') {
 } else if (command === 'maintain') {
   const { main } = await import('./maintenance.mjs');
   await main(args).catch((error) => { console.error(error.message); process.exitCode = 1; });
+} else if (command === 'deploy') {
+  const { main } = await import('./deploy.mjs');
+  await main(args);
 } else if (command === 'create') {
   process.argv.splice(2, 1);
   await import('./create-docsy.mjs');

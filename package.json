@@ -60,6 +60,7 @@
     "start:bun": "bun scripts/start.mjs",
     "check": "node scripts/docsy.mjs validate",
     "maintain": "node scripts/docsy.mjs maintain",
+    "deploy": "node scripts/docsy.mjs deploy",
     "test": "node --import tsx --test tests/*.test.mjs tests/*.test.ts",
     "test:runtime:bun": "DOCSY_TEST_RUNTIME=bun node --import tsx --test tests/platform.integration.test.ts",
     "fixtures:generate": "node scripts/generate-native-fixtures.mjs",

@@ -309,6 +309,7 @@ const makePackageJson = (target, projectName) => {
       start: 'node scripts/start.mjs',
       'start:bun': 'bun scripts/start.mjs',
       maintain: 'node scripts/docsy.mjs maintain',
+      deploy: 'node scripts/docsy.mjs deploy',
     },
     dependencies: template.dependencies,
     devDependencies: template.devDependencies,

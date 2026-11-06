@@ -111,8 +111,11 @@ const themeStyle = [
       import { initSearch } from '../lib/search-client';
       import { initTocTracking } from '../lib/toc-client';
       import { initMediaViewer } from '../lib/media-viewer-client';
-      import { initHeadingLinks } from '../lib/heading-links-client';
+      import { copySectionLink, initHeadingLinks } from '../lib/heading-links-client';
       import { initMermaid } from '../lib/mermaid-client';
+      // Copy buttons in the inline script use this: Clipboard API with an
+      // execCommand fallback for sandboxed or policy-restricted pages.
+      (window as Window & { docsyCopyText?: (text: string) => Promise<boolean> }).docsyCopyText = (text) => copySectionLink(text);
       initRichComponents();
       initSearch();
       initTocTracking();
@@ -350,16 +353,18 @@ const themeStyle = [
       });
 
       // Copy buttons
+      const copyText = (text) => window.docsyCopyText
+        ? window.docsyCopyText(text)
+        : Promise.resolve().then(() => navigator.clipboard.writeText(text)).then(() => true, () => false);
       document.querySelectorAll('[data-copy-target]').forEach((btn) => {
         btn.addEventListener('click', async () => {
           const id = btn.getAttribute('data-copy-target');
           const target = id ? document.getElementById(id) : null;
           if (!target) return;
-          try {
-            await navigator.clipboard.writeText(target.textContent || '');
+          if (await copyText(target.textContent || '')) {
             btn.classList.add('is-copied');
             setTimeout(() => btn.classList.remove('is-copied'), 1600);
-          } catch {}
+          }
         });
       });
 
@@ -478,11 +483,10 @@ const themeStyle = [
         });
 
         copyBtn.addEventListener('click', async () => {
-          try {
-            await navigator.clipboard.writeText(buildUrl());
+          if (await copyText(buildUrl())) {
             copyBtn.classList.add('is-copied');
             setTimeout(() => copyBtn.classList.remove('is-copied'), 1600);
-          } catch {}
+          }
         });
       })();
 
