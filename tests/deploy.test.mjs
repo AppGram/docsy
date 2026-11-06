@@ -1,7 +1,7 @@
 import test, { afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { load } from 'js-yaml';
@@ -31,7 +31,7 @@ const fakeApi = ({ missing = ['ALL'], finalizeStatus = 200, failFirstPut = false
   let putFailures = failFirstPut ? 1 : 0;
   const fetchImpl = async (url, init = {}) => {
     const method = init.method || 'GET';
-    calls.push({ url: String(url), method, headers: init.headers, body: init.body });
+    calls.push({ url: String(url), method, headers: init.headers, body: init.body, redirect: init.redirect });
     if (String(url).startsWith('https://r2.test/')) {
       if (putFailures-- > 0) return new Response('busy', { status: 503 });
       return new Response(null, { status: 200 });
@@ -172,4 +172,38 @@ test('fetchRetry retries network errors then gives up', async () => {
   let n = 0;
   await assert.rejects(fetchRetry('https://x.test', {}, { attempts: 3, delay: 1, fetchImpl: async () => { n++; throw new Error('ECONNRESET'); } }), /ECONNRESET/);
   assert.equal(n, 3);
+});
+
+const env = { APPGRAM_API_KEY: 'k', APPGRAM_API_URL: 'https://api.test' };
+
+test('a symlink in public/ is refused before building', async () => {
+  const root = project();
+  write(root, 'outside.env', 'SECRET=1');
+  mkdirSync(join(root, 'public'), { recursive: true });
+  symlinkSync(join(root, 'outside.env'), join(root, 'public/robots-old.txt'));
+  let built = false;
+  await assert.rejects(
+    deploy(['--project', 'p1'], { root, fetchImpl: fakeApi().fetchImpl, env, log: () => {}, retryDelay: 1, build: () => { built = true; } }),
+    /Refusing symlink in public\/: public\/robots-old.txt/,
+  );
+  assert.equal(built, false);
+});
+
+test('hidden files in the output are refused, .well-known is allowed', () => {
+  const root = project();
+  write(root, 'release/developers/.well-known/security.txt', 'Contact: x');
+  assert.ok(buildManifest(join(root, 'release/developers')).files.some((f) => f.path === '.well-known/security.txt'));
+  write(root, 'release/developers/.env', 'SECRET=1');
+  assert.throws(() => buildManifest(join(root, 'release/developers')), /Refusing hidden file in build output: .env/);
+});
+
+test('a non-https API URL is refused and API calls never follow redirects', async () => {
+  const root = project();
+  await assert.rejects(
+    deploy(['--project', 'p1', '--no-build'], { root, fetchImpl: fakeApi().fetchImpl, env: { ...env, APPGRAM_API_URL: 'http://api.appgram.dev' }, log: () => {} }),
+    /must use https/,
+  );
+  const api = fakeApi({ missing: [] });
+  await deploy(['--project', 'p1'], { root, fetchImpl: api.fetchImpl, env, log: () => {}, retryDelay: 1, build: () => {} });
+  for (const call of api.calls.filter((c) => c.url.startsWith('https://api.test'))) assert.equal(call.redirect, 'error');
 });

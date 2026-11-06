@@ -109,16 +109,29 @@ export const deployConfig = (rawText, { origin } = {}) => {
   return dump(config, { lineWidth: -1, noRefs: true });
 };
 
-const walk = (dir, prefix, out) => {
+// Dotfiles (.env, .git, editor files) are never meant to be published;
+// .well-known is the one exception.
+const isHidden = (name) => name.startsWith('.') && name !== '.well-known';
+
+const walk = (dir, prefix, out, where = 'build output') => {
   for (const name of readdirSync(dir).sort()) {
     const absolute = join(dir, name);
     const path = prefix ? `${prefix}/${name}` : name;
     const stat = lstatSync(absolute);
-    if (stat.isSymbolicLink()) throw new Error(`Refusing symlink in build output: ${path}`);
+    if (stat.isSymbolicLink()) throw new Error(`Refusing symlink in ${where}: ${path}`);
+    if (isHidden(name)) throw new Error(`Refusing hidden file in ${where}: ${path}`);
     if (stat.isDirectory()) walk(absolute, path, out);
     else if (stat.isFile()) out.push({ path, absolute, size: stat.size });
   }
   return out;
+};
+
+// The build copies public/ with symlinks followed, so a link such as
+// public/x -> ../.env would land in the output as an ordinary file. Check the
+// source before building.
+export const assertSafePublicDir = (root) => {
+  const dir = resolve(root, 'public');
+  if (existsSync(dir)) walk(dir, 'public', [], 'public/');
 };
 
 export const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
@@ -180,6 +193,8 @@ export const createClient = ({ apiUrl, apiKey, fetchImpl = globalThis.fetch, ret
         method,
         headers: { 'x-api-key': apiKey, Accept: 'application/json', ...(body ? { 'Content-Type': 'application/json' } : {}) },
         body: body ? JSON.stringify(body) : undefined,
+        // Never follow a redirect: fetch would resend x-api-key to the new host.
+        redirect: 'error',
       }, { fetchImpl, delay: retryDelay });
     } catch (error) {
       throw new ApiError(`Could not reach ${base}: ${error.message}`);
@@ -249,7 +264,10 @@ export const deploy = async (args, {
   env = process.env,
   fetchImpl = globalThis.fetch,
   build = (configFile) => {
-    const result = spawnSync(process.execPath, [resolve(ownRoot, 'scripts/docsy.mjs'), 'build'], { cwd: root, env: { ...env, DOCSY_CONFIG: configFile }, stdio: 'inherit' });
+    // The key stays out of the build: config placeholders and build plugins
+    // can read any environment variable.
+    const { APPGRAM_API_KEY: _key, ...buildEnv } = env;
+    const result = spawnSync(process.execPath, [resolve(ownRoot, 'scripts/docsy.mjs'), 'build'], { cwd: root, env: { ...buildEnv, DOCSY_CONFIG: configFile }, stdio: 'inherit' });
     if (result.error) throw result.error;
     if (result.status !== 0) throw new Error('Docsy build failed; nothing was deployed.');
   },
@@ -260,6 +278,10 @@ export const deploy = async (args, {
   const apiKey = env.APPGRAM_API_KEY;
   if (!apiKey) throw new Error('Set APPGRAM_API_KEY to an AppGram API key with the help_center:manage scope.');
   const apiUrl = env.APPGRAM_API_URL || 'https://api.appgram.dev';
+  const { protocol, hostname } = new URL(apiUrl);
+  if (protocol !== 'https:' && !['localhost', '127.0.0.1', '[::1]'].includes(hostname)) {
+    throw new Error(`APPGRAM_API_URL must use https (got ${protocol}//${hostname}).`);
+  }
 
   const sourceConfig = configPath(root, env);
   if (!existsSync(sourceConfig)) throw new Error(`No Docsy configuration at ${sourceConfig}.`);
@@ -271,8 +293,12 @@ export const deploy = async (args, {
   const origin = site?.url ? new URL(site.url).origin : undefined;
 
   if (options.build) {
+    assertSafePublicDir(root);
     const tempConfig = resolve(root, '.docsy/deploy/docsy.config.yaml');
     mkdirSync(dirname(tempConfig), { recursive: true });
+    for (const dir of [resolve(root, '.docsy'), dirname(tempConfig)]) {
+      if (lstatSync(dir).isSymbolicLink()) throw new Error(`Refusing symlinked ${dir}.`);
+    }
     writeFileSync(tempConfig, deployConfig(readFileSync(sourceConfig, 'utf8'), { origin }));
     log(`Building for ${BASE_PATH}${origin ? ` on ${origin}` : ''}...`);
     build(tempConfig);

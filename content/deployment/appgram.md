@@ -65,14 +65,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run deploy -- --project ${{ vars.APPGRAM_PROJECT_ID }} --message "${{ github.event.head_commit.message }}"
+      # The message goes through env, never pasted into the script: commit
+      # messages and PR titles are attacker-controlled text.
+      - run: npm run deploy -- --project "$APPGRAM_PROJECT_ID" --message "$MESSAGE"
         env:
           APPGRAM_API_KEY: ${{ secrets.APPGRAM_API_KEY }}
+          APPGRAM_PROJECT_ID: ${{ vars.APPGRAM_PROJECT_ID }}
+          MESSAGE: ${{ github.event.head_commit.message }}
 ```
 
 Set `APPGRAM_PROJECT_ID` as a repository variable, or write the ID inline. Deploys from Actions record the commit SHA and show as coming from GitHub.
