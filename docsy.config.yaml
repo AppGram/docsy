@@ -440,6 +440,12 @@ content:
       title: Self-host Docsy
       description: Deploy static documentation or run locked mode on Node, Bun, or Docker.
       eyebrow: DEPLOYMENT
+    - slug: deployment/appgram
+      source: content/deployment/appgram.md
+      authors: [nedimf, appgram]
+      title: Host on AppGram
+      description: Publish an open-mode Docsy site to your AppGram portal under /developers with docsy deploy.
+      eyebrow: DEPLOYMENT
     - slug: reference/cli
       source: content/reference/cli.md
       authors: [nedimf, appgram]
@@ -723,6 +729,10 @@ navigation:
         icon: lucide:server
         titles: { fr: Auto-hébergement, es: Alojamiento propio }
         href: /guides/deployment/self-hosting
+      - title: Host on AppGram
+        icon: lucide:cloud-upload
+        titles: { fr: Héberger sur AppGram, es: Alojar en AppGram }
+        href: /guides/deployment/appgram
   - title: Reference
     titles: { fr: Référence, es: Referencia }
     items:

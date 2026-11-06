@@ -10,6 +10,7 @@ The generated `package.json` exposes these scripts:
 | `npm run validate` | Validate YAML and type-check the site |
 | `npm run build` | Validate, build, and stage production output |
 | `npm run preview` | Serve the staged static site or standalone locked server |
+| `npm run deploy -- --project <id>` | Build for `/developers` and publish to AppGram-hosted docs ([Host on AppGram](/guides/deployment/appgram)) |
 | `npm run docsy -- doctor` | Check local prerequisites and deployment compatibility |
 | `npm run docsy -- --version` | Show recorded template version |
 | `npm run docsy -- upgrade --from <fresh-project>` | Write an upgrade comparison report; never apply changes |
