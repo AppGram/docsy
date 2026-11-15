@@ -1423,6 +1423,50 @@ const themeStyle = [
         }
       }
 
+      @media (max-width: 600px) {
+        /* A flex item never shrinks below its content without min-width: 0;
+           without it the search pushed the menu button off a phone screen. */
+        .docs-search-trigger {
+          min-width: 0;
+        }
+
+        .docs-topbar-actions,
+        .docs-mobile-toggle {
+          flex-shrink: 0;
+        }
+      }
+
+      @media (max-width: 480px) {
+        /* Phones: search becomes an icon button; the brand name gives way
+           (ellipsis) before the menu button ever leaves the screen. */
+        .docs-search-trigger {
+          flex: 0 0 40px;
+          width: 40px;
+          padding: 0;
+          justify-content: center;
+          margin-left: auto;
+        }
+
+        .docs-search-trigger span {
+          display: none;
+        }
+
+        .docs-brand {
+          min-width: 0;
+          flex-shrink: 1;
+        }
+
+        .docs-brand > span {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .docs-topbar-inner {
+          gap: 8px;
+        }
+      }
+
       @media (max-width: 420px) {
         .docs-topbar-icon:not(.docs-theme-toggle) {
           display: none;

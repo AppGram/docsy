@@ -1,5 +1,10 @@
 # Changes
 
+## Unreleased
+
+- Mobile header: the search trigger can now shrink (`min-width: 0`), and on phones (≤480px) it becomes an icon button while the brand name ellipsizes. Before, a long site name pushed the menu button off-screen, leaving no way to open the navigation on a phone.
+- iOS Safari no longer inflates code blocks to roughly twice their size: `text-size-adjust: 100%` on the document, and slightly smaller code with tighter padding on phones.
+
 ## 0.4.7
 
 - Add `docsy deploy` to publish an open-mode site to AppGram-hosted docs at `<portal>/developers`: builds with `site.basePath: /developers` through a temporary config copy, hashes `release/developers/`, uploads only missing files (concurrency 8, retries on network/5xx errors), finalizes and prints the live URL. Locked mode and `agent.query` are refused. No new dependencies.
