@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Mobile header: the search trigger can now shrink (`min-width: 0`), and on phones (≤480px) it becomes an icon button while the brand name ellipsizes. Before, a long site name pushed the menu button off-screen, leaving no way to open the navigation on a phone.
+- Wide article tables on phones (≤700px) scroll inside their own box instead of running off the right edge, and long inline code in table cells wraps.
 - iOS Safari no longer inflates code blocks to roughly twice their size: `text-size-adjust: 100%` on the document, and slightly smaller code with tighter padding on phones.
 
 ## 0.4.7
