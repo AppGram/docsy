@@ -108,3 +108,17 @@ a.button {
 
 .docs-search-trigger[hidden] { display: none !important; }
 .docs-llm[hidden] { display: none !important; }
+
+/* iOS Safari inflates text in wide, horizontally scrolling blocks (code)
+   unless told not to; code then rendered at roughly twice its size. */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+@media (max-width: 600px) {
+  .cb .cb-pre {
+    font-size: 12.5px;
+    padding: 14px 48px 14px 14px;
+  }
+}
